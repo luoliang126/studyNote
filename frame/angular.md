@@ -28,6 +28,23 @@
 	注意：如果在ng new my-app的时候选择了路由模块的话，会自动生成app-routing.modules.ts，就不需要在		单独创建路由模块了，如果最开始创建项目时没选择router，那么后面需要的时候就要单独创建。
 	ng generate module app-routing --flat --module=app  
 	// 添加路由模块，并自动在app.module.ts中添加引用。
+
+3、创建一个模块（在布局的时候，有些复杂的界面，需要拆分多个组件完成，此时创建一个模块来单独处理这些拆分的多个组件）
+	3.1、ng generate module edit (简写：ng g m edit  //edit是模块名称)
+    //这是在当前目录下创建了一个edit的目录，并在该edit目录下生成了一个edit.module.ts的文件
+	import { NgModule } from '@angular/core';
+	import { CommonModule } from '@angular/common';
+    @NgModule({
+      declarations: [],
+      imports: [
+        CommonModule
+      ]
+    })
+	export class EditModule { }
+	3.2、在该模块下创建的组件，就会自动引入到该EditModule中，并暴露出去（也可以手动添加）
+注意：如果前期该页面简单，没有创建模块，后续因为业务的扩展，需要拆分的时候，就需要手动创建模块，然后再挂载！
+    
+4、创建一个服务
 	
 ```
 

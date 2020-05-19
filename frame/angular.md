@@ -45,8 +45,28 @@
 注意：如果前期该页面简单，没有创建模块，后续因为业务的扩展，需要拆分的时候，就需要手动创建模块，然后再挂载！
 
 4、创建公用组件，公用模块等！
+	4.1、cd到公用目录下，创建一个公用模块
+    ng generate module public-module
+	4.2、挂载该publicModule模块
+    找到需要挂载的模块eg:components.module.ts
+	import { NgModule } from '@angular/core';
+	......
+	import { TestModule } from './public-module/public-module.module'; // 引入模块
+	@NgModule({
+        imports: [ ],
+        providers: [
+            ComponentsService
+        ],
+        exports: [
+            ......
+            TestModule //挂载到该模块，并exports出去
+        ]
+    })
+    export class ComponentsModule { } // 统一暴露出去
+	注意：这种方式实现了模块的嵌套
+    4.3、在每个模块中，创建组件 同上！
 
-5、创建一个服务	
+5、创建一个服务
 ```
 
 - ##### angular组件

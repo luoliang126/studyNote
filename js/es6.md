@@ -98,6 +98,58 @@
        return sum;
    }
    add(2, 5, 3) // 10
+   
+   3、函数对象传参
+   function test({ sendData, handleMessage, title, style }){
+       console.log(sendData,handleMessage,title,style)
+   }
+   test({sendData:123,handleMessage:'doSomething',title:'标题',style:{color:red,fontSize:12px}});
+   这样假如我们不需要传递第2,4个参数时，test({sendData:123,title:'标题'});也不会出现任何问题。
+   
+   4、箭头函数
+   4.1、箭头函数this为父作用域的this，不是调用时的this。任何方法都改变不了（包括call，apply，bind）
+   let person = {
+       name:'jike',
+       init:function(){
+           document.body.onclick = ()=>{
+               alert(this.name);
+           }
+       }
+   }
+   person.init(); // jike
+   如果是 
+   document.body.onclick = function(){
+       alert(this.name);
+   }
+   person.init(); //undefined
+   4.2 箭头函数不能作为构造函数，不能使用new
+   //构造函数如下：
+   function Person(p){
+       this.name = p.name;
+   }
+   //如果用箭头函数作为构造函数，则如下
+   var Person = (p) => {
+       this.name = p.name;
+   }
+   //Person is not a constructor
+   4.3、箭头函数没有arguments，使用...rest方法传参
+   let B = (b)=>{
+     console.log(arguments);
+   }
+   B(2,92,32,32);   // Uncaught ReferenceError: arguments is not defined
+   let C = (...c) => {
+     console.log(c);
+   }
+   C(3,82,32,11323);  // [3, 82, 32, 11323]
+   4.4、 箭头函数没有原型属性
+   var a = ()=>{
+     return 1;
+   }
+   function b(){
+     return 2;
+   }
+   console.log(a.prototype);  // undefined
+   console.log(b.prototype);   // {constructor: ƒ}
    ```
 
 5. ##### Class类
@@ -567,4 +619,44 @@
    // fun2
    ```
 
-10. 虚位以待！
+10. ##### js扩展运算符...
+
+    ```js
+    1、函数中使用
+    function myFunction(x, y, z) { 
+      console.log(x+""+y+""+z);
+    } 
+    var args = [0, 1, 2]; 
+    myFunction.apply(null, args);
+    改进后
+    function myFunction(x, y, z) { 
+    	console.log(x+""+y+""+z); 
+    } 
+    var args = [0, 1, 2]; 
+    myFunction(...args);
+    注：...arr返回的并不是一个数组，而是各个数组的值。只有[...arr]才是一个数组，所以...arr可以用来对方法进行传值
+    
+    2、数组和对象的拷贝。
+    数组
+    var arr1 = [1,2,3];
+    var arr2 = [...arr1];
+    arr2.push(4);
+    console.log(arr1 === arr2);  // false
+    console.log(arr1); // [1,2,3]
+    console.log(arr2);// [1,2,3,4]
+    对象
+    var obj1 = {
+        a:1,
+        b:2
+    };
+    var obj2 = {...obj1};
+    console.log(obj2); //{ a:1, b:2}
+    console.log(obj1 === obj2);// false
+    
+    3、字符串转数组
+    var demo = "hello"
+    var str = [...demo];
+    console.log(str);// ["h", "e", "l", "l", "o"]
+    ```
+
+11. 虚位以待！

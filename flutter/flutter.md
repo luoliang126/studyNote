@@ -1,4 +1,4 @@
-# flutter学习笔记
+# flutter笔记
 
 - ##### flutter安装，以及相关需求
 
@@ -48,11 +48,11 @@
   2、void main() => runApp(MyApp()); 主运行函数
   3、class MyApp extends StatelessWidget {......} MyApp继承一个StatelessWidget类
      StatelessWidget：是一个静态的部件
-     StatefulWidget：是一个动态的部件，根据状态改变
+     StatefulWidget：是一个动态的部件，根据状态改变 //setState
   4、@override 重写 Widget 视图，返回return 一个MaterialApp组件
   5、title:'hello' 是这个视图的标题
   6、theme:ThemeData.light(), 这是应用的主题色
-  7、home：Scaffold(......)  是这个视图的内容区域（脚手架，一个外壳磨具，里面填充组件）
+  7、home：Scaffold(......)  是这个视图的内容区域，主题样式（一个外壳磨具，里面填充组件）
   8、appBar: 头部 导航栏 内容部分
   9、body: 主体内容部分
   10、Center(......) 组件，居中（记住是垂直居中，而不是左右居中）
@@ -108,7 +108,18 @@
 
   ```
   new Image(......) 图片组件
-  // assets
+  1、本地图片引用
+  在根目录下创建images文件夹存放图片文件。
+  在pubspec.yaml中的 flutter: 部分找到assets（之前应该被注释掉了）
+  声明
+  assets:
+    - images/tupian.png // 这里要特别注意-前面有两个空格
+  在项目中使用
+  body: new Center(
+  	child: new Image.asset("images/tupian.png")  //路径要写全
+  ),
+  
+  2、使用线上图片资源
   child:new Image.network(
   	'http://www.baidu.com/xxxx.jpg'
   )
@@ -146,4 +157,18 @@
   ```
 
 - ##### 路由
+
+   ```dart
+   路由的跳转方式
+   1、
+   import './page/login.dart'; // 引入需要跳转的界面
+   Navigator.of(context).push(
+       MaterialPageRoute(
+           builder: (context)=>Login()
+       )
+   );
+   Login()是跳转到的路由界面里面的方法。
+   ```
+
+   
 

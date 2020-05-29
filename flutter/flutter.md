@@ -62,6 +62,21 @@
 - ##### 常用组件库
 
   ```dart
+  布局类
+  Row || Column (横轴，纵轴)
+  Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+          Image(
+              image: AssetImage("images/lilly.png"),
+              width: 100.0
+          )
+      ],
+  )
+  
+  ```
+
+  ```dart
   Text(......)文本组件（类似span）
   Text(
       '这是一段文字描述',
@@ -106,7 +121,7 @@
   ),
   ```
 
-  ```
+  ```dart
   new Image(......) 图片组件
   1、本地图片引用
   在根目录下创建images文件夹存放图片文件。
@@ -118,6 +133,13 @@
   body: new Center(
   	child: new Image.asset("images/tupian.png")  //路径要写全
   ),
+  Image(
+    image: AssetImage("images/avatar.png"),
+    width: 100.0
+  );
+  Image.asset("images/avatar.png",
+    width: 100.0,
+  )
   
   2、使用线上图片资源
   child:new Image.network(
@@ -170,5 +192,18 @@
    Login()是跳转到的路由界面里面的方法。
    ```
 
-   
+
+- ##### 安装依赖包
+
+  ```dart
+  1、在pubspec.yaml中，添加需要安装的包
+  dev_dependencies:
+    flutter_test:
+      sdk: flutter
+    flutter_screenutil: ^1.0.2   //屏幕适配解决方案
+        
+  2、执行flutter packages get会自动安装依赖包。
+  ```
+
+  
 

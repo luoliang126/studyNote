@@ -72,6 +72,67 @@
 - ##### angular组件
 
 ```js
-组件传参 参考：https://www.jianshu.com/p/9234504fa8e1
+1、父组件传值子组件（@Input方式）
+// 父组件（绑定传值）
+<app-eventcool-total #eventcoolTotalModal [detailData]="detailData"></app-eventcool-total>
+// 子组件（@Input接收，引入Input模块）
+import { Component, OnInit, Input } from '@angular/core'; 
+@Input() detailData: object;
+
+2、父组件传递方法给子组件，子组件调用父组件方法
+// 父组件中
+<app-person-total #personTotalModal (test)="doFatherMethod($event)"></app-person-total>
+// 注意这里方法里的$event用于接收参数
+doFatherMethod(data){
+    console.log('test测试父组件传递方法')
+    console.log(data)
+}
+// 子组件中
+import { Component, OnInit,Output,EventEmitter } from '@angular/core';
+@Output() test = new EventEmitter();
+doMethod(){
+    let params = {
+        id:123
+    }
+    this.test.emit(params);
+}
+
+3、子组件传值给父组件，父组件获取子组件的值（类似ngModel）
+参考：https://segmentfault.com/a/1190000016651999
+// 父组件
+<app-double-bind [(userName)]="userName"></app-double-bind>
+userName:String = 'luoliang'
+// 子组件
+<div>
+    <label for="">UserName:</label>
+    <input type="text"  [(ngModel)]="userName" (ngModelChange)="change()">
+</div>
+import { Component, OnInit,Input, Output, EventEmitter } from '@angular/core';
+@Input() public userName;
+@Output() public userNameChange = new EventEmitter();
+public change(userName: string) {
+    this.userNameChange.emit(this.userName);
+}
+
+4、子组件传方法给父组件，父组件调用子组件方法。
+// 父组件中
+// 命名组件名称
+<app-person-total #personTotalModal></app-person-total>
+// 声明子组件方法
+@ViewChild('personTotalModal', null) PersonTotalComponent: any
+openPersonTotalModal() {
+    this.PersonTotalComponent.changeModalStatus(); //PersonTotalComponent子组件
+}
+// 调用方法
+scanEventEngin(data){
+    console.log(data)
+    this.openPersonTotalModal();
+}
+// 子组件中
+isShowModal:Boolean = false;
+changeModalStatus(){
+    this.isShowModal = true;
+}
+
 ```
 

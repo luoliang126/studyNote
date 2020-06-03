@@ -134,6 +134,37 @@
 
 4. ##### 数据库的读写操作
 
+   ```python
+   
+   ```
+
 5. ##### python链接mongo数据库--pymongo
 
-6. 虚位以待！
+6. ##### get/post请求，以及返回json对象
+
+   ```python
+   from django.shortcuts import render
+   from django.http import HttpResponse
+   import json;
+   def index(request):
+       # 接收请求参数（get和post方式）
+       username = request.GET.get('username', '')
+       print('用户名是' + username)
+       
+       username = request.POST.get('username', '')
+       print('用户名是' + username)
+   
+       # 返回一个字符串
+       # return HttpResponse("Hello, world. You're at the polls index.")
+   
+       # 返回一个json对象
+       data = {
+           'patient_name': '张三',
+           'age': '25',
+           'patient_id': '19000347',
+           '诊断': '上呼吸道感染',
+       }
+       return HttpResponse(json.dumps(data,ensure_ascii=False),content_type="application/json,charset=utf-8")
+   ```
+
+7. 虚位以待！

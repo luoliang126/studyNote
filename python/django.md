@@ -132,9 +132,22 @@
    注：admin界面可以通过视图操作数据库，是一套不错的后端管理界面，但是它样式固定，不方便修改，且不能按照一定的业务逻辑修改界面。所以我们需要开发一套自己的前端界面，既可以达到视图的优化，又能够操作数据！
    ```
 
-4. ##### 数据库的读写操作
+4. ##### 数据库的读写操作（sqlite3）
 
    ```python
+   1、在htmlContent应用中定义 数据模型models.py
+   from django.db import models
+   class htmlContent(models.Model):
+       # 标题
+       title = models.CharField(max_length=100)
+       # 内容
+       content = models.CharField(max_length=10000)
+   # 将User表添加注册到admin管理界面，就可以实现admin管理这张表
+   from django.contrib import admin
+   admin.site.register(htmlContent)
+   
+   2、在htmlContent应用中views.py，引入models.py模型
+   from htmlContent.models import htmlContent
    
    ```
 

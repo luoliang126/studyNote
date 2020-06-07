@@ -51,4 +51,101 @@
    通过Object.defineProperty()来劫持各个属性的setter,getter，在数据变动时发布消息给订阅者，触发相应的监听回调事件。
    ```
 
-4. 虚位以待！！！
+4. ##### vue实现一个面包屑
+
+   ```js
+   方法一：
+   1、定义路由，与平时路由没什么不一样，但必须添加meta，以及title。
+   let routers = [
+       { 
+           path:'/',
+           redirect:"/dashboard" 
+       },
+       { 
+           path: '/dashboard',
+           name: 'dashboard',
+           component: dashboard,
+           meta: {
+               title: "面板选择页"
+           }
+       },
+       {
+           path:'/loginConfig',
+           name:'loginConfig',
+           component:loginConfig,
+           title:'登录配置',
+           meta:{
+               title:'登录配置'
+           },
+           children:[
+               { 
+                   path:'/loginConfig/loginRouterConfig',
+                   name:'loginRouterConfig',
+                   title:'登录路由配置',
+                   component:loginRouterConfig,
+                   meta:{
+                       title:'登录路由配置'
+                   }
+               },
+               { 
+                   path:'/loginConfig/loginGuideConfig',
+                   name:'loginGuideConfig',
+                   title:'登录引导页配置',
+                   component:loginGuideConfig,
+                   meta:{
+                       title:'登录引导页配置'
+                   }
+               },
+           ]
+       }
+   ]
+   2、获取路由地址，并截取出路由层级
+   getBreadcrumb () {
+       this.itemList = this.$route.matched.filter(item => item.name);
+   },
+   返回的是一个路由数组。（区分了一级路由，二级路由，三级路由......等）
+   eg:[
+       {
+           ......
+           path:'/loginConfig',
+           meta:{
+               title:'登录配置'
+           }
+       },
+       {
+           ......
+           path:'/loginConfig/loginGuideConfig',
+           meta:{
+               title:'登录引导页配置'
+           }
+       }
+   ]
+   3、遍历itemList，并绑定视图
+   <el-breadcrumb separator="/">
+       <el-breadcrumb-item>
+           <span @click="jumpRouter('/')">
+               首页
+           </span>
+       </el-breadcrumb-item>
+       <el-breadcrumb-item v-for="(item,index) in itemList" :key="'breadcrumb'+index">
+           <span @click="jumpRouter(item.path)">
+               {{ item.meta.title }}
+           </span>
+       </el-breadcrumb-item>
+   </el-breadcrumb>
+   jumpRouter(path){
+       if(path == '/'){
+   		......
+       }
+       this.$router.push(path);
+   }
+   4、注意，公用的面包屑，应该实时监听router的变化
+   watch:{
+       $route(){
+           this.getBreadcrumb();
+       }
+   }
+   批注：这种方法的关键在于this.$route.matched.filter(item => item.name) 直接返回的是一个数组格式，且根据路由嵌套的方式，一次存入数组，方便我们取值绑定。
+   ```
+
+5. 虚位以待！！！

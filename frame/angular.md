@@ -136,3 +136,40 @@ changeModalStatus(){
 
 ```
 
+- ##### angular使用注意事项！
+
+```js
+1、ts语法function
+eg:
+editData(data){
+	if(data){
+         this.validateForm.get('keyCode').setValue(data.keyCode);
+        this.validateForm.get('keyName').setValue(data.keyName);
+        this.validateForm.get('keyDesrc').setValue(data.keyDesrc);
+        this.validateForm.get('isOpened').setValue(data.isOpened);
+        this.itsDictionaryVals = data.itsDictionaryVals || [];
+	}
+	this.isShowEdit = true;
+}
+let params = {
+    keyCode:1,
+    keyName:'roche',
+    keyDesrc:'描述内容',
+    isOpened:false
+}
+this.editData(params); // 正确
+this.editData(); // 语法错误
+解决办法：声明函数时，data参数可以需要，可以不需要
+editData(data?){
+	if(data){
+         this.validateForm.get('keyCode').setValue(data.keyCode);
+        this.validateForm.get('keyName').setValue(data.keyName);
+        this.validateForm.get('keyDesrc').setValue(data.keyDesrc);
+        this.validateForm.get('isOpened').setValue(data.isOpened);
+        this.itsDictionaryVals = data.itsDictionaryVals || [];
+	}
+	this.isShowEdit = true;
+}
+this.editData(); // 正确
+```
+

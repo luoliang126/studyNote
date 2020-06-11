@@ -168,3 +168,15 @@
    5、flex属性是flex-grow, flex-shrink 和 flex-basis的简写，默认值为0 1 auto。后两个属性可选
    6、align-self属性，允许单个项目有与其他项目不一样的对齐方式，可覆盖align-items属性。默认值为auto，表示继承父元素的align-items属性，如果没有父元素，则等同于stretch。
    ```
+   
+5. ##### vh布局 参考：https://www.cnblogs.com/luxiaoxing/p/7544375.html
+
+   ```css
+   1.vw：1vw等于视口宽度的1%。
+   2.vh：1vh等于视口高度的1%。
+   3.vmin：选取vw和vh中最小的那个。
+   4.vmax：选取vw和vh中最大的那个。
+   ```
+
+6. 虚位以待！
+

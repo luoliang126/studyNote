@@ -46,11 +46,10 @@
        data.name = val;
    }
    上面两种方法都实现了效果，但是很明显这种操作适合一两个值的修改，当有大量需要编辑的时候就会显得臃肿，难以维护。所以这个时候我们就需要 数据<-->视图 间的双向绑定
-   
-   2、vue的双向绑定原理：数据劫持 + 发布中-订阅者模式
+   vue的双向绑定原理：数据劫持 + 发布中-订阅者模式
    通过Object.defineProperty()来劫持各个属性的setter,getter，在数据变动时发布消息给订阅者，触发相应的监听回调事件。
    ```
-
+   
 4. ##### vue实现一个面包屑
 
    ```js
@@ -148,4 +147,36 @@
    批注：这种方法的关键在于this.$route.matched.filter(item => item.name) 直接返回的是一个数组格式，且根据路由嵌套的方式，一次存入数组，方便我们取值绑定。
    ```
 
-5. 虚位以待！！！
+5. ##### vue面试常见问题？
+
+   ```js
+   1、vue在组件中的data为什么推荐使用函数 return的方式（直接对象data也可以）
+   data:{
+   	a:1
+   }
+   data(){
+   	return{
+   		a:1
+   	}
+   }
+   this指向问题，在写只有一个组件的vue项目时，this指向的就是当前vue实例，所以用data对象和data函数都可以。但是在多个组件或者多个.vue文件时，每一个组件的this都应该指向当前实例组件的this，而不是这个构造vue的this，使用函数return的方式可以避免全局数据的污染。
+   eg：
+   publicVueComponent.vue
+   <template>
+   	<div>
+       	这是一个公用组件
+       </div>    
+   </template>
+   <script>
+   export default {
+   	data:{
+   		a:1
+   	}
+   }    
+   </script>
+   如果我们在a组件中调用这个publicVueComponent.vue，并修改了a这个值this.a=2;
+   那么我们在b组件中调用这个publicVueComponent.vue时，a的值同样被修改了。因为他们指向的都是同一个a
+   所以推荐使用函数return的方式，this指向的是每次实例化这个publicVueComponent组件的实例，而不是这个构造组件。
+   ```
+
+6. 虚位以待！！！

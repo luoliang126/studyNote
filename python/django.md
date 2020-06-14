@@ -153,6 +153,11 @@
 
 5. ##### python链接mongo数据库--pymongo
 
+   ```python
+   1、安装pymongo
+   pip install pymongo
+   ```
+
 6. ##### get/post请求，以及返回json对象
 
    ```python

@@ -103,7 +103,7 @@
        tax: 0.2
    }
    {
-       detail:{
+       item:{
            name: 'luoliang'
            description: '描述内容'
            price: 10
@@ -111,7 +111,13 @@
        }
    }
    解决办法：使用Body
-   
+   @app.post("/items/test")
+   async def read_items(
+       item:Item = Body(...,embed=True)
+   ):
+       print(item)
+       return item
+   通过设定Body(...,embed=True)就可以实现嵌套，如果不需要Body(...,embed=False)
    
    #地址栏+请求体混合参数模式
    from fastapi import FastAPI
@@ -122,7 +128,11 @@
        price: float
        tax: float = None
    @app.put("/items/{item_id}")
-   async def create_item(item_id: int, item: Item):
+   async def create_item(
+       *,
+       item_id: int, 
+       item: Item
+   ):
        return {"item_id": item_id, **item.dict()} // **item.dict()将item转化为字典
    注意：混合get和post的方式传参。
    
@@ -153,7 +163,49 @@
    注意：item_id:int = Path(...,title="标题描述",ge=50,le=100) 这里使用的是Path，因为item_id是地址栏传参
        q: str = Query(None, alias="item-query"),
    
-   #body请求提的参数校验
+   #body请求体的参数校验
+   from fastapi import FastAPI,Path,Query,Body
+   from pydantic import BaseModel,Field
+   from typing import List,Set
+   // 定义一个参数模型，并指定类型，是否必传
+   class Item(BaseModel):
+       name:str // name参数str类型，必传
+       desc:str = Field(None,title="desc描述内容") // desc参数str类型，默认值None，title=“desc描述内容”
+       price:float = Field(...,gt=0) // price参数float类型，必传，大于0
+       items:list = []               // [null]列表，值为空，必传 
+       items1:List[str] = []			//['string'] List 列表，且里面的每一项都必须为str类型
+       items2:Set[str] = set()			//['string'] 设置类型，且里面的每一项都必须为str类型
+   @app.get("/items/{item_id}")
+   async def read_items(
+       item:Item = Body(...,embed=False)
+   ):
+       print(item)
+       return item
+   
+   #数据模型的嵌套
+   from pydantic import BaseModel,Field,HttpUrl
+   class Image(BaseModel):
+       url:HttpUrl　　　　　//url是http格式
+       name:str
+   class Item(BaseModel):
+       image:Image = None  // 是一个字典{url:string,name:string}
+   	iamges:List[Image] = None //是一个列表[{url:string,name:string}]
+   
+   #更多的数据类型
+   from datetime import datetime,time,date,timedelta
+   from uuid import UUID
+   UUID,
+   datetime
+   	datetime
+       date
+       time
+       timedelta
+   frozenset
+   bytes
+   Decimal
+   class model
+           
+   #以上可以实现，数据类型，以及简单的数值大于，等于，小于等验证，但是像复杂的手机号码，邮箱验证等
    
    
    3、路由
@@ -169,4 +221,10 @@
    方法二：实际开发中
    ```
 
-4. 虚位以待！
+4. ##### 数据库操作
+
+   ```python
+   SQLAlchemy
+   ```
+
+5. 虚位以待！

@@ -211,14 +211,37 @@
    3、路由
    方法一：官网推荐，使用多个文件，创建多个router
    1、在根目录下（与main.py平行） 创建一个routers目录
-   2、在routers下创建，login.py文件
+   2、在routers下创建，get.py和post.py文件(以get.py为例，post.py同理)
    from fastapi import APIRouter //引入APIRouter
-   router = APIRouter  //实例化router
-   @router.get("/login/",tags=["login"]) 
-   async def read_login():
+   router = APIRouter()  //实例化router
+   @router.get("/getMethod/",tags=["getMethod"]) 
+   async def read_get():
        return { "username":"luoliang" }
-   注意：这里的tags="login"，没有任何作用，只是在api文档中，方便阅读
+   注意：这里的tags="getMethod"，没有任何作用，只是在api文档中，方便阅读
+   3、在main.py中引入路由文件,并挂在到app实例上
+   from fastapi import FastAPI
+   from routers import get,post //官方的写法from .routers import get,post
+   app = FastAPI()
+   app.include_router(get.router)
+   app.include_router(post.router)
+   简单直接的方式，但是如果需要header头部参数验证（如token等，第二种方法）
+   
    方法二：实际开发中
+   在main.py中
+   定义header中的token验证
+   async def get_token_header(x_token:str = Header(...)):
+       if x_token != "testToken":
+           raise HTTPException(status_code=400,detail="x_token header invalid")
+   app.include_router(get.router)
+   app.include_router(post.router,
+       prefix="/postMethod",
+       tags=["postMethod"],
+       dependencies=[Depends(get_token_header)],
+       responses={404:{'description':'Not found'}}
+   )
+   prefix="postMethod"  
+   // post.py中的路由地址，前级统一加上postMethod就变成了/postMethod/postMethod
+   // dependencies是依赖项
    ```
 
 4. ##### 数据库操作

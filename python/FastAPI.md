@@ -86,7 +86,8 @@
    #请求体body传参
    from fastapi import FastAPI
    from pydantic import BaseModel // 引入BaseModel
-   class Item(BaseModel):		   // 定义数据模型，如果没有定义默认值str=None,那么该参数必传，否则抛错！
+   // 定义数据模型，如果没有定义默认值str=None,那么该参数必传，否则抛错！
+   class Item(BaseModel):		   
        name: str
        description: str = None
        price: float
@@ -155,6 +156,17 @@
    #body请求提的参数校验
    
    
+   3、路由
+   方法一：官网推荐，使用多个文件，创建多个router
+   1、在根目录下（与main.py平行） 创建一个routers目录
+   2、在routers下创建，login.py文件
+   from fastapi import APIRouter //引入APIRouter
+   router = APIRouter  //实例化router
+   @router.get("/login/",tags=["login"]) 
+   async def read_login():
+       return { "username":"luoliang" }
+   注意：这里的tags="login"，没有任何作用，只是在api文档中，方便阅读
+   方法二：实际开发中
    ```
 
 4. 虚位以待！

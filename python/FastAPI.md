@@ -207,7 +207,6 @@
            
    #以上可以实现，数据类型，以及简单的数值大于，等于，小于等验证，但是像复杂的手机号码，邮箱验证等
    
-   
    3、路由
    方法一：官网推荐，使用多个文件，创建多个router
    1、在根目录下（与main.py平行） 创建一个routers目录
@@ -217,37 +216,45 @@
    @router.get("/getMethod/",tags=["getMethod"]) 
    async def read_get():
        return { "username":"luoliang" }
-   注意：这里的tags="getMethod"，没有任何作用，只是在api文档中，方便阅读
+   注意：这里的tags="getMethod"，没有任何作用，只是在api文档中归类，方便查看阅读。
    3、在main.py中引入路由文件,并挂在到app实例上
    from fastapi import FastAPI
    from routers import get,post //官方的写法from .routers import get,post
    app = FastAPI()
    app.include_router(get.router)
    app.include_router(post.router)
-   简单直接的方式，但是如果需要header头部参数验证（如token等，第二种方法）
+   简单直接的方式，但是如果需要header头部参数验证（如token等，使用第二种方法）
    
    方法二：实际开发中
-   在main.py中
-   定义header中的token验证
+   在main.py中，定义header中的token验证
    async def get_token_header(x_token:str = Header(...)):
        if x_token != "testToken":
            raise HTTPException(status_code=400,detail="x_token header invalid")
-   app.include_router(get.router)
    app.include_router(post.router,
        prefix="/postMethod",
        tags=["postMethod"],
        dependencies=[Depends(get_token_header)],
        responses={404:{'description':'Not found'}}
    )
-   prefix="postMethod"  
+   prefix="/postMethod"  
    // post.py中的路由地址，前级统一加上postMethod就变成了/postMethod/postMethod
-   // dependencies是依赖项
+   // dependencies是依赖项(比如token验证)
+   这里可以做一些统一的操作，token验证，header信息拦截等，而具体的业务逻辑放到各自对应的router文件中
    ```
-
+   
 4. ##### 数据库操作
 
    ```python
-   SQLAlchemy
+   使用SQLAlchemy链接数据库
+   优点：既可以使用sql语句，也可以使用ORM对象映射
+   缺点：会影响性能（不会太大）
+   
+   安装sqlalchemy：pip install sqlalchemy （第一次抛错，第二次成功！）
+   安装mysql-connector：pip install mysql-connector
+   sqlalchemy本身不具备链接数据库功能，所以需要mysql-connector，pymysql，MySQL-Python等驱动（根据需要选择一个即可，优缺点自己把握！）
+   
+   1、初始化数据库
+   
    ```
 
 5. 虚位以待！

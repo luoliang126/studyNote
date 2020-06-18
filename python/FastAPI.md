@@ -249,11 +249,14 @@
    优点：既可以使用sql语句，也可以使用ORM对象映射
    缺点：会影响性能（不会太大）
    
-   安装sqlalchemy：pip install sqlalchemy （第一次抛错，第二次成功！）
+   安装sqlalchemy：pip install sqlalchemy 
    安装mysql-connector：pip install mysql-connector
+   安装依赖时，多试几次（第一次抛错，第二次成功！）
    sqlalchemy本身不具备链接数据库功能，所以需要mysql-connector，pymysql，MySQL-Python等驱动（根据需要选择一个即可，优缺点自己把握！）
    
-   1、初始化数据库
+   1、初始化数据库--建立连接
+   
+   2、建立会话
    
    ```
 

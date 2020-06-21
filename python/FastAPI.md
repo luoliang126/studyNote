@@ -251,13 +251,82 @@
    
    安装sqlalchemy：pip install sqlalchemy 
    安装mysql-connector：pip install mysql-connector
+   安装pymysql：pip install pymysql
    安装依赖时，多试几次（第一次抛错，第二次成功！）
    sqlalchemy本身不具备链接数据库功能，所以需要mysql-connector，pymysql，MySQL-Python等驱动（根据需要选择一个即可，优缺点自己把握！）
+   mysql-connector在建立数据表映射时，无法映射没有primary_key的表。
    
-   1、初始化数据库--建立连接
+   1、初始化数据库--建立连接、建立会话（database.py）
+   from sqlalchemy import create_engine
+   from sqlalchemy.ext.declarative import declarative_base
+   from sqlalchemy.orm import sessionmaker
+   engine = create_engine(
+       "mysql+pymysql://root:123456@localhost/luoliang",
+       encoding='utf-8',
+       echo=True
+   )
+   Base = declarative_base() #生成orm基类
+   SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
    
-   2、建立会话
+   2、创建model(models.py)
+   from typing import TYPE_CHECKING
+   from sqlalchemy import Column,Integer,String
+   from database import Base
+   class User(Base):
+       __tablename__ = "user"
+       id = Column(Integer,primary_key=True,index=True)
+       name = Column(String)
+       age = Column(Integer)
+       password = Column(String)
+       def to_dict(self):
+           return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+   
+   3、创建schema(schemas.py)
+   from typing import List
+   from pydantic import BaseModel
+   class userSchema(BaseModel):
+       name: str
+       age: int = None
+       password: str = None
+   
+   5、crud操作(crud.py)
+   from sqlalchemy.orm import Session
+   import models,schemas
+   def get_user(db: Session, name: str):
+       return db.query(models.User).filter(models.User.name == name).first()
+   
+   6、路由应用(main.py)
+   from fastapi import FastAPI,Depends,HTTPException
+   from typing import List
+   from sqlalchemy.orm import Session
+   import crud,models,schemas
+   from database import SessionLocal,engine
+   models.Base.metadata.create_all(bind=engine)
+   app = FastAPI()
+   # 依赖项
+   def get_db():
+       try:
+           db = SessionLocal()
+           yield db
+       finally:
+           db.close()
+           print('关闭数据库')
+   @app.post("/getUser")
+   def getUser(name:str, db: Session = Depends(get_db)):
+       user_name = crud.get_user(db, name)
+       return user_name
+   注意：定义的schema可以验证传参
+   @app.post("/editUser")
+   def editUser(user:schemas.userSchema,db:Session = Depends(get_db)):
+       result = crud.edit_user(db,user)
+       return result
+       
+   ```
+
+5. ##### sqlalchemy操作--ORM方法
+
+   ```python
    
    ```
 
-5. 虚位以待！
+6. 虚位以待！

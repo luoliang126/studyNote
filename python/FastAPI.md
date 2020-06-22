@@ -60,7 +60,7 @@
 3. ##### 基本使用
 
    ```python
-   1、传参
+   1、传参。参考：https://www.jianshu.com/p/9e720b1c367a
    #路径传参：
    @app.get("/items/{item_id}")
    async def read_item(item_id):
@@ -252,7 +252,7 @@
    安装sqlalchemy：pip install sqlalchemy 
    安装mysql-connector：pip install mysql-connector
    安装pymysql：pip install pymysql
-   安装依赖时，多试几次（第一次抛错，第二次成功！）
+   安装依赖时，多试几次（第一次可能抛错）
    sqlalchemy本身不具备链接数据库功能，所以需要mysql-connector，pymysql，MySQL-Python等驱动（根据需要选择一个即可，优缺点自己把握！）
    mysql-connector在建立数据表映射时，无法映射没有primary_key的表。
    
@@ -326,6 +326,47 @@
 5. ##### sqlalchemy操作--ORM方法
 
    ```python
+   1、查找数据query
+   db.query(models.cfgCoveredArea)
+   query查找出来的是一个数组，需要配合first，all等使用
+   // 返回所有查找到的结果
+   db.query(models.cfgCoveredArea).all()
+   // 返回满足需求的第一个
+   db.query(models.cfgCoveredArea).filter(params.City == models.cfgCoveredArea.City).first()
+   // 多个条件and查找
+   db.query(models.cfgCoveredArea).filter(params.Province == models.cfgCoveredArea.Province).filter(params.City == models.cfgCoveredArea.City).all()
+   // 多条件的另外一种方式
+   db.query(models.cfgCoveredArea).filter(params.Province == models.cfgCoveredArea.Province,params.City == models.cfgCoveredArea.City).all()
+   // 模糊查找,多条件(and)
+   db.query(models.cfgCoveredArea).filter(models.cfgCoveredArea.Province.like('%' + params.Province + '%')).filter(models.cfgCoveredArea.City.like('%' + params.City + '%')).all()
+   // 也可以这样（推荐这种方式）
+   from sqlalchemy import and_
+   db.query(models.cfgCoveredArea).filter(
+       models.cfgCoveredArea.Province.like('%' + params.Province + '%'),
+       models.cfgCoveredArea.City.like('%' + params.City + '%')
+   ).all()
+   db.query(models.cfgCoveredArea).filter(
+       and_(
+           models.cfgCoveredArea.Province.like('%' + params.Province + '%'),
+           models.cfgCoveredArea.City.like('%' + params.City + '%')
+       )
+   ).all()
+   // 关键字模糊查找(or)
+   from sqlalchemy import or_
+   db.query(models.cfgCoveredArea).filter(
+       or_(
+           models.cfgCoveredArea.Province.like('%' + params.keyword + '%'),
+           models.cfgCoveredArea.City.like('%' + params.keyword + '%')
+       )
+   ).all()
+   
+   2、查找满足条件数据的条数count
+   db.query(models.cfgCoveredArea).filter(params.City == models.cfgCoveredArea.City).count()
+   
+   3、创建、插入数据
+   create();
+   create_all();
+   
    
    ```
 

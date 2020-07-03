@@ -104,3 +104,42 @@ mysqld --install localmysql  //这里localmysql是服务的名字，可以不写
 	// delete from users where age=28 and password = 123;
 ```
 
+- ##### sql语句
+
+```mysql
+从fndictionarykeys表中查找所有数据
+SELECT * FROM `fndictionarykeys`
+
+从fndictionarykeys表中查找数据（从第一条开始，查找10条）
+SELECT * FROM `fndictionarykeys` limit 10
+SELECT * FROM `fndictionarykeys` limit 0,10
+
+从fndictionarykeys表中查找数据（从第二条开始，查找10条）
+SELECT * FROM `fndictionarykeys` limit 1,10
+
+指定条件查询（IsOpened=1）的所有数据
+SELECT * FROM `fndictionarykeys` where IsOpened=1
+
+指定条件查询（IsOpened=1）的前10条数据
+SELECT * FROM `fndictionarykeys` where IsOpened=1 limit 10
+
+查询id在1~4之间的数据
+SELECT * FROM `user` WHERE id BETWEEN 1 AND 4;
+
+查询id为（1，2，3）的数据
+SELECT * FROM `user` WHERE id IN (1,2,3);
+
+模糊查询（%为通配符，理解为补全缺失的部分）
+SELECT * FROM `user` WHERE username LIKE '%r'；//查询用户名以r结尾的人
+SELECT * FROM `user` WHERE username LIKE 'r%'；//查询用户名以r开头的人
+SELECT * FROM `user` WHERE username LIKE '%r%'；//查询用户名包含r的人
+
+ASC: 升序（默认） DESC: 降序
+SELECT * FROM `user` ORDER BY id ASC;//根据id升序查询
+SELECT * FROM `user` ORDER BY id DESC;//根据id降序查询
+SELECT * FROM `user` ORDER BY id ASC , username;//根据id升序，用户名字母顺序排列，前者权重高于后者，id权重高于用户名
+
+聚合函数max() min() avg() count() sum()
+select count(ifnull(id,0)) from student;//查询 id 字段个数，如果为 null，则使用 0 代替
+```
+

@@ -178,5 +178,24 @@
    4.vmax：选取vw和vh中最大的那个。
    ```
 
-6. 虚位以待！
+6. ##### css更换皮肤方案
+
+   ```css
+   1、使用css变量来进行主题色的修改，替换主题色变量，然后用setProperty来进行动态修改。（注意兼容问题）
+   参考：https://www.cnblogs.com/leiting/p/11203383.html
+   定义主题色：
+   body{
+      --themeColor:#000; // 初始的themeColor
+   }
+   使用时：
+   .main{
+      color: var(--themeColor);
+   }
+   修改主题色：
+   document.body.style.setProperty('--themeColor', '#ff0000');
+   
+   2、基于sass，less的换肤方案
+   ```
+
+7. 虚位以待！
 

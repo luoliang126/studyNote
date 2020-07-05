@@ -107,6 +107,12 @@ mysqld --install localmysql  //这里localmysql是服务的名字，可以不写
 - ##### sql语句
 
 ```mysql
+1、查找表中字段
+SELECT id FROM `banks`
+SELECT id,bank FROM 'banks' // 多个字段
+返回的是列出的字段，表中其他字段不返回！！！
+
+2、查找表中所有字段*
 从fndictionarykeys表中查找所有数据
 SELECT * FROM `fndictionarykeys`
 
@@ -117,7 +123,7 @@ SELECT * FROM `fndictionarykeys` limit 0,10
 从fndictionarykeys表中查找数据（从第二条开始，查找10条）
 SELECT * FROM `fndictionarykeys` limit 1,10
 
-指定条件查询（IsOpened=1）的所有数据
+3、指定条件查询（IsOpened=1）的所有数据
 SELECT * FROM `fndictionarykeys` where IsOpened=1
 
 指定条件查询（IsOpened=1）的前10条数据

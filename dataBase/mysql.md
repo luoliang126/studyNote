@@ -110,7 +110,28 @@ mysqld --install localmysql  //这里localmysql是服务的名字，可以不写
 1、查找表中字段
 SELECT id FROM `banks`
 SELECT id,bank FROM 'banks' // 多个字段
-返回的是列出的字段，表中其他字段不返回！！！
+只返回选择的字段id那一列的所有数据，表中其他字段不返回！！！
+
+2、查询结果，显示别名（便于理解）
+SELECT bank FROM `banks`
+bank
+银行1
+银行2
+...
+SELECT bank as '银行' FROM `banks`
+银行
+银行1
+银行2
+...
+多个表名时
+SELECT bank as '银行',descr as '描述' FROM `banks`
+SELECT bank '银行',descr '描述' FROM `banks`
+
+3、去重（根据province_code），可能有重复province_code的数据，但是只显示一次。
+SELECT DISTINCT province_code FROM `cn_dict_city`
+
+4、合并表名查询concat
+SELECT CONCAT(CITY_NAME,SHORT_NAME) AS '城市' FROM `cn_dict_city`
 
 2、查找表中所有字段*
 从fndictionarykeys表中查找所有数据

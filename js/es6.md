@@ -632,11 +632,11 @@
     function myFunction(x, y, z) { 
     	console.log(x+""+y+""+z); 
     } 
-    var args = [0, 1, 2]; 
+    var args = [0, 1, 2];
     myFunction(...args);
     注：...arr返回的并不是一个数组，而是各个数组的值。只有[...arr]才是一个数组，所以...arr可以用来对方法进行传值
     
-    2、数组和对象的拷贝。
+    2、数组和对象的拷贝(深拷贝，不是简单的指向修改)。
     数组
     var arr1 = [1,2,3];
     var arr2 = [...arr1];
@@ -659,4 +659,60 @@
     console.log(str);// ["h", "e", "l", "l", "o"]
     ```
 
-11. 虚位以待！
+11. ##### 解构赋值 https://www.cnblogs.com/xiaohuochai/p/7243166.html#anchor5
+
+    ```js
+    1、对象解构
+    es5语法：
+    let options = {
+        repeat: true,
+        save: false
+    };
+    let repeat = options.repeat,
+    	save = options.save;
+    es6语法：
+    let options = {
+        repeat: true,
+        save: false
+    };
+    let { repeat, save, value=true } = options;
+    console.log(repeat); // "Identifier"
+    console.log(save); // "foo"
+    console.log(value); // true,不存在为value的key，则赋值为undefined,如果给了默认值就用默认值
+    // 这里要注意：声明的变量名为obj的key，如：repeat，save，当然也可以重命名。
+    let { repeat:renameRepeat, save:renameSave, value=true } = options; 
+    console.log(renameRepeat); // "Identifier"
+    console.log(renameSave); // "foo"
+    对象嵌套的解构
+    
+    2、数组解构	
+    let colors = [ "red", "green", "blue" ];
+    let [ firstColor,,thirdColor ] = colors; // 对号入座方式,占位符
+    console.log(firstColor); // "red"
+    console.log(thirdColor); // "blue"
+    // 和对象一样，也有默认值
+    let colors = [ "red" ];
+    let [ firstColor, secondColor = "green" ] = colors;
+    console.log(firstColor); // "red"
+    console.log(secondColor); // "green"
+    // 变量值的交换
+    在es5中
+    let a = 1,b = 2,tmp;
+    tmp = a;
+    a = b;
+    b = tmp;
+    console.log(a); // 2
+    console.log(b); // 1
+    在es6中
+    let a = 1,b = 2;
+    [ a, b ] = [ b, a ];
+    console.log(a); // 2
+    console.log(b); // 1
+    数组嵌套解构
+    
+    3、字符串的解构，是转换为数组的方式
+    
+    4、混合解构
+    ```
+
+12. ##### 虚位以待！

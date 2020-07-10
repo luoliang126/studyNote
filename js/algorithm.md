@@ -28,7 +28,7 @@
    console.log(arr2) // [0,1,2,3,4,5]
    
    数组的合并
-   arr2.concat(arr1,[8,9],......); //可以多个合并，返回的是合并后的数组。原数组并未改变。
+   arr2.concat(arr1,[8,9],......); //可以多个合并，返回的是合并后的新数组。原数组并未改变（可用于深拷贝）
    eg:let arr = [0,1,2,3,4,5]
    let arr1 = [6,7]
    console.log(arr.concat(arr1)) // [0,1,2,3,4,5,6,7]
@@ -73,6 +73,10 @@
    let arr = [1,2,3,4,5]
    let res = arr.includes(2)
    console.log(res) // true
+   
+   判断 字符串 是否以 xxx 开头 startsWith()，返回的是boolean
+   let a = 'luoliang'
+   console.log(a.startsWith('luo'))  // true
    
    判断数组中，元素是否满足需求 some / every
    some: 判断是否有一个满足即可，返回true/false
@@ -209,7 +213,7 @@
    }
    console.log(arrNew);
    
-   //数组去重3 (先将数组排序，然后再相邻两个进行比较，该方法会有一个先排序的动作，使用时根据需要选用)
+   //数组去重3 (先将数组排序，然后再相邻两个进行比较，不同则选出来，相同则不作为。该方法会有一个先排序的动作，使用时根据需要选用)
    var arr = [2,56,4,89,4,343,465,67,2,3,5,7,565,123];
    var arrNew = [];
    arr = arr.sort(function (a,b) {
@@ -229,7 +233,7 @@
    var temp = {};
    var arrNew = [];
    for(var i = 0;i<arr.length;i++){
-       if(!temp[arr[i]]){ //此处的temp对象不能用temp.arr[i],当对象的键是一个number类型时，不能使用 . 操作;
+       if(!temp[arr[i]]){ //此处的temp对象不能使用 . 操作，因为对象的键是一个number类型;
            temp[arr[i]] = 1; //temp对象没有该属性，就添加。
            arrNew.push(arr[i])
        }

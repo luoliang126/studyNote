@@ -220,6 +220,7 @@
            return this.name;
        }
        set prop(value) {
+           // 这里可以做一些操作
            console.log('setter:'+value);
        }
    }
@@ -244,6 +245,15 @@
    }
    let fooTest = new Foo();
    fooTest.classMethod(); // TypeError: foo.classMethod is not a function
+   静态属性和方法 #
+   class Foo {
+       #name = '';
+   	#classMethod() {
+           return 'hello';
+       }
+   }
+   let fooTest = new Foo();
+   fooTest.#classMethod();  // 抛错
    
    5、class继承 extends
    // 父类Foo
@@ -257,7 +267,11 @@
    	
    }
    Bar.classMethod() //'hello'
+   let barTest = new Bar();
+   barTest.classMethod(); // 抛错，不存在
    注：extends继承，也包括父类的static方法继承。但是实例还是无法拿到static方法。
+   多个继承实现方式: https://blog.csdn.net/weixin_43343144/article/details/92657964
+   C同时继承A和B
    ```
 
 6. ##### Promise的用法。参考: https://blog.csdn.net/shan1991fei/article/details/78966297
@@ -715,4 +729,37 @@
     4、混合解构
     ```
 
-12. ##### 虚位以待！
+12. ##### 可选链操作符
+
+    ```js
+    问题描述：有一个对象，多个嵌套属性，但有可能不存在
+    let obj = {
+        luoliang:{
+            name:"luoliang",
+            age:31
+        }
+    }
+    let obj1 = {}
+    let age = obj.luoliang.age // 已确定对象属性
+    let age1 = obj1.luoliang.age // 抛错
+    我们一般会这样：let age1 = obj1 && obj1.luoliang && obj1.luoliang.age || 0; 
+    // 虽然实现了结果，但很不方便，如果有更深的嵌套就会很麻烦，解决办法：
+    let age1 = obj1?.luoliang?.age
+    ```
+
+13. ##### 空位合并操作符
+
+    ```js
+    问题描述：当一个变量为空值时，就是用默认值
+    let c = a ? a ： b; 
+    let c = a || b;
+    // 如果a存在就用a，不存在就用b
+    这种方式有个弊端就是：如果a是0，‘’，false时，依然会用b，但a其实是存在的 0，‘’，false，解决办法：
+    let c = a ?? b;
+    当a不为undefined，null时，用a值，否则才用b值，这样就避免了a为0，''，false的尴尬情况
+    let a = 0;
+    let b = 10;
+    let c = a ?? b; // c=0
+    ```
+
+14. 虚位以待！

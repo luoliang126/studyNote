@@ -228,7 +228,8 @@
    inst.prop = 123; // 拦截存储行为，执行set prop(value){...}方法，并打印setter: 123
    inst.prop //'getter'
    
-   4、class的静态方法。所有定义在类class中的方法，都会被new之后的实例所继承
+   4、class的静态方法。
+   // 所有定义在类class中的方法，都会被new之后的实例所继承
    class Foo {
    	classMethod() {
            return 'hello';
@@ -236,7 +237,7 @@
    }
    let fooTest = new Foo();
    fooTest.classMethod(); // hello
-   但是有时候我们又不想让实例用到该构造函数的方法？
+   // 但是有时候我们又不想让实例用到该构造函数的方法？
    class Foo {
        //声明一个静态方法，实例化无法调用！
        static classMethod() {
@@ -249,29 +250,103 @@
    class Foo {
        #name = '';
    	#classMethod() {
-           return 'hello';
+       	console.log(this.#name) //只有内部可以访问
        }
    }
    let fooTest = new Foo();
    fooTest.#classMethod();  // 抛错
    
-   5、class继承 extends
+   5、class继承
+   es5方式：
+   
+   es6方式：使用extends和super
    // 父类Foo
    class Foo {
+       constructor(){
+           this.name = 'Foo';
+       }
        static classMethod() {
            return 'hello';
        }
    }
    //子类Bar继承Foo
    class Bar extends Foo {
-   	
+       //props是继承过来的属性，myAttribute是自己的属性
+   	constructor(props,myAttribute){
+           super(props) //相当于获得父类的this指向
+       }
    }
    Bar.classMethod() //'hello'
    let barTest = new Bar();
    barTest.classMethod(); // 抛错，不存在
    注：extends继承，也包括父类的static方法继承。但是实例还是无法拿到static方法。
+   
    多个继承实现方式: https://blog.csdn.net/weixin_43343144/article/details/92657964
    C同时继承A和B
+   方法一：链式继承
+   class A {
+       ......
+   }
+   class B extends A {
+       ......
+   }
+   class C extends B {
+       ......
+   }
+   描述：这样链式继承很好的达到了多继承效果，而且追溯也很方便C类可以直接拿到A类的方法和属性。但是缺点也很明显，C类如果还想继承D类的话，就必须在A类和B类间再插入一个D类，这样在后期扩展时极为不方便。
+   方法二：拷贝继承（将类中的属性、原型拷贝到当前类中，再使用super函数）
+   function mix(...mixins) {
+       class Mix {
+           constructor() {
+               for (let mixin of mixins) {
+                   copyProperties(this, new mixin()); // 拷贝实例属性
+               }
+           }
+       }
+       for (let mixin of mixins) {
+           copyProperties(Mix, mixin); // 拷贝静态属性
+           copyProperties(Mix.prototype, mixin.prototype); // 拷贝原型属性
+       }
+       return Mix;
+   }
+   function copyProperties(target, source) {
+       for (let key of Reflect.ownKeys(source)) {
+           if ( key !== 'constructor' && key !== 'prototype' && key !== 'name') {
+               let desc = Object.getOwnPropertyDescriptor(source, key);
+               Object.defineProperty(target, key, desc);
+           }
+       }
+   }
+   class A {
+       constructor(){
+           this.a = 'a';
+       }
+       sayA (){
+           console.log(this.a);
+       }
+   }
+   class B {
+       constructor(){
+           this.b = 'b';
+       }
+       sayB (){
+           console.log(this.b);
+       }
+   }
+   class C extends mix(A,B){
+       constructor(){
+           super();
+           this.c = 'c'
+       }
+       sayC(){
+           console.log(this.a)
+           console.log(this.b)
+           console.log(this.c)
+       }
+   }
+   let cInstance = new C();
+   cInstance.sayC() //ａ、ｂ、ｃ
+   描述：拷贝继承达到了预期效果
    ```
 
 6. ##### Promise的用法。参考: https://blog.csdn.net/shan1991fei/article/details/78966297
@@ -750,7 +825,7 @@
 13. ##### 空位合并操作符
 
     ```js
-    问题描述：当一个变量为空值时，就是用默认值
+    问题描述：当一个变量为空值时，就使用默认值
     let c = a ? a ： b; 
     let c = a || b;
     // 如果a存在就用a，不存在就用b
@@ -762,4 +837,108 @@
     let c = a ?? b; // c=0
     ```
 
-14. 虚位以待！
+14. ##### js strict模式
+
+    ```js
+    strict模式产生原因：JavaScript在设计之初，为了方便初学者学习，并不强制要求用var申明变量。这个设计错误带来了严重的后果：如果一个变量没有通过var申明就被使用，那么该变量就自动被申明为全局变量：
+    i = 10; // i现在是全局变量
+    在同一个页面的不同的JavaScript文件中，如果都不用var申明，恰好都使用了变量i，将造成变量i互相影响，产生难以调试的错误结果，污染全局变量。
+    为了修补JavaScript这一严重设计缺陷，ECMA在后续规范中推出了strict模式，在strict模式下运行的JavaScript代码，强制通过var申明变量，未使用var申明变量就使用的，将导致运行错误。
+    
+    使用方法：在JavaScript代码的第一行写上：
+    'use strict';
+    注意：这是一个字符串，不支持strict模式的浏览器会把它当做一个字符串语句执行，支持strict模式的浏览器才会开启strict模式。
+    
+    注意点;
+    1、严格模式下, delete运算符后跟随非法标识符(即delete 不存在的标识符)，会抛出语法错误； 非严格模式下，会静默失败并返回false
+    2、严格模式中，对象直接量中定义同名属性会抛出语法错误； 非严格模式不会报错
+    3、严格模式中，函数形参存在同名的，抛出错误； 非严格模式不会
+    4、严格模式不允许八进制整数直接量（如：023）
+    5、严格模式中，arguments对象是传入函数内实参列表的静态副本；非严格模式下，arguments对象里的元素和对应的实参是指向同一个值的引用
+    6、严格模式中 eval和arguments当做关键字，它们不能被赋值和用作变量声明
+    7、严格模式会限制对调用栈的检测能力，访问arguments.callee.caller会抛出异常
+    8、严格模式 变量必须先声明，直接给变量赋值，不会隐式创建全局变量，不能用with,
+    9、严格模式中 call apply传入null undefined保持原样不被转换为window
+    ```
+
+15. ##### Map类 使用方法
+
+    ```js
+    Map结构提供了“值—值”的对应，是一种更完善的Hash结构实现。如果你需要“键值对”的数据结构，Map比Object更合适。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。
+    1、使用
+    let map = new Map();
+    let obj = {name:1};
+    map.set(true,'111');
+    map.set(obj,'111');
+    map.set(1,1);
+    map.set(1,1);
+    map.set(undefined,undefined);
+    map.set(null,null);
+    map.set(NaN,NaN);
+    map.set([1,2,3],1);
+    console.log(map); 
+    注意：只有对同一个对象的引用，Map结构才将其视为同一个键。
+    let map = new Map();
+    map.set(['a'], 555);
+    map.get(['a']) // undefined
+    let obj = {
+        name:'luoliang'
+    }
+    map.set(obj,123)
+    map.get(obj) // 123
+    第一种，因为最开始的['a']它的内存地址和map.get(['a'])的内存地址不一样，所以无法取到！。
+    第二种，obj的内存地址已经存在，且map.get(obj)指向同一地址，所以可以获取到！
+    
+    2、Map常用实例方法
+    size、set、get、has、delete、clear
+    
+    3、Map常用遍历方法
+    keys()、values()、entries()、forEach()
+    
+    4、Map与数组Array的对比
+    let map = new Map();
+    let arr = new Array();
+    //增：
+    map.set('a',1);
+    arr.push({'a': 1});
+    //查：
+    map.has('a');
+    arr.find(item=>item.a);
+    //改：
+    map.set('a',2);
+    arr.forEach(item=>item.a?item.a=2:'');
+    //删：
+    map.delete('a');
+    arr.splice(arr.findIndex(item=>item.a),1);
+    console.log(map);
+    console.log(arr);
+    
+    5、Map与对象object的对比
+    let item = {a: 1};
+    let set = new Set();
+    let map = new Map();
+    let obj = new Object();
+    //增
+    set.add(item);
+    map.set('a', 1);
+    obj['a'] = 1;
+    //查
+    set.has(item);// true
+    map.has('a');// true
+    'a' in obj;// true
+    //改
+    item.a = 2;
+    map.set('a', 2);
+    obj['a'] = 2;
+    //删
+    set.delete(item);
+    map.delete('a');
+    delete obj['a'];
+    console.log(set);
+    console.log(map);
+    console.log(obj);
+    
+    总结：在开发过程中，涉及到数据结构，能使用Map 不使用Array 尤其是复杂的数据结构 ，如果对于数组的存储考虑唯一性 使用Set ，优先使用map 如果要求数据储存的唯一性使用Set 放弃使用Array。
+    ```
+
+16. 虚位以待！

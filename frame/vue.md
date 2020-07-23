@@ -23,6 +23,9 @@
    1、使用深拷贝方式，最简单直接的JSON.stringify和JSON.parse转换一次，实现深拷贝
    2、Vue.set(vm.someObject, 'b', 2) 或者 this.$set(this.someObject,'b',2)
    3、this.someObject = Object.assign({}, this.someObject, { a: 1, b: 2 })
+   
+   3、vue强制刷新界面
+   this.$forceUpdate();
    ```
 
 2. ##### vue-cli3发布一个npm包

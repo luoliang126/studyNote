@@ -150,7 +150,44 @@
    批注：这种方法的关键在于this.$route.matched.filter(item => item.name) 直接返回的是一个数组格式，且根据路由嵌套的方式，一次存入数组，方便我们取值绑定。
    ```
 
-5. ##### vue面试常见问题？
+5. ##### vue组件传参
+
+   ```js
+   1、父-子传递参数 props
+   在father.vue中导入子组件child.vue后
+   <child :data="data"></child>  // 可以绑定多个参数
+   在child.vue中 定义一个props:['data']   //注意此处props是以数组的方式传递的，且为字符串。如果有多个则：['data','data1','data2']。
+   props还可以以一个对象的方式接收，且可以调控
+   props: {
+       propA: Number,  //传递的参数propA只能为Number类型，如果不是number类型则抛错
+       propB: [String, Number],  // 可以同为string和number
+       propC: {                   // 参数propC必传且是字符串
+           type: String,
+   		required: true
+       },
+   	propD: {                 // 参数propD，可以不传（但默认值为100）
+           type: Number,
+           default: 100
+       },
+       propE: { // 数组/对象的默认值应当由一个工厂函数返回
+           type: Object,
+           default: function () {
+               return { message: 'hello' }
+           }
+       },
+   }
+   child.vue中使用该data和数据一样使用。
+   注意：通过props传参是单向的，即父-->子组件
+   
+   2、子-父传递参数，通过事件的传播方式传递参数
+   在child.vue中自定义一个事件 this.$emit('childToFather',msg);
+   在father.vue中监听事件 <child v-on:childToFather="listenToChild"></child>
+   在methods中，添加监听到childToFather 的事件执行函数listenToChild(data),该方法中有一个data返回参数，里面就存放着msg对应的参数
+   
+   3、在vue2中废除了vue1中的dispatch和broadcast事件传播方法。假设第一点提出的父--子传递参数，改为事件传播就无能为力了。解决办法请查看下文中的 “vue中的事件传播”
+   ```
+
+6. ##### vue面试常见问题？
 
    ```js
    1、vue在组件中的data为什么推荐使用函数 return的方式（直接对象data也可以）
@@ -182,4 +219,4 @@
    所以推荐使用函数return的方式，this指向的是每次实例化这个publicVueComponent组件的实例，而不是这个构造组件。
    ```
 
-6. 虚位以待！！！
+7. 虚位以待！！！

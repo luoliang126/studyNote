@@ -89,7 +89,8 @@
    
    2、rest 参数（形式为...变量名）,用于获取函数的多余参数，这样就不需要使用arguments对象了。rest 参数搭配的变量是一个数组，该变量将多余的参数放入数组中。
    function add(...values) {
-       console.log(arguments); //arguments和values，都包含了参数数组[2,5,3]，不同的是values更加简洁
+       //arguments和values，都包含了参数数组[2,5,3]，不同的是values更加简单明了
+       console.log(arguments); 
        console.log(values);
        let sum = 0;
        for (var val of values) {
@@ -98,6 +99,7 @@
        return sum;
    }
    add(2, 5, 3) // 10
+   //注意：这里提一下，箭头函数没有arguments，所以无法通过arguments获取参数。而是通过..values的方式传参。详见箭头函数部分
    
    3、函数对象传参
    function test({ sendData, handleMessage, title, style }){
@@ -141,7 +143,7 @@
      console.log(c);
    }
    C(3,82,32,11323);  // [3, 82, 32, 11323]
-   4.4、 箭头函数没有原型属性
+   4.4、 箭头函数没有原型属性（没有原型链prototype）
    var a = ()=>{
      return 1;
    }
@@ -515,7 +517,7 @@
    异步任务1执行完成
    异步任务2执行完成
    异步任务3执行完成
-   最后再返回
+   最后再返回数组
    ["随便什么数据1", "随便什么数据2", "随便什么数据3"]
    
    6、promise的race方法。（和all方法不同点，数组中谁先执行完，谁就先返回并调用then方法。所以then方法中只可能有数组函数中一个的返回值，但是数组中的函数都会执行）
@@ -807,6 +809,7 @@
 12. ##### 可选链操作符
 
     ```js
+    ES机构还在审核阶段，各浏览器暂时不支持！ https://www.jianshu.com/p/2852b6efed8e
     问题描述：有一个对象，多个嵌套属性，但有可能不存在
     let obj = {
         luoliang:{

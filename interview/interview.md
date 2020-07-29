@@ -56,4 +56,12 @@
    父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
    ```
 
-6. 虚位以待！
+6. ##### 前端安全策略
+
+7. ##### 设计模式
+
+   ```
+   js常见的设计模式：https://www.cnblogs.com/imwtr/p/9451129.html
+   ```
+
+8. 虚位以待！

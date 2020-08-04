@@ -184,13 +184,145 @@
    在father.vue中监听事件 <child v-on:childToFather="listenToChild"></child>
    在methods中，添加监听到childToFather 的事件执行函数listenToChild(data),该方法中有一个data返回参数，里面就存放着msg对应的参数
    
-   3、在vue2中废除了vue1中的dispatch和broadcast事件传播方法。假设第一点提出的父--子传递参数，改为事件传播就无能为力了。解决办法请查看下文中的 “vue中的事件传播”
+   3、eventHub bus总线方式
+   方法一：挂载data方式
+   1、在入口main.js中添加数据模型
+   new Vue({
+       el: '#app',
+       router,
+       render: h => h(App),
+       data: {    //添加的data数据模型
+           eventHub: new Vue()
+       }
+   })
+   组件中调用事件触发，通过this.$root.eventHub获取到此对象
+   //调用$emit触发
+   this.$root.eventHub.$emit('YOUR_EVENT_NAME', yourData)
+   //调用$on监听
+   this.$root.eventHub.$on('YOUR_EVENT_NAME',function(data){
+       console.log(data)   //通过事件传递过来的参数
+   })
+   方法二：挂载prototype方式
+   创建一个Bus.js文件
+   import Vue from 'vue';
+   export default new Vue();
+   在main.js中绑定在vue原型上
+   import Bus from 'Bus'
+   Vue.prototype.Bus = Bus
+   在界面上就可以使用
+   this.Bus.$emit("doSearch", params); //触发事件
+   this.Bus.$on("doSearch",function(params){......}) //监听事件，params为传递的参数
+   注意：
+   1、在组件中使用$on时，首先创建时会执行一次。如果在当前组件不销毁时，那么下次进入时就会执行2次，依次类推，不停的进入该组件、退出，就会不停的监听$on，解决办法是，在该组件销毁时取消监听组件销毁生命周期函数中取消监听，下次再进入时再创建监听。
+   destroyed() {
+   	this.$root.$bus.$off("reloadDetail")
+   },
+   2、以上两种方法都一样，只是书写方法不一致而已。适用于触发一次，从新渲请求接口等操作。Bus总线事件触发方法，建议少用，尤其是有大量数据需要传递时，建议使用vuex。（整个界面都是触发--监听很难维护,尤其是数据无法得到保证和确定）
+                                 
+   4、路由传参
+   方法一：定义路由跳转传参
+   <router-link :to="{ name:'game1', params: {num: 123} }">   
+   //其中name:'game1',这个name属性就是定义路由中的name
+   <router-link :to="{ path:'/hotel',params:{id:item.id} }">
+   方法二：函数传参
+   router.push({ name: 'user', params: { userId: 123 }})  
+   // 记住此处只能用定义在路由index.js文件中，name属性对应的值。
+   界面上通过this.$route就可以获取到这个params了
+   方法三：
+   this.$router.push({name:'parasetEdit',params:{pk_refinfo:'test',value:'test1'}}); // 传递
+   this.$route.params.pk_refinfo // 接收
+   方法四：
+   this.$router.push({path:'/uapbd/paraset/edit',query:{pk_refinfo:'test',value:'test1'}}); // 传递
+   this.$route.query.pk_refinfo  // 接收
+   方法五：
+   通过拼接路由地址+参数方式：http://localhost/isAttendMeeting?id=123
+   然后在路由isAttendMeeting界面，使用this.$route.query.id来获取拼接的参数。
+   两种方式的区别是query传参的参数会带在url后边展示在地址栏，params传参的参数不会展示到地址栏。
+   需要注意的是接收参数的时候是route而不是router。两种方式一一对应，名字不能混用。
+              
+   自定义组件实现一个双向绑定 v-model
+   问题描述：假如我们在书写一个组件的时候，只想得到里面的值。如<persona-component v-model="value"></persona-component>由于父--子组件props传参是单向的，即父组件修改值，子组件能拿到最新修改后的值。但是子组件将props传过来的值修改了，父组件却无法修改（双向绑定）。使用事件传递可以，但毕竟要$emit一次，并要监听。
+   解决办法一：
+   父组件：
+   <template>
+       <div>
+       	<aa v-model="test"></aa>  // 组件中使用v-model
+   	</div>
+   </template>
+   <script>
+   import aa from './aa.vue'
+   export default {
+   	data () {
+   		return {
+   			test: ''
+   		}
+   	},
+   	components:{
+   		aa
+   	}
+   }
+   </script>
+   子组件：
+   <template>
+   	<div>
+   		<ul>
+   			<li>{{'里面的值：'+ msg}}</li>
+               <button @click="fn2">里面改变外面</button>
+   		</ul>
+   	</div>
+   </template>
+   <script>
+   export default {
+   //使用model，这儿2个属性，prop属性说，我要将msg作为该组件被使用时（此处为aa组件被父组件调用）v-model能取到的值，
+   //event说，我this.$emit('cc',修改的值)的时候，参数的值就是父组件v-model收到的值。
+   	model: {
+   		prop: 'msg',
+   		event: 'cc'
+   	},
+       props: {
+           msg: ''
+       },
+   	methods: {
+           fn2 () {
+               this.$emit('cc', this.msg+2)  // this.msg+2就是修改后的值
+           }
+       }
+   }
+   </script>
+   方法二(推荐使用)：
+   父组件与方法一的父组件一样
+   子组件
+   <template>
+       <div>
+       	<ul>
+       	// 组件使用时有v-model属性，value初始传的‘what’ 不会被渲染，而是v-model绑定的test值被渲染，这儿value会被重新赋值为v-model绑定的test的值。
+   			<li>{{'里面的值：'+ value}}</li>
+   			<button @click="fn2">里面改变外面</button>
+   		</ul>
+   	</div>
+   </template>
+   <script>
+   export default {
+   	props: {
+           value: {   // 必须要使用value，才能拿到数据
+               default: '',
+           },
+       },
+   	methods: {
+           fn2 () {
+               // 这儿必须用input发送数据，发送的数据会被父级v-model=“test”接受到，再被value=test传回来。
+               this.$emit('input', this.value+2)
+           }
+       }
+   }
+   </script>
+   注意：如果v-model是动态，随时可能变的情况下，应该用watch监听value的变化，在赋值！！！这样就能同步数据
    ```
 
 6. ##### vue面试常见问题？
 
    ```js
-   1、vue在组件中的data为什么推荐使用函数 return的方式（直接对象data也可以）
+   1、vue在组件中的data为什么推荐使用函数return的方式（直接对象data也可以）
    data:{
    	a:1
    }
@@ -217,6 +349,19 @@
    如果我们在a组件中调用这个publicVueComponent.vue，并修改了a这个值this.a=2;
    那么我们在b组件中调用这个publicVueComponent.vue时，a的值同样被修改了。因为他们指向的都是同一个a
    所以推荐使用函数return的方式，this指向的是每次实例化这个publicVueComponent组件的实例，而不是这个构造组件。
+   
+   2、vue中为什么v-for循环时，建议加上key？
+   
+   3、vue的生命周期函数每个阶段干了什么事？以及父子组件生命周期加载的顺序？
+   vue生命周期钩子函数：
+   beforeCreate -> created -> beforeMount -> mounted -> beforeUpdate -> updated -> beforeDestroy -> destroyed
+   
+   初次加载：
+   父 beforeCreate -> 父 created -> 父 beforeMount -> 子 beforeCreate -> 子 created -> 子 beforeMount -> 子 mounted -> 父 mounted
+   数据修改渲染：
+   beforeUpdate -> updated
+   销毁过程：
+   父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
    ```
 
 7. 虚位以待！！！

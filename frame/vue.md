@@ -239,7 +239,86 @@
    然后在路由isAttendMeeting界面，使用this.$route.query.id来获取拼接的参数。
    两种方式的区别是query传参的参数会带在url后边展示在地址栏，params传参的参数不会展示到地址栏。
    需要注意的是接收参数的时候是route而不是router。两种方式一一对应，名字不能混用。
-              
+   
+   5、$attrs和$listener方式（vue2.4版本以后）。
+   描述：A-->B-->C组件传参
+   组件A：
+   <template>
+       <div>
+           <div>页面A</div>        
+           <first-component :inputTex="inputTex" :content="content"></first-component>
+       </div>
+   </template>
+   <script>
+   import firstComponent from './page1/firstComponent.vue';
+   export default {
+       components:{
+           firstComponent
+       },
+       data(){
+           return{
+               inputTex:'123',
+               content:'1007',
+           }
+       }
+   }
+   </script>
+   组件B：
+   <template>
+       <div>
+           <div>组件B</div>
+           <second-component v-bind="$attrs"></second-component>
+       </div>
+   </template>
+   <script>
+   import secondComponent from './secondComponent.vue';
+   export default {
+       props: {
+           inputTex:{
+               type:String,
+               default:''
+           }
+       },
+       components:{
+           secondComponent
+       },
+       data(){
+           return {
+               // inheritAttrs:false,
+               name:'这是第一级组件'
+           }
+       },
+       mounted:function(){
+           console.log(this.inputTex);
+       }
+   }
+   </script>
+   组件C：
+   <template>
+       <div>
+           组件C
+       </div>
+   </template>
+   <script>
+   export default {
+       props:{
+           content:{
+               type:String,
+               default:''
+           }
+       },
+       data(){
+           return {
+               name:'这是第二级组件'
+           }
+       },
+       mounted:function(){
+           console.log(this.content)
+       }
+   }
+   </script>
+   
+   
    自定义组件实现一个双向绑定 v-model
    问题描述：假如我们在书写一个组件的时候，只想得到里面的值。如<persona-component v-model="value"></persona-component>由于父--子组件props传参是单向的，即父组件修改值，子组件能拿到最新修改后的值。但是子组件将props传过来的值修改了，父组件却无法修改（双向绑定）。使用事件传递可以，但毕竟要$emit一次，并要监听。
    解决办法一：
@@ -356,12 +435,15 @@
    vue生命周期钩子函数：
    beforeCreate -> created -> beforeMount -> mounted -> beforeUpdate -> updated -> beforeDestroy -> destroyed
    
+   4、vue父子组件加载顺序
    初次加载：
    父 beforeCreate -> 父 created -> 父 beforeMount -> 子 beforeCreate -> 子 created -> 子 beforeMount -> 子 mounted -> 父 mounted
    数据修改渲染：
    beforeUpdate -> updated
    销毁过程：
    父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
+   
+   5、vue-router的hash、history模式的区别？
    ```
 
 7. 虚位以待！！！

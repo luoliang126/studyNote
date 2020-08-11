@@ -446,4 +446,43 @@
    5、vue-router的hash、history模式的区别？
    ```
 
-7. 虚位以待！！！
+7. ##### vue疑难杂症
+
+   ```js
+   1、setTnterval在vue中，clearInterval后，仍不停的触发？
+   intervalTimeGetData(){
+       clearInterval(this.intervalTime);
+       this.intervalTime = setInterval(()=>{
+           let params = {
+               tenantCode:this.customerSelect,
+           }
+           this.getListData({
+               pageIndex:this.currentPageIndex,
+               startTime:this.timeSelect.startTime,
+               endTime:this.timeSelect.endTime
+           })
+       },5000)
+   },
+   getListData(){
+       ......
+       this.intervalTimeGetData();
+   }
+   解决办法：将setInterval挂载到window对象上
+   intervalTimeGetData(){
+       clearInterval(window.intervalTime);
+       window.intervalTime = setInterval(()=>{
+           let params = {
+               tenantCode:this.customerSelect,
+           }
+           this.getListData({
+               workOrder:params,
+               pageIndex:this.currentPageIndex,
+               startTime:this.timeSelect.startTime,
+               endTime:this.timeSelect.endTime
+           })
+       },5000)
+   }
+   ```
+
+8. 虚位以待！！！
+

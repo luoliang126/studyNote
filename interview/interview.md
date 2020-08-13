@@ -48,23 +48,122 @@
 
 4. ##### 浏览器兼容问题
 
-6. ##### 前端安全策略
+   ```js
+   详见browser中的htmlCompatible和jsCompatible部分
+   ```
+
+6. ##### 前端安全策略 https://www.cnblogs.com/zhanghaiyu-Jade/p/11148530.html
 
 6. ##### 设计模式 https://www.cnblogs.com/imwtr/p/9451129.html
 
-   ```
+   ```js
    什么是设计模式？
    假设有一个空房间，我们要日复一日地往里面放一些东西。最简单的办法当然是把这些东西直接扔进去，但是时间久了，就会发现很难从这个房子里找到自己想要的东西，要调整某几样东西的位置也不容易。所以在房间里做一些柜子也许是个更好的选择，虽然柜子会增加我们的成本，但它可以在维护阶段为我们带来好处。使用这些柜子存放东西的规则，或许就是一种模式。
    
-   1、单例模式：保证一个类仅有一个实例，并提供一个访问它的全局访问点。（dialog弹窗唯一，上传组件唯一）
+   1、单例模式：保证一个类仅有一个实例对象，并提供一个能访问它的全局访问点。（dialog弹窗唯一，上传组件唯一）。
+   es5实现方式：
+   var Single = (function() {
+       var instance = null;
+       function Single(name) {
+           this.name = name;
+       }
+       return function(name){
+           if (!instance) {
+               instance = new Single(name);
+           }
+           return instance;
+       };
+   })();
+   var oA = new Single('hi');
+   var oB = new Single('hello');
+   console.log(oA===oB);
+   说明：在第一次调用构造函数时利用闭包存储一个instance实例（不会被回收机制回收），以后的调用直接返回该instance实例。
+   es6实现方式：
+   class Single {
+       constructor(name) {
+           this.name = name;
+           this.instance = null;
+       }
+       // 注意：这里的static只能是类的访问方式，实例化new之后的对象是无法访问的。
+       static getInstance(name) {
+           if(!this.instance) {
+               this.instance = new Singleton(name);
+           }
+           return this.instance;
+       }
+   }
+   var oA = Single.getInstance('hi');
+   var oB = Single.getInstance('hisd');
+   console.log(oA===oB);
+   说明：这里只能是调用Single类的方法，才能实现一个instance。当然你也可以使用new Single创建多个实例（但他们都无法访问getInstance这个方法）
+   另一种实现方式：
+   let Single = (function(){
+       let instance = null;
+       return class {
+           constructor(name){
+               if(instance){
+                   return instance
+               }
+               this.name = name;
+               return instance = this;
+           }
+       }
+   })()
+   let oA = new Single('luo');
+   let oB = new Single('liang');
+   console.log(oA === oB);
+   说明：对比上面的方式，很明显这种方法就比较具体化了（没有oop编程的思路）。
+   总结：在oop编程的时候，我们更想把一个类给抽离出来，而不是做定制化开发，如果一个类只解决一个问题的话，那就是面向过程/流程开发了。所以我们在封装Single类的时候，既要考虑到公用的new多个实例操作，也要考虑单例模式。所以es6的第一种方法无疑是最好的选择。
    
-   2、策略模式：定义一系列的算法，把它们一个个封装起来，并且使它们可以相互替换。（也可理解为：为了解决一个问题，创建了一系列的解决办法，至于采用哪一种根据判断准则确定）
+   2、策略模式：定义一系列的算法，把它们一个个封装起来，并且使它们可以相互替换。（也可理解为：为了解决一个问题，创建了一系列的解决办法，至于采用哪一种根据判断结果确定，与switch原理类似）
+   商场满100减5、满200减15、满300减30、满400减50
+   var countPrice = {
+       // 定义活动算法
+       returnPrice: {
+           full100: function (price) {
+               return price - 5
+           },
+           full200: function (price) {
+               return price - 15
+           },
+           full300: function (price) {
+               return price - 30
+           },
+           full400: function (price) {
+               return price - 50
+           }
+       },
+       // 统一调用入口
+       getPirce: function (type, money) {
+           return this.returnPrice[type] ? this.returnPrice[type](money) : money;
+       },
+       // 增加规则
+       addRule: function (type, discount) {
+           this.returnPrice[type] = function (price) {
+               return price - discount;
+           }
+       }
+   }
+   console.log(countPrice.getPirce('full300',399)) // 369
+   假如：新增一个满500减100的方案
+   countPrice.addRule('full500', 100);
+   console.log(countPrice.getPirce('full500',599))
+   使用场景：表单验证，正则验证规则(手机号，密码)等。
    
-   3、代理模式
+   3、发布-订阅模式：又叫观察者模式（Observer Pattern），它定义了一种一对多的关系，让多个订阅者对象同时监听某一个发布者，或者叫主题对象，这个主题对象的状态发生变化时就会通知所有订阅自己的订阅者对象，使得它们能够自动更新自己。
+   
+   举例说明：
+   当我们去adadis买鞋，发现看中的款式已经售罄了，售货员告诉你不久后这个款式会进货，到时候打电话通知你。于是你留了个电话，离开了商场，当下周某个时候adadis进货了，售货员拿出小本本，给所有关注这个款式的人打电话。
+   
+   发布订阅模式的特点：
+   3.1、买家（订阅者）只要声明对消息的一次订阅，就可以在未来的某个时候接受来自售货员（发布者）的消息，不用一直轮询消息的变化。
+   3.2、售货员（发布者）持有一个小本本（订阅者列表），对这个本本上记录的订阅者的情况并不关心，只需要在消息发生时挨个去通知小本本上的订阅者，当订阅者增加或减少时，只需要在小本本上增删记录即可；
+   3.3将上面的逻辑升级一下，售货员也可以有多个小本本，当不同款式的鞋进货了，发布者可以按照不同的小本本分别去通知订阅了不同类型消息的订阅者，这里有个消息类型的概念；
+   参考：https://www.cnblogs.com/Nyan-Workflow-FC/p/13026629.html
    
    4、迭代器模式
    
-   5、发布-订阅模式
+   5、代理模式
    
    6、命令模式
    
@@ -95,7 +194,7 @@
    Event Table 事件表
    macro-task 宏任务
    micro-task 微任务
-   js执行时候，一个主线程里面都会有一个事件循环（消息循环|运行循环）和事件队列，存放各种要处理的事件信息，通过这个循环不断处理这些事件信息或消息。队列分为：宏任务和微任务
+   js执行时候，一个主线程里面都会有一个事件循环（消息循环|运行循环）和事件队列，存放各种要处理的事件信息，通过这个循环不断处理这些事件信息或消息。队列分为：宏任务队列和微任务队列
    
    js是一种单线程语言，顾名思义同一时间只能执行一个任务，代码是同步执行并且会形成阻塞。如果有多个任务，就必须排队，前面一个任务完成，再执行后面一个任务，以此类推！
    优点：实现起来比较简单，执行环境相对单纯。
@@ -121,12 +220,12 @@
    console.log(3)
    1、整个js就是一个宏任务，主线程开始执行任务。
    2、先执行同步任务console.log(1)，然后遇到setTimeout异步的宏任务，把setTimeout注册到event table并分发到宏任务的事件队列中等待执行。
-   3、然后遇到new Promise异步微任务，会立即执行promise函数console.log(2)，并将异步微任务的promise.then注册分发到微任务的事件队列中等待执行。
+   3、然后遇到new Promise异步微任务，会立即执行promise函数console.log(2)以及resolve()函数，并将异步微任务的promise.then注册分发到微任务的事件队列中等待执行。
    4、执行同步任务 console.log(3)。至此第一轮事件轮询结束。
    5、第一轮事件轮询结束后，主线程开始检查异步任务，优先检查微任务的事件队列，发现promise.then并执行。console.log(4)
    6、微任务执行结束后，开始检查宏任务的事件队列，发现setTimeout并执行console.log(5)。
    
-   再来看一个复杂点的面试题：https://www.lagou.com/lgeduarticle/91871.html
+   再来看一个复杂点的情况：https://www.lagou.com/lgeduarticle/91871.html
    console.log(1);
    setTimeout(() => {
      console.log(2);

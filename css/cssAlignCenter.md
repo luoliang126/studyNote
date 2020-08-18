@@ -14,10 +14,84 @@ display:inline-block;
 - ##### 垂直居中对齐
 
 ```css
-// 文本垂直居中
+// 文本垂直居中（当行文本）
 line-height:50px
+
 // 图片，块级元素垂直居中
 vertical-align:middle
+
+// 块级元素垂直居中
+1、flex方式
+<div class="out">
+	<div class="in"></div>
+</div>
+.out{
+    width: 500px;
+    height: 500px;
+    background-color: blue;
+    display: flex;
+    align-items: center;/*垂直居中*/
+    /*justify-content: center;*//*水平居中*/
+}
+.in{
+    width: 100px;
+    height: 100px;
+    background-color: red;
+}
+
+2、设置父元素相对定位，子元素position: absolute;top: 50%;同时margin-top值为-(子元素高度的一半)，因为设置top值时是相对于盒子顶部，所以想要居中还要往上移动半个盒子的高度才能实现。弊端就是：子元素的高度必须固定！！！
+<div class="out">
+	<div class="in"></div>
+</div>
+.out{
+    width: 500px;
+    height: 500px;
+    background-color: blue;	
+    position: relative;			
+}
+.in{
+    width: 100px;
+    height: 100px;
+    background-color: red;
+    position: absolute;
+    top: 50%;
+    margin-top: -50px;
+}
+
+3、利用定位（设置上下左右都为0，达到居中效果）
+.out{
+    width: 500px;
+    height: 500px;
+    background-color: skyblue;
+    position: relative;
+}
+.in{
+    width: 100px;
+    height: 100px;
+    background-color: salmon;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+4、使用transform的translateY属性
+.out{
+    width: 500px;
+    height: 500px;
+    background-color: skyblue;
+    position: relative;
+}
+.in{
+    width: 100px;
+    height: 100px;
+    background-color: salmon;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
 ```
 
 - ##### table表格居中

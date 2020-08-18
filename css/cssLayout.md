@@ -169,13 +169,16 @@
    6、align-self属性，允许单个项目有与其他项目不一样的对齐方式，可覆盖align-items属性。默认值为auto，表示继承父元素的align-items属性，如果没有父元素，则等同于stretch。
    ```
    
-5. ##### vh布局 参考：https://www.cnblogs.com/luxiaoxing/p/7544375.html
+5. ##### vw和vh布局 参考：https://www.cnblogs.com/luxiaoxing/p/7544375.html
 
    ```css
+   vh和vw：相对于视口的高度和宽度，而不是父元素的（CSS百分比是相对于包含它的最近的父元素的高度和宽度）。1vh 等于1/100的视口高度，1vw 等于1/100的视口宽度。比如：浏览器高度950px，宽度为1920px, 1vh = 950px/100 = 9.5px，1vw = 1920px/100 = 19.2 px。
    1.vw：1vw等于视口宽度的1%。
    2.vh：1vh等于视口高度的1%。
-   3.vmin：选取vw和vh中最小的那个。
+   3.vmin：选取vw和vh中最小的那个（背景图片平铺问题）。
    4.vmax：选取vw和vh中最大的那个。
+   
+   兼容性问题：在移动端iOS8以上，以及Android4.4以上获得支持，并且在微信x5内核中也得到完美的全面支持。
    ```
 
 6. ##### css更换皮肤方案

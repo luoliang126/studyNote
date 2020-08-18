@@ -5,6 +5,11 @@
    ```
    ios使用fixed后（例如top：0固定在顶部），当调用输入框时，输入框会把fixed的定位部分往上顶，当我们关闭输入框的时候，顶部的fixed不会返回到top:0
    解决办法：使用position：absolute
+   
+   fixed定位：https://www.jianshu.com/p/47db0d2ab2a7
+   在ios上无论顶部，还是底部都会被遮挡
+   解决办法：
+   在外层套一个div元素，
    ```
 
 2. ##### 关于日期格式问题

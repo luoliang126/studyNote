@@ -186,7 +186,7 @@
    
    3、eventHub bus总线方式
    方法一：挂载data方式
-   1、在入口main.js中添加数据模型
+   在入口main.js中添加数据模型
    new Vue({
        el: '#app',
        router,
@@ -241,7 +241,7 @@
    需要注意的是接收参数的时候是route而不是router。两种方式一一对应，名字不能混用。
    
    5、$attrs和$listener方式（vue2.4版本以后）。
-   描述：A-->B-->C组件传参
+   描述：A-->B-->C组件传参（$attrs）
    组件A：
    <template>
        <div>
@@ -284,7 +284,6 @@
        },
        data(){
            return {
-               // inheritAttrs:false,
                name:'这是第一级组件'
            }
        },
@@ -317,9 +316,87 @@
        }
    }
    </script>
+   说明：这种方式可以理解为漏勺的原理，A组件传递了inputTex和content两个参数，但B组件只用了inputTex参数，剩下的参数（content）直接给B组件中引用的C组件，当然C组件需要props去接收。注意点：A传递的inputTex和content，如果B组件用props全部接收了，则组件C一个值都拿不到（一个都没有漏下去），同理如果B组件一个都没取，则全部漏给了组件C。这种方式实际应用时根据需要所定。
+                
+   组件C-->B-->A 事件触发($listener)
+   组件A：同时监听了event-first和event-second两个事件
+   <template>
+       <div>
+           <first-component @event-first="eventFirst" @event-second="eventSecond"></first-component>
+       </div>
+   </template>
+   <script>
+   import firstComponent from './firstComponent.vue'
+   export default {
+       components:{
+           firstComponent
+       },
+       methods:{
+           eventFirst(data){
+               console.log(data);
+           },
+           eventSecond(data){
+               console.log(data);
+           }
+       }
+   }
+   </script>
+   组件B：父子组件可以使用this.$emit()方法触发事件，但也可以使用this.$listeners()方式。重点来了如果是C组件想通过事件传值给A组件，怎么办？？？
+   <template>
+       <div>
+           第一级组件
+           <button @click="touchFirst">触发eventFirst</button>
+           <button @click="touchSecond">触发eventSecond</button>
    
+           <second-component v-on="$listeners"></second-component>
+       </div>
+   </template>
    
-   自定义组件实现一个双向绑定 v-model
+   <script>
+   import secondComponent from './secondComponent.vue';
+   export default {
+       components:{
+           secondComponent
+       },
+       mounted:function(){
+           console.log(this.$listeners);
+       },
+       methods:{
+           touchFirst(){
+               // 这两种方法效果都是一样的
+               this.$emit('event-first',1);
+               this.$listeners['event-first']('1');
+           },
+           touchSecond(){
+               this.$listeners['event-second']('2');
+           }
+       }
+   }
+   </script>
+   组件C：我们看到B组件调用C组件使用了v-on="$listeners"，即把B组件所有的监听事件都传给了C组件，所以我们直在C组件中接触发事件，A组件就能收到！
+   <template>
+       <div>
+           第二级组件
+           <button @click="touchSecond">触发eventSecond</button>
+       </div>
+   </template>
+   <script>
+   export default {
+       mounted:function(){
+           console.log(this.$listeners)
+       },
+       methods:{
+           touchSecond(){
+               // 这里两种效果，都可以触发
+               this.$emit('event-second',2);
+               this.$listeners['event-second']('2');
+           }
+       }
+   }
+   </script>
+   说明：这里的关键在于组件B，通过v-on="$listeners"把B组件所有的事件都传给了C组件，C组件就可以直接触发！！！
+   
+   6、自定义组件实现一个双向绑定 v-model
    问题描述：假如我们在书写一个组件的时候，只想得到里面的值。如<persona-component v-model="value"></persona-component>由于父--子组件props传参是单向的，即父组件修改值，子组件能拿到最新修改后的值。但是子组件将props传过来的值修改了，父组件却无法修改（双向绑定）。使用事件传递可以，但毕竟要$emit一次，并要监听。
    解决办法一：
    父组件：
@@ -430,10 +507,51 @@
    所以推荐使用函数return的方式，this指向的是每次实例化这个publicVueComponent组件的实例，而不是这个构造组件。
    
    2、vue中为什么v-for循环时，建议加上key？
+   首先看一下如果不加key会有什么影响？
+   <ul>
+       <li v-for="(item, i) in list">
+           <input type="checkbox"> {{item.name}}
+   	</li>
+   </ul>
+   list: [
+       { id: 1, name: '李斯' },
+       { id: 2, name: '吕不韦' },
+       { id: 3, name: '嬴政' }
+   ]
+   第一步：checkbox选择，这个时候我们在界面上选中了第二条 ‘吕不韦’。
+   第二步：list数据变更，
+   list: [
+       { id: 0, name: 'luoliang' },
+       { id: 1, name: '李斯' },
+       { id: 2, name: '吕不韦' },
+       { id: 3, name: '嬴政' }
+   ]
+   就会发现视图变成四条，但是我们选中的checkbox变成了 ‘李斯’。
+   解决办法：
+   	就是在v-for循环的时候，加上唯一标识id
+   	<ul>
+           <li v-for="(item, i) in list" :key="item.id">
+               <input type="checkbox"> {{item.name}}
+           </li>
+       </ul>
+   总结：
+       2.1、唯一性，为了vue 核心库中的diff算法能更高效的更新DOM。
+       2.2、使得当前DOM内容和当前DOM状态相关联。
    
    3、vue的生命周期函数每个阶段干了什么事？以及父子组件生命周期加载的顺序？
    vue生命周期钩子函数：
    beforeCreate -> created -> beforeMount -> mounted -> beforeUpdate -> updated -> beforeDestroy -> destroyed
+   beforeCreate：组件实例刚被创建，组件中的属性、data等都没有计算。
+   created:组件实例创建完成，属性已经绑定，data等已经赋值，但DOM还未生产，所以$el还不存在
+   beforeMount：虚拟DOM已经存在，但是正式DOM还未挂载。
+   mounted：正式DOM已经生产，并挂载完成。
+   beforeUpdate：组件更新之前
+   updated：组件更新之后
+   beforeDestroy：组件销毁之前
+   destroyed：组件销毁之后
+   activated,deactivated：这两个生命周期函数比较特别，是专为keep-alive组件使用的。
+   activated：组件被激活时调用
+   deactivated：组件被移除时调用
    
    4、vue父子组件加载顺序
    初次加载：
@@ -444,6 +562,12 @@
    父 beforeDestroy -> 子 beforeDestroy -> 子 destroyed -> 父 destroyed
    
    5、vue-router的hash、history模式的区别？
+   hash模式在路由地址后面有一个‘#’，看着不太习惯。
+   
+   6、v-if和v-for为什么不建议在同意dom节点上使用？（虽然可以！）
+   原因：v-for的执行顺序高于v-if，所以一般都是v-for循环后，再判断是否显示，存在一定的性能浪费（说实话，在我操作循环遍历时，几十几百条数据渲染，这点性能的浪费，可以忽略不计，这只是理论上的一种优化方式）。
+   解决办法：可以在外层嵌套一个template或者其他dom标签，先v-if判定后，在v-for循环
+   
    ```
 
 7. ##### vue疑难杂症

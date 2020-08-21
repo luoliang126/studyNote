@@ -608,5 +608,49 @@
    }
    ```
 
-8. 虚位以待！！！
+8. vue排序后，动画效果
+
+   ```js
+   官网上动画效果
+   <transition-group name="flip-list" tag="ul">
+       <li v-for="(item,index) in arr" :key="item">
+           {{ item }}
+   		<span @click="deleteItem(item,index)">删除该条</span>
+   	</li>
+   </transition-group>
+   export default {
+       data(){
+           return {
+               arr:[10,7,1,4,2,5,3],
+               selectIndex:''
+           }
+       },
+       methods:{
+           // 排序
+           arrReserve(){
+               this.arr.sort(function(a,b){
+                   return a-b;
+               });
+           },
+           // 删除该条
+           deleteItem(item,index){
+               this.arr.splice(index,1);
+           },
+           // 根据输入排序
+           inputSort(){
+               if(!this.selectIndex){
+                   return;
+               }
+               let currentNum = this.arr[this.selectIndex];
+               this.arr.splice(this.selectIndex,1);
+               this.arr.unshift(currentNum);
+           }
+       }
+   }
+   .flip-list-move {
+       transition: transform 1s;
+   }
+   ```
+
+9. 虚位以待！！！
 

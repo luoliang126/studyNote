@@ -1,0 +1,93 @@
+# git基本使用
+
+1. ##### git安装
+
+   ```
+   在官网上下载https://git-for-windows.github.io
+   
+   安装选择路径后next
+   
+   安装完成后，在开始菜单里找到“Git”->“Git Bash”，蹦出一个类似命令行窗口的东西，就说明Git安装成功！
+   
+   因为Git是分布式版本控制系统，所以，每个机器都必须自报家门：你的名字和Email地址
+   输入：git config --global user.name "Your Name"
+   git config --global user.email "email@example.com"
+   
+   vscode虽然自动集成了git操作，但有时候还是要懂得git的命令行操作！
+   git的可视化操作界面，推荐使用sourceTree。
+   ```
+
+2. ##### git介绍
+
+   ```
+   git、cvs、svn的区别？
+   cvs、svn属于 集中式版本控制系统：版本库是集中存放在中央服务器的，而干活的时候，用的都是自己的电脑，所以要先从中央服务器取得最新的版本，然后开始干活，干完活了，再把自己的活推送给中央服务器。中央服务器就好比是一个图书馆，你要改一本书，必须先从图书馆借出来，然后回到家自己改，改完了，再放回图书馆。
+   缺点：集中式版本控制系统最大的毛病就是必须联网才能工作，如果在局域网内还好，带宽够大，速度够快，可如果在互联网上，遇到网速慢的话，可能提交一个10M的文件就需要5分钟，这还不得把人给憋死啊。所有有了git（分布式版本控制系统）。
+   git属于分布式版本控制系统：分布式版本控制系统根本没有“中央服务器”，每个人的电脑上都是一个完整的版本库，这样，你工作的时候，就不需要联网了，因为版本库就在你自己的电脑上。既然每个人电脑上都有一个完整的版本库，那多个人如何协作呢？比方说你在自己电脑上改了文件A，你的同事也在他的电脑上改了文件A，这时，你们俩之间只需把各自的修改推送给对方，就可以互相看到对方的修改了。
+   ```
+
+3. ##### git基本操作
+
+   ```
+   git init 本地初始化（用于最初创建git版本库）
+   
+   git remote add url   向远程url添加一个仓库
+   	例如：git remote add origin git@github.com:daixu/WebApp.git
+   
+   git clone git://github.com/schacon/grit.git 从服务器上将代码给拉下来
+   
+   git branch 查看本地所有分支
+   git branch -a 查看所有的分支
+   git branch -r 查看远程所有分支
+   git branch -D master develop 删除本地库develop
+   git branch branch_0.1 master 从主分支master创建branch_0.1分支
+   git branch -m branch_0.1 branch_1.0 将branch_0.1重命名为branch_1.0
+   
+   git status 查看当前状态
+   
+   git ls-files 看已经被提交的
+   
+   git diff 查看尚未暂存的更新
+   git diff --cached 或 git diff --staged 查看尚未提交的更新
+   
+   git log 看你当前分支commit的日志
+   
+   git config --list 查看所有用户
+   
+   git checkout --track origin/dev 切换到远程dev分支
+   git checkout -b dev 建立一个新的本地分支dev
+   git checkout dev 切换到dev分支
+   
+   git add .  暂存当前所有修改内容
+   git add README 暂存README文件
+   
+   git commit 提交
+   git commit -am "init" 提交并且加注释
+   git commit -m 'first commit' 提交暂存，并标注提交内容‘first commit’
+   git commit -a 提交当前repos的所有的改变
+   git commit -v 当你用－v参数的时候可以看commit的差异
+   git commit -a    -a是代表所有，把所有的change加到git
+   git commit -a -v 一般提交命令
+   git commit -a -m "log_message" (-a是提交所有改动，-m是加入log信息) 本地修改同步至服务器端 ：
+   
+   git pull 本地与服务器端同步（拉取远端代码）
+   
+   git fetch 是将远程主机的最新内容拉到本地，用户在检查了以后决定是否合并到工作本机分支中。而git pull则是将远程主机的最新内容拉下来后直接合并，
+   	即：git pull = git fetch + git merge，这样可能会产生冲突，需要手动解决。
+    git fetch <远程主机名> <分支名>  可以不用主机名，直接分支名
+   
+   git push (远程仓库名) (分支名) 将本地分支推送到服务器上去。
+   git push origin master 将本地项目给提交到服务器中
+   git push origin master:hb-dev 将本地库与服务器上的库进行关联
+   
+   git rm 文件名  git没有直接删除远端代码库的方法，只有从本地或暂存区中删除指定文件，再add，再commit。
+   
+   git remote show origin 显示远程库origin里的资源
+   git remote add origin git@192.168.1.119:ndshow
+   
+   git merge origin/dev 将分支dev与当前分支进行合并
+   
+   分支合并：https://www.jianshu.com/p/bfb4b0de7e03
+   ```
+
+4. 虚位以待

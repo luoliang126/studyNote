@@ -70,7 +70,8 @@
    git commit -a -v 一般提交命令
    git commit -a -m "log_message" (-a是提交所有改动，-m是加入log信息) 本地修改同步至服务器端 ：
    
-   git pull 本地与服务器端同步（拉取远端代码）
+   git pull 拉取当前分支，远端代码。
+   git pull ll 拉取远端ll分支到本地。
    
    git fetch 是将远程主机的最新内容拉到本地，用户在检查了以后决定是否合并到工作本机分支中。而git pull则是将远程主机的最新内容拉下来后直接合并，
    	即：git pull = git fetch + git merge，这样可能会产生冲突，需要手动解决。
@@ -88,6 +89,10 @@
    git merge origin/dev 将分支dev与当前分支进行合并
    
    分支合并：https://www.jianshu.com/p/bfb4b0de7e03
+   1、问题描述：当前在ll分支，需要把master分支的代码拉取并合并到ll分支，解决冲突，再提交到ll分支？
+   1-1、合并分支都是在本地进行，首先拉取最新的ll分支、master分支代码到本地。
+   1-2、checkout到ll分支，执行git merge master 将master最新代码合并到ll分支，这时候再查看冲突，或者全局搜索 <<< （有冲突都会有这个标识）
+   1-3、解决冲突后，再执行git add .， git commit等操作，实现代码提交！
    ```
 
 4. 虚位以待

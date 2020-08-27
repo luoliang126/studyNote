@@ -43,7 +43,7 @@
    let array = [1,2,3,4,5];
    array = array.join(); // "1,2,3,4,5"
    array = array.join('') // '12345'
-   console.log(array)
+   console.log(array) 
    也可以指定分隔符
    array = array.join("\") // "1\2\3\4\5";
    注意：join方法有返回值，返回值才是join后的结果，但原数组并未改变。
@@ -172,13 +172,14 @@
        forEach()允许callback更改原始数组的元素。map()返回新的数组。
        map执行效率大于forEach
    
-   Object.keys()方法。数组、字符串返回索引，对象返回key
+   Object.keys()，Object.values()方法。数组、字符串返回索引，对象返回key
    数组时
    let arr = [9,5,2,3,6]
    Object.keys(arr)  // ["0", "1", "2", "3", "4"]
    对象时
    let obj = {name:'luoliang',age:18,sex:'男'}
    Object.keys(obj)  // ["name", "age", "sex"]
+   Object.values(obj) // ['luoliang',18,'男']
    字符串时
    let str = 'luoliang'
    Object.keys(str)  // ["0", "1", "2", "3", "4", "5", "6", "7"]

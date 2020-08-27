@@ -28,7 +28,14 @@
    this.$forceUpdate();
    ```
 
-2. ##### vue-cli3发布一个npm包
+2. ##### vue-cli3发布一个npm包 参考：https://www.cnblogs.com/jasonwang2y60/p/11382349.html
+
+   ```js
+   1、创建项目
+   vue create myProgramme
+   
+   2、
+   ```
 
 3. ##### vue源码笔记 
 
@@ -650,7 +657,38 @@
    .flip-list-move {
        transition: transform 1s;
    }
+   备注：这种实现方式，能达到要求，但动画效果始终有点别扭。
+   
+   解决办法：
    ```
 
-9. 虚位以待！！！
+9. ##### vue在使用UI组件（如element等），怎样修改单个组件里的局部样式？
+
+   ```css
+   问题描述：在vue的项目开发中，你若是设置了style的scoped属性，会发现针对ui框架的css重写无法生效，若是把style的scoped去掉，样式倒是可以重写，但这就把重写的样式提升为了全局样式，会影响到其它组件的样式，而你只是想重写当前组件的样式？
+   解决办法:
+   1、未使用css预处理语言
+   <div class="test">
+       <el-alert title="成功提示的文案" type="success"></el-alert>
+   </div>
+   <style scoped>
+       .test >>> .el-alert__title{
+           color:red;
+       }
+   </style>
+   
+   2、使用预编译css如：less，sass等
+   <div class="test">
+       <el-alert title="成功提示的文案" type="success"></el-alert>
+   </div>
+   <style lang="less" scoped>
+   .test{
+       /deep/ .el-alert__title{
+           color:red;
+       }
+   }
+   注意：以上两种方法都是外层嵌套样式修改，必须要有一个外层选择器如：class="test"。
+   ```
+
+10. 虚位以待！！！
 

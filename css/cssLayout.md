@@ -177,6 +177,30 @@
    2.vh：1vh等于视口高度的1%。
    3.vmin：选取vw和vh中最小的那个（背景图片平铺问题）。
    4.vmax：选取vw和vh中最大的那个。
+   5、再配合上css3的计算高度算法实现布局。
+   eg:上--中--下布局
+   上：高度60px
+   中：自适应高度
+   下：固定40px
+   <div class="header"></div>
+   <div class="body"></div>
+   <div class="footer"></div>
+   .header{
+       width:100%;
+       height:60px;
+       background-color:red;
+   }
+   .body{
+       width:100%;
+       height:calc(100%-60px);
+       background-color:blue;
+   }
+   .footer{
+       position:fixed;
+       width:100%;
+       height:40px;
+       bottom:0;
+   }
    
    兼容性问题：在移动端iOS8以上，以及Android4.4以上获得支持，并且在微信x5内核中也得到完美的全面支持。
    ```

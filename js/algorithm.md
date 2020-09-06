@@ -27,6 +27,13 @@
    console.log(arr2.slice(1,3)) // [1,2]
    console.log(arr2) // [0,1,2,3,4,5]
    
+   字符串的截取substring
+   substring一个参数时，截图的是字符串的第N位数字后面的所有字符（不包含N）
+   substring二个参数时，截图的是字符串的第N位到第M位数字之间的所有字符（不包含N，M）
+   let str="Hello world!"
+   let result = str.substring(3)) // lo world!
+   let result = str.substring(3,7) // lo w
+   
    数组的合并
    arr2.concat(arr1,[8,9],......); //可以多个合并，返回的是合并后的新数组。原数组并未改变（可用于深拷贝）
    eg:let arr = [0,1,2,3,4,5]

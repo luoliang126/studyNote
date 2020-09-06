@@ -365,4 +365,64 @@
     详看：js中的algorithm部分
     ```
 
-11. 虚位以待！
+11. ##### js中防抖、节流的方法
+
+    ```js
+    防抖节流：在进行窗口的resize、scroll、输入框内容校验、输入查询等操作时，如果事件处理函数调用的频率无限制（例如调用接口，增加服务器端压力），也会加重浏览器的负担，导致用户体验非常糟糕，而且也没有必要将浏览器的性能花费在这些地方，为了解决以上问题，便提出了防抖和节流。
+    
+    防抖例子：
+    function debounce(fn, wait) {    
+        var timeout = null;    
+        return function() {        
+            if(timeout !== null)  clearTimeout(timeout);        
+            timeout = setTimeout(fn, wait);    
+        }
+    }
+    function handle() {    
+        console.log(Math.random()); 
+    }
+    window.addEventListener('scroll', debounce(handle, 1000));
+    
+    节流例子：
+    //时间戳方式
+    var throttle = function(func, delay) {            
+    　　var prev = Date.now();            
+    　　return function() {                
+    　　　　var context = this;                
+    　　　　var args = arguments;                
+    　　　　var now = Date.now();                
+    　　　　if (now - prev >= delay) {                    
+    　　　　　　func.apply(context, args);                    
+    　　　　　　prev = Date.now();                
+    　　　　}            
+    　　}        
+    }        
+    function handle() {            
+    　　console.log(Math.random());        
+    }        
+    window.addEventListener('scroll', throttle(handle, 1000));
+    // 定时器方式
+    var throttle = function(func, delay) {            
+        var timer = null;            
+        return function() {                
+            var context = this;               
+            var args = arguments;                
+            if (!timer) {                    
+                timer = setTimeout(function() {                        
+                    func.apply(context, args);                        
+                    timer = null;                    
+                }, delay);                
+            }            
+        }        
+    }        
+    function handle() {            
+        console.log(Math.random());        
+    }        
+    window.addEventListener('scroll', throttle(handle, 1000));
+    
+    防抖：将几次操作合并为一此操作进行。原理是维护一个计时器，规定在delay时间后触发函数，但是在delay时间内再次触发的话，就会取消之前的计时器而重新设置。这样一来，只有最后一次操作能被触发。
+    节流：使得一定时间内只触发一次函数。原理是通过判断是否到达一定时间来触发函数。
+    总结： 函数节流不管事件触发有多频繁，都会保证在规定时间内一定会执行一次真正的事件处理函数，而函数防抖只是在最后一次事件后才触发一次函数。 比如在页面的无限加载场景下，我们需要用户在滚动页面时，每隔一段时间发一次Ajax请求，而不是在用户停下滚动页面操作时才去请求数据。这样的场景，就适合用节流技术来实现。
+    ```
+
+12. 虚位以待！

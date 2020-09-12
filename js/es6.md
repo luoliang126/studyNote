@@ -281,7 +281,7 @@
    Bar.classMethod() //'hello'
    let barTest = new Bar();
    barTest.classMethod(); // 抛错，不存在
-   注：extends继承，也包括父类的static方法继承。但是实例还是无法拿到static方法。
+   注：extends继承，也包括父类的static方法继承，所以原型可以访问static方法，但是实例还是无法拿到static方法。
    
    多个继承实现方式: https://blog.csdn.net/weixin_43343144/article/details/92657964
    C同时继承A和B
@@ -810,7 +810,7 @@
 12. ##### 可选链操作符
 
     ```js
-    ES机构还在审核阶段，各浏览器暂时不支持！ https://www.jianshu.com/p/2852b6efed8e
+    ECMAScipt机构还在审核阶段，各浏览器暂时不支持！ https://www.jianshu.com/p/2852b6efed8e
     问题描述：有一个对象，多个嵌套属性，但有可能不存在
     let obj = {
         luoliang:{
@@ -945,7 +945,7 @@
     总结：在开发过程中，涉及到数据结构，能使用Map 不使用Array 尤其是复杂的数据结构 ，如果对于数组的存储考虑唯一性 使用Set ，优先使用map 如果要求数据储存的唯一性使用Set 放弃使用Array。
     ```
 
-16. ##### Set 类的使用
+16. ##### Set 类的使用。参考：https://www.cnblogs.com/wjcoding/p/11690886.html
 
     ```js
     

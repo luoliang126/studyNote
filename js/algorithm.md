@@ -81,6 +81,11 @@
    let res = arr.includes(2)
    console.log(res) // true
    
+   判断一个对象是否为空对象？
+   let temp = {}
+   JSON.stringify(temp) == '{}' // 转换字符串方式
+   Object.keys(temp).length == 0 // 获取对象的keys,返回一个数组，如果为空则为[]，再判断其length值
+   
    判断 字符串 是否以 xxx 开头 startsWith()，返回的是boolean
    let a = 'luoliang'
    console.log(a.startsWith('luo'))  // true

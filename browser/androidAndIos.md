@@ -2,14 +2,52 @@
 
 1. ##### 关于position：fixed
 
-   ```
+   ```css
    ios使用fixed后（例如top：0固定在顶部），当调用输入框时，输入框会把fixed的定位部分往上顶，当我们关闭输入框的时候，顶部的fixed不会返回到top:0
    解决办法：使用position：absolute
    
    fixed定位：https://www.jianshu.com/p/47db0d2ab2a7
    在ios上无论顶部，还是底部都会被遮挡
-   解决办法：
-   在外层套一个div元素，
+   解决办法：不要使用fixed顶部定位布局
+   1、使用vw和vh布局。
+   <div class="out">
+   	<div class="header"></header>
+   	<div class="content"></div>
+   </div>
+   .out{
+       height:100vh;
+   }
+   .header{
+       width:100vw;
+       height:10vh;
+   }
+   .content{
+       width:100vw;
+       height:90vh;
+       overflow:auto;
+       // height:calc(100%-10vh); // 使用计算高度方式，更容易理解
+   }
+   
+   2、使用relative和absolute布局。
+   <div class="out">
+   	<div class="header"></header>
+   	<div class="content"></div>
+   </div>
+   .out{
+       position:relative;
+   }
+   .header{
+       position:absolute;
+       height:50px;
+   }
+   .content{
+       position:absolute;
+       top:50px;
+       bottom:0;
+       width:100%;
+       overflow:auto;
+   }
+   
    ```
 
 2. ##### 关于日期格式问题
@@ -20,7 +58,8 @@
    解决办法：将2019-03-07 转换为：2019/03/07（android和ios都可识别）
    
    顺便提一句，在ie下 可以识别2019-03-07也可以识别2019/03/07，但是却无法识别2019-03-07 00:00:00.
-   所以最终的解决办法还是转换为2019/03/07 00:00:00
+   所以最终的解决办法还是转换为2019/03/07 00:00:00。
+   如果允许的话，与后端交互还是以时间戳为准！
    ```
 
 3. ##### 关于ios中，使用了input，调用键盘输入法后，界面被顶上去了，input失焦后，顶部无法滚下来，而是定在了顶部

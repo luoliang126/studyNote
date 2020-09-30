@@ -108,16 +108,20 @@
    // 注意，这里调用checkAdult方法名，不需要执行，some方法会自动将每次遍历的item传入 checkAdult(age)的行参age中！！！
    // every同理
    
-   数组中所有数据迭代相加reduce/reduceRight
+   数组中所有数据迭代相加reduce/reduceRight求和
    reduce:从左往右相加
-   参数：previousValue 必选 --上一次调用回调返回的值，或者是提供的初始值（initialValue）
-   currentValue 必选 --数组中当前被处理的数组项
-   index 可选 --当前数组项在数组中的索引值
-   array 可选 --原数组
-   initialValue: 可选 --初始值 (不建议使用)
+   array.reduce(function(previousValue, currentValue, currentIndex, array){
+   	return previousValue + currentValue
+   }, initialValue);
+   参数：
+   previousValue 	必选 --上一次调用回调返回的值，或者是提供的初始值（initialValue）
+   currentValue 	必选 --数组中当前被处理的数组项
+   currentIndex 	可选 --当前数组项在数组中的索引值
+   array 		 	可选 --原数组
+   initialValue 	可选 --初始值
    let arr = [0,1,2,3,4]
    let num = arr.reduce((preValue, curValue) =>
-   	preValue + curValue
+   	return preValue + curValue
    )
    console.log(num) // 10
    reduceRight：从右往左相加
@@ -127,6 +131,11 @@
    	preValue + curValue
    )
    console.log(num)  // 10
+   注意：reduce对于空数组是不会执行回调函数的。
+   求最大值
+   var max = arr.reduce(function (prev, cur) {
+       return Math.max(prev,cur);
+   });
    
    数组中查找某个元素find，filter方法。参考：https://blog.csdn.net/lhjuejiang/article/details/80112547
    find()方法为数组中的每个元素都调用一次函数执行(有先后顺序)，当数组中的元素在测试条件时返回true，后面的函数不会执行
@@ -264,6 +273,12 @@
    let set1 = new Set([...arr1, ...arr2])
    console.log(set1)  // {1,2,3,4,5,6}
    注意：数据结构Set的更多用法，参考：https://www.cnblogs.com/kongxianghai/p/7250248.html
+   
+   数组去重7，使用reduce方法
+   var newArr = arr.reduce(function (prev, cur) {
+       prev.indexOf(cur) === -1 && prev.push(cur);
+       return prev;
+   },[]);
    ```
 
 4. ##### 数组排序算法
@@ -310,4 +325,10 @@
    4、二分查找法(在数据量较少时，不推荐使用效率不高，大量数据推荐使用！)
    ```
 
-5. 虚位以待！
+5. ##### js实现惯性滚动，下拉回弹效果
+
+   ```js
+   
+   ```
+
+6. 虚位以待！

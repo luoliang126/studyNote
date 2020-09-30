@@ -556,9 +556,9 @@
    updated：组件更新之后
    beforeDestroy：组件销毁之前
    destroyed：组件销毁之后
-   activated,deactivated：这两个生命周期函数比较特别，是专为keep-alive组件使用的。
    activated：组件被激活时调用
    deactivated：组件被移除时调用
+   注：activated,deactivated：这两个生命周期函数比较特别，是专为keep-alive组件使用的。
    
    4、vue父子组件加载顺序
    初次加载：
@@ -615,7 +615,7 @@
    }
    ```
 
-8. vue排序后，动画效果
+8. ##### vue排序后，动画效果
 
    ```js
    官网上动画效果
@@ -683,12 +683,33 @@
    </div>
    <style lang="less" scoped>
    .test{
-       /deep/ .el-alert__title{
+       /deep/.el-alert__title{
            color:red;
        }
    }
    注意：以上两种方法都是外层嵌套样式修改，必须要有一个外层选择器如：class="test"。
    ```
 
-10. 虚位以待！！！
+10. ##### vue中 sync修饰符的作用
+
+    ```js
+    vue组件传参都是单向的
+    <child-component :father-num="test"></child-component>
+    test值修改后，child-component组件中的props属性接收到的father-num就会变更。
+    但是假如child-component中想修改father-num就必须借助event事件的模式，通过方法传参给父组件，父组件监听到event事件后，修改father-num
+    ```
+
+11. ##### vue指令directive和过滤器filter
+
+    ```js
+    webstorm上迁移过来！！！
+    ```
+
+12. ##### vue 服务类组件，动态创建组件，添加到对应DOM（又名函数式编程）
+
+    ```js
+    
+    ```
+
+13. 虚位以待！！！
 

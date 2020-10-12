@@ -615,10 +615,10 @@
    }
    ```
 
-8. ##### vue排序后，动画效果
+8. ##### vue动画效果
 
    ```js
-   官网上动画效果
+   官网上动画效果--排序
    <transition-group name="flip-list" tag="ul">
        <li v-for="(item,index) in arr" :key="item">
            {{ item }}

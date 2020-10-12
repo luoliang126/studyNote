@@ -249,7 +249,122 @@
    2、申明在state中的数据，都是可以读写的。
    ```
 
-6. ##### 组件中的数据
+6. ##### react中的样式
 
-7. 虚位以
+   ```css
+   1、内嵌到标签内的样式
+   
+   2、内联样式
+   
+   3、外联样式表
+   
+   ```
+
+7. ##### react 路由
+
+   ```jsx
+   安装路由：npm install react-router-dom --dev
+   
+   1、定义一个路由组件AppRouter.js
+   import React from 'react';
+   import { BrowserRouter as Router, Route, Link } from 'react-router-dom'; // 重命名BrowserRouter为Router，方便使用
+   // 定义的路由组件
+   import Home from './views/Home.js';
+   import List from './views/List.js';
+   function AppRouter(){
+       return <Router>
+           //路由导航
+           <ul>
+               <li>
+                   <Link to="/">Home页</Link>
+               </li>
+               <li>
+                   <Link to="/list">list页</Link>
+               </li>
+           </ul>
+           
+           // 定义路由
+           <Route path="/" exact component={ Home }></Route>
+           <Route path="/list" component={ List }></Route>
+       </Router>
+   }
+   export default AppRouter;
+   // exact是严格匹配模式
+   
+   2、在需要挂载的地方，引入并挂载
+   import React from 'react';
+   import ReactDOM from 'react-dom';
+   import AppRouter from './AppRouter.js';
+   ReactDOM.render(
+       <AppRouter></AppRouter>,
+       document.getElementById('root')
+   );
+   
+   3、路由跳转和传递参数
+   	3.1、Link标签跳转，使用地址栏传递(单一参数比较方便)
+       在AppRouter.js中，定义路由规则，地址栏传递id
+   	<Route path="/list/:id" component={ List }></Route>
+   	在需要跳转路由的地方加上id
+       <li>
+           <Link to="/list/123">list页</Link>
+   	</li>
+   	在路由组件中拿取参数
+       componentDidMount(){
+           console.log(this.props);
+           let id = this.props.match.params.id;
+           this.setState({
+               id:id
+           })
+       }
+       render(){
+           return <div>这是list组件，id是{ this.state.id }</div> // 设置setState之后，就可以直接使用了
+       }
+   
+   	3.2、重定向路由跳转(默认路由)
+   	import { Redirect } from 'react-router-dom';
+   	<Redirect to="/home"></Redirect>
+       <Route path="/home" exact component={ Home }></Route>
+       <Route path="/list/:id" component={ List }></Route>
+   	
+   	3.3、js路由跳转， this.props.history.push('/Home')
+   		3.3.1、params方式
+           <Route path='/path/:name' component={Path}/>
+           <link to="/path/2">xxx</Link>
+           this.props.history.push({pathname:"/path/" + name});
+           读取参数用:this.props.match.params.name
+   
+   		3.3.2、query方式
+           <Route path='/query' component={Query}/>
+           <Link to={{ path : ' /query' , query : { name : 'sunny' }}}>
+           this.props.history.push({pathname:"/query",query: { name : 'sunny' }});
+           读取参数用: this.props.location.query.name
+                   
+   		3.3.3、state方式
+   		<Route path='/sort ' component={Sort}/>
+           <Link to={{ path : ' /sort ' , state : { name : 'sunny' }}}> 
+           this.props.history.push({pathname:"/sort ",state : { name : 'sunny' }});
+           读取参数用: this.props.location.query.state 
+               
+   		3.3.4、search方式
+           <Route path='/web/departManange ' component={DepartManange}/>
+           <link to="web/departManange?tenantId=12121212">xxx</Link>
+           this.props.history.push({pathname:"/web/departManange?tenantId" + row.tenantId});
+           读取参数用: this.props.location.search
+       
+   	总结：1、params方式和search方式，刷新地址栏，参数依然存在，因为参数都在地址栏，而地址栏不变，但只能传字符串，并且如果传的值太多的话，url会变得很长很难看。
+   		 2、query方式和state方式，传参优雅，传递参数可传对象。但刷新地址栏，参数丢失，因为无状态保存参数。
+               
+   4、路由嵌套
+   AppRouter.js
+   import React from 'react';
+   import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom';
+   ```
+
+8. ##### react的生命周期
+
+   ```jsx
+   
+   ```
+
+9. 虚位以待！！！
 

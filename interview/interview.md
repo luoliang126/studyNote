@@ -425,4 +425,93 @@
     总结： 函数节流不管事件触发有多频繁，都会保证在规定时间内一定会执行一次真正的事件处理函数，而函数防抖只是在最后一次事件后才触发一次函数。 比如在页面的无限加载场景下，我们需要用户在滚动页面时，每隔一段时间发一次Ajax请求，而不是在用户停下滚动页面操作时才去请求数据。这样的场景，就适合用节流技术来实现。
     ```
 
-12. 虚位以待！
+12. ##### 闭包
+
+    ```js
+    闭包：闭包就是能够读取其他函数内部变量的函数，由于在Javascript语言中，只有函数内部的子函数才能读取局部变量，因此可以把闭包简单理解成"定义在一个函数内部的函数"。所以，在本质上，闭包就是将函数内部和函数外部连接起来的一座桥梁。
+    
+    闭包的形成：
+    function outer(){
+        var localVal = 1;
+        return localVal;
+    }
+    outer(); // 1 
+    这是一个一般的函数，每执行一次outer函数时，都会在outer作用域下var localVal = 1，当执行完成后，因为localVal没有被再使用，所以就会被垃圾回收而清除；下一次执行时再创建var localVal = 1，依次类推。
+    function outer(){
+        var localVal = 1;
+        return function(){
+            return localVal;
+        }
+    }
+    var func = outer();
+    func(); //1 
+    这里形成了闭包，当定义var func = outer()时，执行outer函数，var localVal = 1并return一个function(){return localVal},但并未执行该function，重点来了，该function中会用到localVal，所以localVal不会被释放，而是常驻内存中，这样闭包形成了。
+    
+    闭包的作用：
+    1、可以读取函数内部的变量
+    function f1(){
+        var n=999;
+        function f2(){
+            alert(n);
+        }
+        return f2;
+    }
+    var result=f1(); 
+    // 赋值方法,如果是var result = f1; 那么只是给它一个方法的引用，并未执行该方法，便不能形成闭包,在执行result()()时相当于重新执行了一次f1方法而已，那里面的变量n就会被重置;
+    result(); // 999
+    
+    2、让变量的值始终保持在内存中
+    function f1(){
+        var n=999;
+        nAdd = function(){
+            n+=1
+        }
+        function f2(){
+            alert(n);
+        }
+        return f2;
+    }
+    var result=f1();
+    result(); // 999
+    nAdd();
+    result(); // 1000
+    nAdd();
+    result(); // 1001
+    说明：
+    2.1、f1函数中的nAdd方法，因为没有用var nAdd，所以定义的nAdd为全局变量，而不是函数内的局部变量，虽然它存在函数内。可以在函数外部对函数内部的局部变量进行操作nAdd()直接使用。
+    2.2、在var result = f1();时，此时就已经执行了f1函数，从而f2方法暴露在了全局作用域下。注意重点来了，重要事情说三遍，f1中var n = 999,因为在函数f2中会使用到n所以在执行完函数f1后，n不会被垃圾回收，而是常驻内存，这也就是闭包的关键。
+    2.3、第一次执行result()时，就相当于f1()();那么执行的是return出来的f2函数，所以alert(n) //999，但内存中的n并没有被消除
+    2.4、第一次nAdd()时，此时n+=1；使用的n是活动变量n（未被清除，常驻内存中的n），最终n变为1000，但依然没有被清除掉。
+    2.5、第二次执行result()时，就相当于f1()();执行f2函数，但使用的n是内存中的n=1000;如果再执行f1()函数时，依然会使用n=1000；
+    2.6、第二次nAdd()时，此时n+=1；使用的n依然是活动变量n（未被清除，常驻内存中的n），最终n变为1001，但依然没有被清除掉。
+    
+    闭包误区：
+    var name = "The Window";
+    var object = {
+        name : "My Object",
+        getNameFunc : function(){
+            return function(){
+                return this.name;
+            };
+        }
+    };
+    alert(object.getNameFunc()()); //The Window
+    
+    var name = "The Window";
+    var object = {
+        name : "My Object",
+        getNameFunc : function(){
+            var that = this;
+            return function(){
+                return that.name;
+            };
+        }
+    };
+    alert(object.getNameFunc()()); // My object
+    
+    闭包的注意事项:
+    1、由于闭包会使得函数中的变量都被保存在内存中，滥用闭包的话，内存消耗很大，会造成网页的性能问题，在IE中可能导致内存泄露。解决方法是，在退出函数之前，将不使用的局部变量全部删除。
+    2、闭包会在父函数外部，改变父函数内部变量的值。所以，如果你把父函数当作对象（object）使用，把闭包当作它的公用方法（Public Method），把内部变量当作它的私有属性（private value），这时一定要小心，不要随便改变父函数内部变量的值。
+    ```
+
+13. 虚位以待！

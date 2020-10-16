@@ -124,6 +124,10 @@
    6、使用JSX创建DOM元素的时候，所有节点必须包裹在一个根节点内（与vue的组件中，template元素有且只有一个根节点类似）
    
    7、使用jsx创建dom节点时，标签必须有闭环。eg: <div></div>或者<input type='test'/>
+       
+   8、事件绑定
+   <button onClick={ this.jumpRouter }>点击按钮跳转</button>
+   <button onClick={ () => { this.jumpRouter() } }>点击按钮跳转</button> // 推荐使用这种方法
    ```
 
 5. ##### react创建组件，以及组件传参
@@ -327,6 +331,45 @@
        <Route path="/list/:id" component={ List }></Route>
    	
    	3.3、js路由跳转， this.props.history.push('/Home')
+       注意：该方法需要在主页面（引入根路由的时候，添加BrowserRouter，嵌套才能实现），且嵌套路由的地方，需要加上withRouter标签嵌套
+       eg: 
+   	// 在首页index.js
+   	import React from 'react';
+       import ReactDOM from 'react-dom';
+       import { BrowserRouter as Router } from 'react-router-dom';
+       import './index.css';
+       import AppRouter from './AppRouter.js';
+       ReactDOM.render(
+           // 嵌套一层BrowserRouter
+           <Router>
+               <AppRouter></AppRouter>
+           </Router>,
+           document.getElementById('root')
+       );
+   	// 在AppRouter.js中，引入withRouter方法，暴露该路由组件
+   	import React, { Component } from 'react';
+       import { BrowserRouter as Router, Route, withRouter } from 'react-router-dom';
+       import Home from './views/Home.js';
+       class AppRouter extends Component {
+           jumpRouter(){
+               console.log(this.props); // 这里的this.props里才有history和location对象
+               this.props.history.push('/home')
+           }
+           render(){
+               return (
+                   <Router>
+                       <ul>
+                           <li>
+                               <button onClick={ () => { this.jumpRouter() } }>点击按钮跳转</button>
+                           </li>
+                       </ul>
+                       <Route path="/home" component={ Home }></Route>
+                   </Router>
+               )
+           }
+       }
+   	export default withRouter(AppRouter);
+   
    		3.3.1、params方式
            <Route path='/path/:name' component={Path}/>
            <link to="/path/2">xxx</Link>
@@ -352,18 +395,104 @@
            读取参数用: this.props.location.search
        
    	总结：1、params方式和search方式，刷新地址栏，参数依然存在，因为参数都在地址栏，而地址栏不变，但只能传字符串，并且如果传的值太多的话，url会变得很长很难看。
-   		 2、query方式和state方式，传参优雅，传递参数可传对象。但刷新地址栏，参数丢失，因为无状态保存参数。
+   		 2、query方式和state方式，传参优雅，传递参数可传对象。但刷新地址栏，参数丢失，因为无状态保存参数。但可以引入持久化保存数据。
                
    4、路由嵌套
-   AppRouter.js
+   // 一级界面 + 路由 AppRouter.js
    import React from 'react';
    import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom';
+   import Home from './views/Home.js';
+   import List from './views/List.js';
+   function AppRouter(){
+       return <Router>
+           <ul>
+               <li>
+                   <Link to="/home">Home页</Link>
+               </li>
+               <li>
+                   <Link to="/list/123">list页</Link>
+               </li>
+           </ul>
+           <Redirect to="/home"></Redirect>
+           <Route path="/home" exact component={ Home }></Route>
+           <Route path="/list/:id" component={ List }></Route>
+       </Router>
+   }
+   export default AppRouter;
+   // 二级界面 + 路由 Home.js
+   import React, { Component } from 'react';
+   import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+   import Home1 from './Home/Home1.js';
+   class Home extends Component {
+       constructor(props){
+           super(props);
+           this.state = {}
+       }
+       render(){
+           return (
+               <Router>
+                   <Link to="/home/home1">到home1</Link>
+                   <Route path="/home/home1" component={ Home1 }></Route>
+               </Router>
+           )
+       }
+   }
+   export default Home;
+   // 三级界面 Home1.js
+   import React, { Component } from 'react';
+   class Home1 extends Component {
+       constructor(props){
+           super(props);
+           this.state = {}
+       }
+       render(){
+           return (
+               <div>
+                   这是Home1内容
+               </div>
+           )
+       }
+   }
+   export default Home1;
+   以上：如果还想继续嵌套可以继续！！！
    ```
 
 8. ##### react的生命周期
 
    ```jsx
+   react的生命周期，主要分为：创建阶段、运行阶段、销毁阶段
+   1、创建阶段
+   componentWillMount(){
+       // 在渲染前调用,在客户端也在服务端。
+       console.log('componentWillMount');
+   }
+   componentDidMount(){
+       // 在第一次渲染后调用，只在客户端。之后组件已经生成了对应的DOM结构，可以通过this.getDOMNode()来进行访问。 如果你想和其他JavaScript框架一起使用，可以在这个方法中调用setTimeout, setInterval或者发送AJAX请求等操作(防止异步操作阻塞UI)。
+       console.log('componentDidMount');
+   }
    
+   2、运行阶段分为： 属性props改变时、组件状态state改变时
+   componentWillReceiveProps(){
+       // 属性props改变时执行
+   }
+   shouldComponentUpdate(){
+   	// props、state改变时都会来这里，这里可以阻塞是否执行重新渲染，如果return false那么后面的生命周期都不会执行，就不会重新渲染
+   }
+   componentWillUpdate(){
+       // 将要更新
+   }
+   render(){
+       // 执行重新渲染（没有这个生命周期函数，放这里只是说会执行render）
+   }
+   componentDidUpdate(){
+       // 更新完成
+   }
+   
+   3、销毁阶段
+   componentWillUnmount(){
+       // 组件在卸载前调用
+       console.log('componentWillUnmount');
+   }
    ```
 
 9. 虚位以待！！！

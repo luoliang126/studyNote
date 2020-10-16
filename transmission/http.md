@@ -111,4 +111,185 @@
    https在http基础上，在传输层传输之前进行加密
    ```
 
-7. 虚位以待！
+7. ##### 原生http的封装和使用
+
+   ```js
+   
+   ```
+
+8. ##### axios的使用 <a href="http://blog.csdn.net/binginsist/article/details/65630547" target="_blank">参考文档</a>
+
+   ```js
+   以vue为例：
+   1、安装axios： npm install axios
+   
+   2、在项目中引入axios：import axios from 'axios'
+   
+   3、使用get/post
+   axios.get('/user?ID=12345')
+   .then(function (response) { //成功后的回调函数
+       console.log(response);
+   })
+   .catch(function (response) { //失败后的回调函数
+       console.log(response);
+   });
+   // 也可以通过 params 对象传递参数
+   axios.get('/user', {
+       params: {
+           ID: 12345
+       }
+   })
+   .then(function (response) {
+       console.log(response);
+   })
+   .catch(function (error) {
+       console.log(error);
+   });
+   axios.post('/user', {
+       firstName: 'Fred',
+       lastName: 'Flintstone'
+   })
+   .then(function (response) {
+       console.log(response);
+   })
+   .catch(function (response) {
+       console.log(response);
+   });
+   
+   4、并发多个请求方法：
+   function getUserAccount() {
+       return axios.get('/user/12345');
+   }
+   function getUserPermissions() {
+       return axios.get('/user/12345/permissions');
+   }
+   axios.all([getUserAccount(), getUserPermissions()])
+   .then(axios.spread(function (acct, perms) {
+       //acct，perms分别对应第一个，第二个请求的返回值
+   }));
+   
+   5、全局 axios 默认配置
+   axios.defaults.baseURL = 'https://api.example.com';
+   axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+   axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+   
+   6、拦截器（很实用），在发送请求前，响应后都可以拦截到，并作相应的处理。
+   // 添加一个请求拦截器
+   axios.interceptors.request.use(function (config) {
+       // Do something before request is sent 可以在这里添加请求头部信息，添加验证token等
+       return config;
+   }, function (error) {
+       // Do something with request error
+       return Promise.reject(error);
+   });
+   // 添加一个响应拦截器
+   axios.interceptors.response.use(function (response) {
+       // Do something with response data   可以在这里拦截响应信息，例如返回值格式化等
+       return response;
+   }, function (error) {
+       // Do something with response error
+       return Promise.reject(error);
+   });
+   可以拦截每一次发送的http请求，从而做出一个loading的显示和隐藏功能
+   
+   7、axios虽然好，但是不兼容IE，所以需要引入npm install es6-promise --save-dev。参考文档：https://segmentfault.com/q/1010000010160881
+   然后再main.js中使用（放在第一行）
+   import promise from 'es6-promise';
+   promise.polyfill();
+   
+   8、挂载全局axios
+   // 在http.js文件中，封装axios方法
+   import config from './config'
+   import api from "axios"
+   import qs from 'qs' // 使用qs模块是为了参数序列化，构造出表单的请求体
+   import router from '../router/index'
+   import $cookie from 'vue-cookie'
+   import iView from 'iview';
+   import configuration from '@/configuration'
+   // axios的默认配置
+   api.defaults.baseURL = config.host;
+   api.defaults.timeout = 5000;
+   api.defaults.headers.common['Authorization'] = '';
+   api.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
+   // axios的请求拦截
+   api.interceptors.request.use((request) => {
+       iView.LoadingBar.start();
+       request.url = config.build(request.url);
+       //只有当content-type为form类型时才使用qs.stringify
+       if (request.data && request.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+           request.data = qs.stringify(request.data);
+       }
+       var token = $cookie.get('token');
+       // 调用登陆站点
+       if (token && token != null) {
+           request.headers["Authorization"] = 'Bearer ' + token;
+       }else{
+           var returnUrl = window.location.href;
+           window.location.href = configuration.uriIS + "?returnUrl=" + returnUrl;
+       }
+       return request;
+   },
+   error => {
+       return Promise.reject(error);
+   });
+   // axios的响应拦截
+   api.interceptors.response.use(response => {
+       iView.LoadingBar.finish();
+       // return response.data;
+       return response;
+   },
+   error => {
+       iView.LoadingBar.finish();
+       if (error.response) {
+           switch (error.response.status) {
+               case 400:
+                   break;
+               case 401:
+                   router.replace({
+                       path: '/Login'
+                   })
+                   break;
+           }
+       }
+       var data = {
+           message: error.message,
+           data: (error.response && error.response.data) || null
+       };
+       return Promise.reject(data);
+   });
+   export {
+   	api,
+       qs
+   }
+   // 注意：qs模块的使用，不是所有请求都需要，只有request.headers['Content-Type'] === 'application/x-www-form-urlencoded'才需要。
+   
+   // 挂载到vue上，提供全局使用
+   import Vue from 'vue'
+   import api from "./apis/http.js";
+   Vue.prototype.api = api;
+   
+   使用axios上传进度的监听(不是真实的http上传进度，而是预请求的进度) 参考：https://www.cnblogs.com/wxb-it/p/7774758.html
+   var response = await this.api.post(urls.urlUpload, formData, {
+       method: "post",
+       headers: {
+           "Content-Type": "multipart/form-data"
+       },
+       onUploadProgress: function (e) {
+           let percentage = Math.round(e.loaded * 100 / e.total) || 0;
+           let waitPercentage = null;
+           if (percentage >= 99){  // 模拟进度，加载到99时就停止，直到真正的http请求响应结束才置为100
+               percentage == 99;
+               waitPercentage = 99;
+           }
+           fileItem.progress = waitPercentage ? waitPercentage : percentage;
+       }
+   }).catch(function (error) {
+       console.log("upload error:", error);
+       return Promise.reject(error);
+   });
+   if (response) {
+       console.log(response);
+   }
+   ```
+
+9. 虚位以待！

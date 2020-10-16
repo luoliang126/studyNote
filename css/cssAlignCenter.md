@@ -9,9 +9,11 @@ text-align:center
 margin:0 auto
 // 转换为行内块级元素，再使用text-align
 display:inline-block;
+// 转换为flex布局
+display:flex
 ```
 
-- ##### 垂直居中对齐
+- ##### 垂直居中对齐 参考：https://www.cnblogs.com/zhouhuan/p/vertical_center.html
 
 ```css
 // 文本垂直居中（当行文本）

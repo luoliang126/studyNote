@@ -61,7 +61,7 @@
    git add .  暂存当前所有修改内容
    git add README 暂存README文件
    
-   git commit 提交
+   git commit 提交(只是暂存，不会push)
    git commit -am "init" 提交并且加注释
    git commit -m 'first commit' 提交暂存，并标注提交内容‘first commit’
    git commit -a 提交当前repos的所有的改变

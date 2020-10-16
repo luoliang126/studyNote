@@ -53,4 +53,80 @@
    document.body.append($changePrint(1));// 将样式append到根节点，或者需要打印的容器中。
    ```
 
-2. 虚位以待！
+2. ##### 前端微服务 参考：https://zhuanlan.zhihu.com/p/96717332
+
+   ```js
+   1、使用 HTTP 服务器的路由来重定向多个应用，即路由分发
+   2、在不同的框架之上设计通讯、加载机制，诸如Single-SPA 和 Mooa
+   3、通过组合多个独立应用、组件来构建一个单体应用
+   4、iFrame。使用 iFrame 及自定义消息传递机制
+   5、使用纯 Web Components 构建应用
+   ```
+
+3. ##### js日期、时间对象
+
+   ```js
+   日期对象：
+   var date = new Date; //获取到的是，标准时间   Fri Mar 24 2017 16:06:02 GMT+0800 (中国标准时间)
+   var year = date.getFullYear(); //获取到具体年份 2017，注意：如果是date.getYear()获取到的是117，而不是2017；
+   var month = date.getMonth()+1; //月份是从0开始计算，所以加1
+   var day = date.getDate(); //获取今日
+   var hour = date.getHours(); //获取当前小时
+   var minute = date.getMinutes(); //获取当前分钟
+   var second = date.getSeconds(); //获取当前秒
+   var weekday = date.getDay(); //获取星期几 如：5  代表星期五
+   var time = data.getTime(); //获取到的是以毫秒计算的数值（时间戳）
+   var arr = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"]
+   divEle.innerHTML = year + "年" + month + "月" + day + "日" + hour + "时" + minute + "分" + second + "秒" + arr[weekday];
+   
+   倒计时：
+   var curtime = new Date;
+   var endtime = new Date("2017,6,7")
+   var lefttime = endtime.getTime() - curtime.getTime(); //　转换为时间戳进行　减法
+   // 转换为毫秒1天 = 24h  1h = 60minutes 1minute = 60seconds 1second = 1000ms
+   var day = Math.ceil(lefttime/(24*60*60*1000));　// 转化为 ‘天’
+   var second = parseInt(lefttime%60)	//此处用取整，不用math.ceil(因为倒计时不用向上取整)
+   var minute = parseInt(lefttime/60%60);	//转换为m
+   var hour = parseInt(lefttime/(60*60)%24);	//对24取模是因为每天有24h，我们只需要余下的部分
+   var date = parseInt(lefttime/(24*60*60));
+   
+   日期的越界：在处理像2月这种不知道最后一天是28，29的时候最有用
+   var preMonthLastday = new Date(2017,5,0)  //6月的第0天，也就是上个月的最后一天，即2017年5月31日
+   获取本月的最后一天也可以用：var currentMonthLastDay = new Date(2017,6,0); //下月的第0天
+   
+   js时间格式化format 参考：https://blog.csdn.net/vasilis_1/article/details/73649961
+   // 对Date的扩展，将 Date 转化为指定格式的String
+   // 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
+   // 年(y)可以用 1-4 个占位符，
+   // 毫秒(S)只能用 1 个占位符 (是 1-3 位的数字)
+   Date.prototype.Format = function (fmt) {
+       var o = {
+           "M+": this.getMonth() + 1, // 月份
+           "d+": this.getDate(), // 日
+           "h+": this.getHours(), // 小时
+           "m+": this.getMinutes(), // 分
+           "s+": this.getSeconds(), // 秒
+           "q+": Math.floor((this.getMonth() + 3) / 3), // 季度
+           "S": this.getMilliseconds() // 毫秒
+       };
+       if (/(y+)/.test(fmt)){
+           fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+   	}
+       for (var k in o)
+           if (new RegExp("(" + k + ")").test(fmt))
+               fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+       		return fmt;
+   }
+   // 使用：
+   new Date().Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423
+   new Date().Format("yyyy-M-d h:m:s.S") ==> 2006-7-2 8:9:4.18
+   
+   ```
+
+4. ##### js正则
+
+   ```js
+   
+   ```
+
+5. 虚位以待！

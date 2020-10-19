@@ -114,7 +114,32 @@
 7. ##### 原生http的封装和使用
 
    ```js
+   var request = new XMLHttpRequest();// 创建一个XMLHttpRequest对象
+   var method = "GET"; //设置请求方式method类型
+   request.open(method,url); // 确定访问地址url
+   request.send(null); // 发送请求
+   request.onreadystatechange = function(){ //监听响应事件
+       if(request.readyState == 4){
+           if(request.status ==200 || request.status == 304){
+               console.log(request.responseText);
+           }
+       }
+   }
+   XMLHttpRequest的属性：
+   1、onreadystatechange 每个状态改变都会触发这个时间处理器，通常会调用一个JavaScript函数
+   2、readyState 请求的状态，有5个可用值，0代表未初始化，1代表正在加载，2代表已经加载，3代表交互中，4代表完成
+   3、responseText 服务器的响应，表示一个串
+   4、responseXML 服务器的响应，表示为XML，这个对象可以解析为DOM对象
+   5、status 服务器的HTTP状态码（200对应OK,304对应上次请求后没有更新就可以不用上传节省流量开支，404对应not found服务器上没有找到对应的界面等，500服务器错误无法完成请求）
+   6、statusText HTTP状态码的相应文本（ok,NOT found等）
    
+   XMLHttpRequest的方法：
+   1、abort() 停止当前请求
+   2、getAllResponseHeaders() 把HTTP请求的所有响应首部作为键/值对返回
+   3、getResponseHeader("header") 返回指定首部的串值
+   4、open("method","url") 建立对服务器的调用，method:GET/POST/PUT,url:路径可以是相对路径也可以是绝对路径
+   5、send(content) 向服务器发送请求附带参数，如果没有为null
+   6、setRequestHeader("header","value") 把指定首部设置为所提供的值，在设置任何首部之前必须先调用open()
    ```
 
 8. ##### axios的使用 <a href="http://blog.csdn.net/binginsist/article/details/65630547" target="_blank">参考文档</a>

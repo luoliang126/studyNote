@@ -2,7 +2,7 @@
 
 参考：ECMAScript 6 入门 --阮一峰著 http://es6.ruanyifeng.com/
 
-1. ##### let 声明变量使用
+1. ##### 声明变量使用
 
    ```js
    1、es5之前声明一个变量用var，无论这个变量声明在哪？（花括号内，function内等）它都是一个全局的变量（变量提升），只是在执行上下文的时候，它才会被赋值。所以会造成一种现象，没有赋值过的变量，可以先使用。从严谨的方向说，显然不合理！所以引入了let声明。
@@ -260,6 +260,161 @@
    
    5、class继承
    es5方式：
+   1、call继承方法:将父对象的构造函数绑定在子对象上，即在子对象构造函数中加一行Animal.call(this,arguments);
+   // 动物类
+   function Animal(arguments){
+       this.name = arguments[0];
+       this.age = arguments[1];
+       this.height = arguments[2];
+       this.color = arguments[3];
+       this.say = function(){
+           return "动物的名字叫：" + this.name + "。高度是：" + this.height + "。年龄是：" + this.age + "。颜色是：" + this.color
+       }
+   }
+   // 猫科类
+   function Cat(name,age,height,color){
+       //arguments是将所有的参数(name,age,height,color)组成一个数组传递过去，所有使用时用arguments[0],arguments[1],arguments[2],arguments[3]来赋值
+       Animal.call(this,arguments);
+   }
+   Cat.prototype.type = "猫科动物";
+   var cat1 = new Cat("大毛",27,168,"黑色");
+   console.log(cat1.type);
+   2、apply继承方法:将父对象的构造函数绑定在子对象上，即在子对象构造函数中加一行Animal.apply(this,tips);
+   // 动物类
+   function Animal(name,age,height,color){
+       this.name = name;
+       this.age = age;
+       this.height = height;
+       this.color = color;
+       this.say = function(){
+           return "动物的名字叫：" + name + "。高度是：" + height + "。年龄是：" + age + "。颜色是：" + color
+       }
+   }
+   //猫科类
+   function Cat(name,age,height,color){
+       //arguments是将所有参数组成一个对象传递过去，所以最后还是以name,age,height,color挨着赋值
+       var tips = [name,age,height,color]; //可以封装数组，也可以封装对象
+       Animal.apply(this,tips);
+   }
+   Cat.prototype.type = "猫科动物";
+   var cat1 = new Cat("大毛",27,168,"黑色");
+   console.log(cat1.type);
+   3、prototype继承方法
+   function Animal(name,age,height,color){
+       this.name = name;
+       this.age = age;
+       this.height = height;
+       this.color = color;
+       this.say = function(){
+           return "动物的名字叫：" + name + "。高度是：" + height + "。年龄是：" + age + "。颜色是：" + color
+       }
+   }
+   function Cat(name,color){
+       this.name = name;
+       this.color = color;
+   }
+   Cat.prototype = new Animal();
+   var cat1 = new Cat("大毛","黄色");
+   console.log(cat1.constructor); //指向Animal，而不是Cat
+   注：此时cat1虽然是由Cat构造器生成的，但Cat的prototype指向了Animal构造器的一个实例，所以Cat的prototype指向Animal，
+   那生成的cat1也应该指向Animal。这显然会导致继承链的紊乱，所以需要手动加上Cat.prototype.constructor = Cat;
+   //当继承的属性在prototype上时，可以直接继承(不用通过new一个新的继承实例)eg：
+   function Animal(){}
+   Animal.prototype.type = "动物类"
+   function Cat(){}
+   Cat.prototype = Animal.prototype;
+   var cat1 = new Cat();
+   Cat.prototype.constructor = Cat;
+   console.log(cat1.type);
+   4、利用空对象作为中介（推荐使用）
+   function Animal(name,age,height,color){
+       this.name = name;
+       this.age = age;
+       this.height = height;
+       this.color = color;
+       this.say = function(){
+           return "动物的名字叫：" + name + "。高度是：" + height + "。年龄是：" + age + "。颜色是：" + color
+       }
+   }
+   function Cat(name,color){
+       this.name = name;
+       this.color = color;
+   }
+   function extend(Child, Parent) {
+       var F = function(){};	//空对象
+       F.prototype = Parent.prototype;
+       Child.prototype = new F();
+       Child.prototype.constructor = Child;
+       Child.uber = Parent.prototype;
+   }
+   extend(Cat,Animal);
+   var cat1 = new Cat("大毛","黄色");
+   console.log(cat1);
+   5、拷贝继承：把父对象的所有属性和方法，拷贝进子对象。
+   function Animal(){}
+   Animal.prototype.style = "动物的公共属性";
+   Animal.prototype.method = "动物的公共方法";
+   Animal.prototype.do = function(){
+       console.log("动物都可以运动");
+   };
+   function Cat(){}
+   function extend2(Child, Parent) {
+       var p = Parent.prototype;
+       var c = Child.prototype;
+       console.log(p);
+       for (var i in p) {	//将父对象的prototype对象中的属性，一一拷贝给Child对象的prototype对象
+           c[i] = p[i];
+       }
+       c.uber = p;
+   }
+   extend2(Cat, Animal);
+   var cat1 = new Cat("大毛","黄色");
+   6、浅拷贝继承.
+   var Chinese = {
+       nation:"Chinese",
+       face:"yellow",
+       birthPlace:["北京","上海","广州"]
+   }
+   function extendCopy(p) {
+       var c = {};
+       for (var i in p) {
+           c[i] = p[i];
+       }
+       c.uber = p;//可不用
+       return c;
+   }
+   var Doctor = extendCopy(Chinese);
+   Doctor.career = '医生';
+   Doctor.birthPlace.push("成都");
+   console.log(Doctor);
+   console.log(Chinese);
+   //注：浅拷贝的弊端，如Chinese中有一个birthPlace属性(数组),当我们在生成的Doctor往birthPlace中添加“成都”时，
+   此时的Chinese中也添加了“成都”(因为我们拷贝的birthPlace只是数组的一个引用，而不是真正的拷贝，最终指向的还是该数组)，
+   子属性修改影响到了父属性,解决方法：深拷贝
+   7、深拷贝继承(当copy的chinese属性是一个对象或者数组时，再次循环该数组或对象，达到更深的拷贝)
+   var Chinese = {
+       nation:"Chinese",
+       face:"yellow",
+       birthPlace:["北京","上海","广州"]
+   }
+   function deepCopy(p, c) {
+       var c = c || {};
+       for (var i in p) {
+           if (typeof p[i] === 'object') {	//判断是否为数组或对象
+               c[i] = (p[i].constructor === Array) ? [] : {};
+               deepCopy(p[i], c[i]);
+           } else {
+               c[i] = p[i];
+           }
+       }
+       return c;
+   }
+   var Doctor = deepCopy(Chinese);
+   Doctor.career = '医生';
+   Doctor.birthPlace.push("成都");
+   console.log(Doctor);
+   console.log(Chinese);
+   //注：此时的Doctor中的birthPlace中有“成都”，但Chinese中没有“成都”，因为我们将birthPlace以及对应的["北京","上海","广州"]全部拷贝了(正因为如此，所以该方法很占内存)
    
    es6方式：使用extends和super
    // 父类Foo
@@ -951,4 +1106,12 @@
     
     ```
 
-17. 虚位以待！
+17. #####  Proxy代理，参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+
+    ```js
+    Proxy用于修改某些操作的默认行为，等同与在语言层面做出修改，即对编程语言进行编程。
+    Proxy 可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。Proxy 这个词的原意是代理，用在这里表示由它来“代理”某些操作，可以译为“代理器”。
+    
+    ```
+
+18. 虚位以待！

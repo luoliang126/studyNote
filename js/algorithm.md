@@ -1,6 +1,6 @@
 # js算法
 
-1. ##### 数组的基本操作
+1. ##### 数组、字符串、对象的基本操作
 
    ```js
    数组添加
@@ -59,19 +59,6 @@
    console.log(newArr) // "1,2,3,4,5"
    console.log(arr) // [1,2,3,4,5]
    
-   字符串转数组
-   let str = 'ab+c+de';
-   let a = str.split('+');
-   let b = str.split('');
-   console.log(a) // [ab, c, de]
-   console.log(b) // [a,b,+,c,+,d,e]
-   console.log(str) // 'ab+c+de' 
-   注意：split拆分有返回值，返回值才是拆分后的结果，但原字符串并未改变。
-   特殊使用案例，使用位运算符实现：
-   let demo = "hello"
-   let str = [...demo];
-   console.log(str);// ["h", "e", "l", "l", "o"]
-   
    判断 数组/字符串 中是否包含某个值 indexOf / includes
    indexOf: 返回的是对应的索引，如果没有返回的是 -1
    let a = [1,2,3,4,5]
@@ -80,15 +67,6 @@
    let arr = [1,2,3,4,5]
    let res = arr.includes(2)
    console.log(res) // true
-   
-   判断一个对象是否为空对象？
-   let temp = {}
-   JSON.stringify(temp) == '{}' // 转换字符串方式
-   Object.keys(temp).length == 0 // 获取对象的keys,返回一个数组，如果为空则为[]，再判断其length值
-   
-   判断 字符串 是否以 xxx 开头 startsWith()，返回的是boolean
-   let a = 'luoliang'
-   console.log(a.startsWith('luo'))  // true
    
    判断数组中，元素是否满足需求 some / every
    some: 判断是否有一个满足即可，返回true/false
@@ -156,6 +134,135 @@
    });
    console.log(ar); // [6,7]
    由此可见find是找到一个，然后就返回该元素。filter是赛选出所有符合条件的元素，并返回一个新的数组。
+   
+   判断 字符串 是否以 xxx 开头 startsWith()，返回的是boolean
+   let a = 'luoliang'
+   console.log(a.startsWith('luo'))  // true
+   
+   字符串转数组
+   let str = 'ab+c+de';
+   let a = str.split('+');
+   let b = str.split('');
+   console.log(a) // [ab, c, de]
+   console.log(b) // [a,b,+,c,+,d,e]
+   console.log(str) // 'ab+c+de' 
+   注意：split拆分有返回值，返回值才是拆分后的结果，但原字符串并未改变。
+   特殊使用案例，使用位运算符实现：
+   let demo = "hello"
+   let str = [...demo];
+   console.log(str);// ["h", "e", "l", "l", "o"]
+   
+   字符串替换replace
+   1、replace字符串替换方法！
+   eg：let a = "aaabbbccc"
+   let b = a.replace("b","1")
+   console.log(b)  //  b -> aaa1bbccc 而这时的a -> aaabbbccc，不变！！！
+   上面我们可以看到replace值替换了 第一个，其余的未替换，如果想全部替换怎么办？
+   解决办法：结合正则匹配
+   let a = "aaabbbccc"
+   let b = aaa.replace(/b/g,'1') //    /s/g 全局匹配字符串中含有s的字符串
+   console.log(b)  // b -> aaa111ccc
+   2、假如 需要替换内容也是一个变量怎么办？
+   let ccc = "变量";
+   let reg = "/"+ccc+"/g";
+   let str = "这是一个变量，这是一个变量";
+   var val = str.replace(eval(reg),"替换"); // 这里使用eval函数，计算函数内部的值
+   console.log(val); // val -> "这是一个替换，这是一个替换"
+   也可以使用：
+   let ch = "/";
+   let str = "这是一/个变量，这是一个变量";
+   let val = str.replace(new RegExp(ch,'g'),"b");
+   console.log(val);  // val -> "这是一b个变量，这是一个变量"
+   
+   对象的访问方式：
+   var test = {
+       name:'luoliang'
+   }
+   1、‘.’访问方式
+   console.log(test.name);
+   2、‘ [] ’数组访问方式
+   console.log(test['name']);
+   两者的区别：总的来说性能各个方面区别不大，但各自有特定的访问地方。如：test['name']，当我们的key键值为一个数字时，就不能用‘.’访问，而只能用‘[]’;
+   var test = {
+       123:'luoliang'
+   }
+   console.log(test.123)      // 抛错
+   console.log(test['123'])   // luoliang
+   
+   对象权限设置
+   var person = {};
+   Object.defineProperty(person, 'name', {
+       configurable: false, //表示能否使用delete操作符删除从而重新定义，或能否修改为访问器属性。默认为true;
+       Enumberable:true, //表示是否可通过for-in循环返回属性。默认true;
+       writable: false, //表示是否可修改属性的值。默认true;
+       value: 'Luoliang' //表示name的属性值
+   });
+   console.log(person.name);//Luoliang
+   delete person.name; //不能删除掉
+   console.log(person.name);//Luoliang
+   person.name = 'bobo'; //也不能修改掉
+   console.log(person.name);//Luoliang
+   
+   对象的判断
+   1、constructor：每个实例化对象都有一个constructor指向构造他们的构造函数
+   class Person {
+       constructor(){}
+       getName(){}
+   }
+   let luoliang = new Person();
+   console.log(luoliang.constructor); // Person
+   2、instanceof:判断某个对象是否属于另外一个对象，或被另外一个对象所创建。要求其左边的是一个对象，右边是对象类的名字或构造函数
+   console.log(luoliang instanceof Person); // true
+   3、typeof：返回结果是一个基本数据类型。如："number"，"string"，"boolean"，"object"，"function"，"undefined"
+   typeof Person // 返回function，因为它是一个构造函数
+   typeof luoliang // 返回object
+   typeof 1、typeof NaN // 返回 number
+   typeof 'test' // 返回 string
+   typeof true   // 返回 boolean
+   typeof Null、typeof undefined  // 返回 undefined
+   4、isPrototypeOf: 判断某个proptotype对象和某个实例之间的关系
+   console.log(Person.prototype.isPrototypeOf(luoliang)); // true
+   5、hasOwnProperty：用来判断某一个属性到底是本地属性，还是继承自prototype对象的属性。
+   console.log(luoliang.hasOwnProperty("getName")); // false，因为getName属性是从原型Person的prototype中继承过来的
+   luoliang.getName = () => {}
+   console.log(luoliang.hasOwnProperty("getName")); // true，这是可以在实例luoliang对象上添加getName方法
+   6、in：用来判断，某个实例是否含有某个属性（包括自身属性和prototype上的属性）
+   console.log('getName' in luoliang) //true， luoliang本身已添加getName方法，继承的Person上也有getName方法(两种都行，使用时会用luolian本省的getName)
+   7、判断一个对象是否为空对象？
+   let temp = {}
+   JSON.stringify(temp) == '{}' // 转换字符串方式
+   Object.keys(temp).length == 0 // 获取对象的keys,返回一个数组，如果为空则为[]，再判断其length值
+   
+   对象的合并
+   obj1={a:1}
+   obj2={b:2}
+   1、for in循环赋值
+   for(var key in obj2){
+       //此处hasOwnProperty是判断自有属性，使用for in循环遍历对象的属性时，原型链上的所有属性都将被访问会避免原型对象扩展带来的干扰
+       if(obj2.hasOwnProperty(key)===true){
+           obj1[key] = obj2[key]; // 如果相同，则用obj2的覆盖obj1
+       }
+   }
+   console.log(obj1); // {a:1,b:2}
+   2、使用Object.assign(obj1,obj2,......)，是深拷贝的合并，而不是简单的变量引用！！！
+   for in 方法，在处理多个对象合并的时候就不那么友好了，解决办法使用Object.assign(target,sources1,sources2,...)方法。
+   该方法是将sources源合并到target中，并返回target对象。
+   let obj = Object.assign(obj1,obj2,......)
+   console.log(obj); // {a:1,b:2}
+   但该方法也存在一个问题obj1也被修改成了{a:1,b:2}
+   优化方案，修改target为空对象
+   let obj = Object.assign({},obj1,obj2,......)
+   console.log(obj); // {a:1,b:2}  此时的obj1还是{a:1}
+   obj,obj1,obj2是相互独立的变量和变量地址，如果修改各自的属性，都不会影响其他。
+   3、使用...展开符，再使用一个新对象包含
+   let obj3={a:3}
+   let newObj = {
+       ...obj1,
+       ...obj2,
+       ...obj3
+   }
+   console.log(newObj) // {a:3,b:2} 合并三个对象，如有相同靠后的会覆盖靠前的
+   ...操作符：用于取出参数对象中的所有可遍历属性，拷贝到当前对象之中，实际上就是Object.assign()操作
    ```
 
 2. ##### 数组的遍历

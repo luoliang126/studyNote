@@ -406,9 +406,11 @@
    </template>
    
    slot的作用域，父子通过slot-scope传递参数，参考：https://segmentfault.com/a/1190000012996217?utm_source=tag-newest
+   描述：组件的内容渲染，都是通过数据传递的，即子组件把样式写好，父组件传递数据给子组件，从而渲染。但有一种情况，数组的渲染，父组件传递一个数组给子组件，但是子组件渲染的时候，每一条数据的样式是固定的，但如果用户需要在父组件自定义？子组件怎样把数据再扔给父组件呢？slot-scope就派上用场了，类似element的table表格中的<template slot-scope="row">......</template>
+   // 子组件中，在插槽slot上使用 :data="data"传递数据给父组件，父组件再拿到数据，自定义渲染样式
    <div class="zz-header">
        <div class="zz-header-left">
-           <slot name="left" :data="data">
+           <slot name="left" :data="data"> // 这里可以使用其他属性，父组件保持一致即可
                <i class="zz-header-back"></i>
    			<span>返回</span>
    		</slot>

@@ -372,6 +372,7 @@
    数组去重5，配合Array.from和new Set。// 该方法不仅能去重，还能区别null，undefined，NaN
    let arr = [1,23,4,5,2,1,1,null,null,undefined,undefined,NaN,NaN]
    let res = Array.from(new Set(arr))  // new Set后，并非是一个数组，所以使用Array.from类似数组的对象转换为数组
+   let res1 = [...new Set(arr)] // new Set之后，使用展开符一样可以实现类数组转换为数组
    console.log(res); //[1, 23, 4, 5, 2, null, undefined, NaN]
    
    数组去重6，多数组的合并去重

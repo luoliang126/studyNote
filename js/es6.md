@@ -2,7 +2,7 @@
 
 参考：ECMAScript 6 入门 --阮一峰著 http://es6.ruanyifeng.com/
 
-1. ##### 声明变量使用
+1. ##### 变量声明、使用
 
    ```js
    1、es5之前声明一个变量用var，无论这个变量声明在哪？（花括号内，function内等）它都是一个全局的变量（变量提升），只是在执行上下文的时候，它才会被赋值。所以会造成一种现象，没有赋值过的变量，可以先使用。从严谨的方向说，显然不合理！所以引入了let声明。
@@ -35,44 +35,33 @@
        let a = 1;
        let a = 2; //抛错
    }
-   
    正确方法
    let a = 1;
    function test(){
        let a = 2;
    }
-   ```
-
-2. ##### const的使用
-
-   ```js
+   
+   5、const的使用
    const：申明一个只读的常量，一旦申明，常量的值就没法改变（只是引用地址不能改变，但可以往里面添加/删除数据，随后会详细解释）
    const的本质是：保证的并不是变量的值不得改动，而是变量指向的那个内存地址不得改动。
-   1、不能修改引用地址的情况
+   5.1、不能修改引用地址的情况
    const a = 1;
    a = 2;  //抛错 Assignment to constant variable.
-   
-   2、修改引用地址中的值，但未修改引用地址时，正确
+   5.2、修改引用地址中的值，但未修改引用地址时，正确
    const a = [];
    a.push(1);    //往数组中添加数据（可行），没有修改的值（引用地址未发生改变）
    console.log(a); //a=[1]
    a = [1];  //抛错，因为修改了引用地址
+   5.3、const的作用域和let的使用方法相同
    
-   3、const的作用域和let的使用方法相同
-   ```
-
-3. ##### 变量声明与赋值
-
-   ```js
-   1、单个变量赋值 
+   6、变量赋值
+   单个变量赋值 
    let a = 1;
    let b = 2;
    let c = 3;
-   
-   2、ES6语法(对号入座)
+   ES6语法(对号入座)
    let [a,b,c] = [1,2,3];  //和上面得到的一样效果
-   
-   3、逗号分隔
+   逗号分隔
    let a = 1,b = 2, c = 3;
    ```
 
@@ -747,7 +736,7 @@
    3、当然也可以使用最暴力的方式，直接扔参数，将当前环境的this已参数的方式传入。
    ```
 
-8. ##### async/await异步函数使用方法
+8. ##### async/await异步函数使用方法（其实是es7提出的）
 
    ```js
    1、首先申明一个异步函数，和一般的命名函数没多大区别，在前面加一个async即可（切记await必须要写在申明了async的函数内部，否则无法实现异步功能）
@@ -1020,7 +1009,7 @@
     9、严格模式中 call apply传入null undefined保持原样不被转换为window
     ```
 
-15. ##### Map类 使用方法
+13. ##### Map类 使用方法
 
     ```js
     Map结构提供了“值—值”的对应，是一种更完善的Hash结构实现。如果你需要“键值对”的数据结构，Map比Object更合适。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。
@@ -1097,13 +1086,94 @@
     console.log(map);
     console.log(obj);
     
-    总结：在开发过程中，涉及到数据结构，能使用Map 不使用Array 尤其是复杂的数据结构 ，如果对于数组的存储考虑唯一性 使用Set ，优先使用map 如果要求数据储存的唯一性使用Set 放弃使用Array。
+    总结：在开发过程中，涉及到数据结构，能使用Map不使用Array，尤其是复杂的数据结构，如果对于数组的存储考虑唯一性使用Set，如果要求数据储存的唯一性使用Set，放弃使用Array。
+    Map 和 WeakMap 是一种[键,值]的集合，Map的键可以是任意类型，WeakMap的键只能是对象类型
+    
+    WeakMap后续补充
     ```
 
-16. ##### Set 类的使用。参考：https://www.cnblogs.com/wjcoding/p/11690886.html
+14. ##### Set 类的使用。参考：https://www.cnblogs.com/wjcoding/p/11690886.html
 
     ```js
+    ES6 提供了新的数据结构 Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。
+    const set = new Set([1,2,1,2])
+    console.log(set) // {1,2} 可以看出Se 是可以去除数组中的重复元素
     
+    Set的属性
+    size: 返回集合中所包含的元素的数量
+    const set = new Set([1,2,1,2])
+    console.log(set.size) // 2
+    
+    Set的方法：
+    add(value): 向集合中添加一个新的项，无返回值
+    delete(value): 从集合中删除一个值，无返回值
+    has(value): 判断值是否存在集合中，返回ture/false
+    clear(): 移除集合中的所有项，无返回值
+    let set = new Set()
+    set.add(1)
+    set.add(2)
+    set.add(2)
+    set.add(3)
+    console.log(set) // {1,2,3} 这里第一次add的2，被第二次add的2覆盖掉了
+    set.has(2) // true
+    set.delete(2)
+    set.has(2) // false
+    set.clear() 
+    
+    遍历方法：
+    keys(): 返回键名的遍历器
+    values(): 返回键值的遍历器
+    entries(): 返回键值对的遍历器
+    forEach(): 使用回调函数遍历每个成员
+    let set = new Set([1,2,3,4]);
+    console.log(Array.from(set.keys())) // [1,2,3,4] console.log([...set.keys()]) 同样转换
+    console.log(Array.from(set.values())) // [1,2,3,4]
+    console.log(Array.from(set.entries())) //  [[1,1],[2,2],[3,3],[4,4]]
+    set.forEach((item) => { console.log(item)}) // 1,2,3,4
+    注意：由于set只有键值，没有键名，所以keys() values()行为完全一致
+    
+    应用场景：
+    1、去重，因为Set结构的值是唯一的，所以可以用来去重
+    let arr = [1, 1, 2, 3];
+    let arr1 = new Set(arr);
+    let arr2 = [...arr1];
+    console.log(arr) // [1,1,2,3]
+    console.log(arr1)
+    // 返回的是一个类数组（不是数组，也不是对象）
+    Set(3) {1, 2, 3}
+    [[Entries]]
+    0: 1
+    1: 2
+    2: 3
+    size: 3
+    __proto__: Set
+    console.log(arr2) // [1,2,3] 将类数组转换为数组
+    
+    2、取并集
+    let a = new Set([1, 2, 3]);
+    let b = new Set([4, 3, 2]);
+    let union = [...new Set([...a, ...b])]; // [1,2,3,4]
+    注意：两个数组的合并，需要展开[..a,...b]
+    
+    3、取交集
+    let a = new Set([1, 2, 3]);
+    let b = new Set([4, 3, 2]);
+    let intersect = [...new Set([...a].filter(x => b.has(x)))]; // [2,3]
+    
+    4、取差集（取的是，a数组中的值，没有包含在b数组中的值）
+    let a = new Set([1, 2, 3]);
+    let b = new Set([4, 3, 2]);
+    let difference = Array.from(new Set([...a].filter(x => !b.has(x)))); // [1]
+    
+    5、取不同时在a,b两数组中的值
+    let a = new Set([1, 2, 3]);
+    let b = new Set([4, 3, 2]);
+    let difference1 = Array.from(new Set([...a].filter(x => !b.has(x)))); // [1]
+    let difference2 = Array.from(new Set([...b].filter(x => !a.has(x)))); // [4]
+    let result = [...difference1,...difference2]; // [1,4]
+    
+    总结：Set、WeakSet 是[值,值]的集合，且具有唯一性。
+    WeakSet后续补充
     ```
 
 17. #####  Proxy代理，参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy

@@ -514,4 +514,94 @@
     2、闭包会在父函数外部，改变父函数内部变量的值。所以，如果你把父函数当作对象（object）使用，把闭包当作它的公用方法（Public Method），把内部变量当作它的私有属性（private value），这时一定要小心，不要随便改变父函数内部变量的值。
     ```
 
-13. 虚位以待！
+13. ##### 前端内存泄露
+
+    ```js
+    什么是内存泄漏？
+    程序的运行需要内存。只要程序提出要求，操作系统或者运行时（runtime）就必须供给内存。对于持续运行的服务进程（daemon），必须及时释放不再用到的内存。否则，内存占用越来越高，轻则影响系统性能，重则导致进程崩溃。不再用到的内存，没有及时释放，就叫做内存泄漏（memory leak）。
+    js提供自动内存管理，减轻程序员的负担，这被称为"垃圾回收机制"（garbage collector）。
+    
+    垃圾回收机制
+    最常使用的方法叫做"引用计数"（reference counting）：语言引擎有一张"引用表"，保存了内存里面所有的资源（通常是各种值）的引用次数。如果一个值的引用次数是0，就表示这个值不再用到了，因此可以将这块内存释放。
+    例如：
+    const arr = [1, 2, 3, 4];
+    console.log('hello world');
+    上面代码中，数组[1, 2, 3, 4]是一个值，会占用内存。变量arr是仅有的对这个值的引用，因此引用次数为1。尽管后面的代码没有用到arr，它还是会持续占用内存。
+    解决办法：arr = null;
+    arr重置为null，就解除了对[1, 2, 3, 4]的引用，引用次数变成了0，内存就可以释放出来了。
+    因此，并不是说有了垃圾回收机制，程序员就轻松了。你还是需要关注内存占用。那些很占空间的值，一旦不再用到，你必须检查是否还存在对它们的引用。如果是的话，就必须手动解除引用。
+    
+    怎样查看内存泄露情况？使用chrome浏览器的memery查看！！！，参考：http://www.ruanyifeng.com/blog/2017/04/memory-leak.html
+    
+    前端常见的内存泄露
+    1、闭包
+    function closure(){
+        var element = document.getElementById('mydiv');
+        var test = element.innerHTML;
+        // 给element添加了一个click事件
+        element.onclick = function () {
+            alert(test);
+        };
+    }
+    closure(); //element用完之后一直驻留在内存中
+    解决办法：
+    function closure(){
+        var element = document.getElementById('mydiv');
+        var test = element.innerHTML;
+        element.onclick = function () {
+             alert('test');
+        };
+        element = null;// 这里直接释放回收了
+    }
+    closure();
+    
+    2、意外的全局变量
+    function foo(arg) {
+        bar = "aaaaa";
+    }
+    // 实际上等价于
+    function foo(arg) {
+        window.bar = "aaaaa";
+    }
+    解决办法：
+    使用es6的let或者是使用严格模式。
+    
+    3、定时器
+    var data = getData();  
+    setInterval(function(){  
+        var node=document.getElementById("name");  
+        if(node){  
+            node.innerHTML=JSON.stringify(data)  
+        }  
+    },1000)
+    定时器，会常驻内存，所以要使用clearInterval清除
+    
+    4、vue中的生命周期中使用全局事件，然后没有做释放处理。$Bus总线方式
+    onCreate(){
+        bus.%on('')
+    },
+    解决办法：在销毁的时候，取消监听$off
+    beforeDestroy() {
+        bus.$off('****');
+    }
+    
+    5、vue中的keep-alive组件
+    有A，B两个路由，我们在做路由缓存的时候，A--》B，那么A路由的界面数据都会常驻内存，B返回的时候A保持不变。但是，假如A--》B后，B不返回到A呢？而是去了C路由，那么原来A的变量也会常驻内存，形成内存泄露。
+    解决办法：合理管理路由缓存，充分使用activated 和 deactivated两个钩子函数。
+    
+    6、echarts引起的内存泄漏
+    解决方法：
+    chart.dispose(myChart)
+    myChart = chart.init(document.getElementById(dom));
+    myChart.setOption(option);
+    
+    总结：工作当中遇到的还有很多，但总结就是一种，变量的滥用，所以合理的代码规范很重要！！！
+    ```
+
+14. ##### 微前端实现方式
+
+    ```js
+    
+    ```
+
+15. 虚位以待！

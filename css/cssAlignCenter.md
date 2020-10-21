@@ -1,4 +1,4 @@
-# css居中对齐
+# css对齐
 
 - ##### 水平居中对齐
 
@@ -114,3 +114,17 @@ vertical-align:middle
 ```
 
 - ##### flex布局（设为Flex布局以后，子元素的float、clear和vertical-align属性将失效。）
+
+- ##### div右对齐
+
+  ```
+  <div algin="center">
+  	<div style="width:100px"></div>
+      <div style="width:200px"></div>
+  </div> 
+  div内部的块级元素居中对齐
+  right：右对齐
+  left：左对齐（默认）
+  ```
+
+- 虚位以待！！！

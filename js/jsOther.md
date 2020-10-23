@@ -429,4 +429,251 @@
    document.onpaste = function(){ return false; };
    ```
 
-9. 虚位以待！！！
+9. ##### js图片压缩
+
+   ```js
+   image-compressor.js  参考：http://www.imooc.com/article/40038
+   安装：
+   npm install image-compressor.js // 注意是image-compressor.js 不是 image-compressor那是另一个包
+   使用：
+   import ImageCompressor from 'image-compressor.js'
+   new ImageCompressor([file[, options]])
+   eg:
+   new ImageCompressor(fileObject, { // fileObject,是input type='file'上传的文件对象
+       quality: .6,    // 压缩图片质量，值越大越高清，但size越大（一般0.6 -- 0.8）
+       maxHeight:4096, // 最大分辨率的 高/宽
+       maxWidth:4096,
+       success(result) {
+           resolve(result);
+       },
+       error(e) {
+           console.log(e.message);
+           resolve(fileObject);
+       }
+   })
+   更多options参数：
+   checkOrientation:true // 是否检查图片的 orientation 属性，类型是 boolean。默认值是 true。注意：不要一直相信这一点，因为一些JPEG图像有不正确的（不是标准的） orientation 属性，所以会自动旋转/翻转 图片
+   width、height、maxWidth、maxHeight、minWidth、minHeight  // 输出图像的宽度、高度、最大宽度、最大高度、最小宽度、最小高度。类型是number。
+   quality:0.6  // 输出图像的画质，类型是 number。默认值是 undefined。值是0到1之间的数字。
+   mimeType:auto  // 输出图像的文件类型，类型是 string。默认值是 auto。默认情况下，源映像文件的原始MIME类型将被使用。
+   convertSize  // 输出图像的文件类型，类型是 number。默认值是 5000000 (5MB)。
+   beforeDraw(context, canvas){......} // 在将图像绘制到画布中进行压缩之前，要执行的钩子函数，类型是 Function。默认值是 null。
+   new ImageCompressor(file, {
+       ......
+       beforeDraw(context,canvas) {
+           // context: canvas的2D渲染上下文。
+       	// canvas: 压缩画布
+           context.fillStyle = '#fff';
+       },
+   });
+   drew(context, canvas){......} // 该钩子函数执行后，将图像绘制到画布中进行压缩，类型是 Function。默认值是 null。
+   new ImageCompressor(file, {
+       drew(context,canvas) {
+           // context: canvas的2D渲染上下文。
+       	// canvas: 压缩画布
+           context.filter = grayscale(100%);
+   	},
+   });
+   success(result){ // 成功压缩图像时执行的钩子函数，类型是 Function。默认值是 null。
+   	// result: 压缩后的图像(一个Blob对象)。
+       console.log(result);
+   }
+   error(err){ // 压缩图像失败时执行的钩子函数，类型是 Function。默认值是 null。
+   	// err: 压缩错误(一个Error对象)。
+       console.log(err);
+   }
+   ```
+
+10. ##### js导出table表格数据为excel，参考：https://blog.csdn.net/qq_41728540/article/details/79709998
+
+    ```js
+    
+    ```
+
+11. ##### js数据校验
+
+    ```js
+    参数提交校验validata.js
+    function isValidDate(DateStr) {
+        if (!DateStr) return false;
+        var sDate = DateStr.replace(/(^\s+|\s+$)/g, '')
+        if (sDate === '') {
+            return true;
+        }
+        var s = sDate.replace(/[\d]{ 4,4 }[\-/]{1}[\d]{1,2}[\-/]{1}[\d]{1,2}/g, '')
+        if (s === '') {
+            var t = new Date(sDate.replace(/\-/g, '/'))
+            var ar = sDate.split(/[-/:]/)
+            if (ar[0] !== t.getYear() || ar[1] !== t.getMonth() + 1 || ar[2] !== t.getDate()) {
+                return false
+            }
+        } else {
+            return false
+        }
+        return true
+    }
+    function isObject(o) {
+        var gettype = Object.prototype.toString
+        return gettype.call(o) === '[object Object]'
+    }
+    function getItsVal(object, key) {
+        if (!key)
+            return null
+        var val = null
+        if (key && typeof(key) === "function") {
+            val = key(object)
+        } else {
+            val = getPropertyValue(object, key)
+        }
+        return val
+    }
+    function getPropertyValue(object, key) {
+        try {
+            var keys = key.split('.')
+            if (keys.length == 1) {
+                return object[key]
+            }
+            var nextKeys = key.substring(key.indexOf('.') + 1)
+            var nextObject = object[keys[0]]
+            return getPropertyValue(nextObject, nextKeys)
+        } catch (e) {
+            return null
+        }
+    }
+    function isEmpty(val) {
+        // if (isValidDate(val)) {
+        //     return false
+        // }
+        if (isObject(val)) {
+            return Object.keys(val).length === 0
+        }
+        return !val
+    }
+    function isValid(val, regExp) {
+        console.log(val)
+        var pattern = new RegExp(regExp, 'im')
+        console.log(pattern.test(val))
+        return !pattern.test(val);
+    }
+    function dateTransform(date) {
+        // var date=new Date(date).getTime();
+        var curdate = new Date(typeof(date) == "string" ? date.replace(/-/g, '/') : date);
+        return curdate.getTime();
+    }
+    var validator = function(model, validatorConfig) {
+        for (var key in validatorConfig) {
+            var rule = validatorConfig[key];
+            var description = typeof(rule.description) == "function" ? rule.description(model) : rule.description;
+            var preCondition = rule.preCondition;
+    
+            var val = getItsVal(model, rule.getVal || key)
+    
+            // required
+            if (
+                (preCondition == undefined || (preCondition && preCondition(model))) &&
+                rule.required && isEmpty(val)) {
+                // toast(description)
+                // return false;
+                return {
+                    status: false,
+                    msg: description
+                }                 
+            }
+            // regExp
+            if (
+                (preCondition == undefined || (preCondition && preCondition(model))) &&
+                rule.regExp && isValid(val, rule.regExp)) {
+                // toast(rule.regExpMsg)
+                // return false;
+                return {
+                    status: false,
+                    msg: rule.regExpMsg
+                }                
+            }
+            //expression
+            if (
+                (preCondition == undefined || (preCondition && preCondition(model))) &&
+                rule.expression && rule.expression(model)) {
+                // toast(rule.expressionMsg)
+                // return false;
+                return {
+                    status: false,
+                    msg: rule.expressionMsg
+                }
+            }                                                                     
+        }
+        return {
+            status: true
+        }
+    }
+    export default validator
+    
+    使用时：
+    import validator from './validata.js';
+    let params = {
+        invoiceItem:'测试单位开票',
+    	qty: 10,
+        amount: 100,
+    }
+    let validateConfig = {
+        'invoiceItem':{
+            required: true,
+            description: '开票项目不能为空',
+        },
+        'qty':{
+            required: true,
+            description: '数量不能为空',
+            regExp:/^[1-9]\d*$/,
+            regExpMsg:'请填写正确数量' ,
+        },
+        'amount':{
+            required: true,
+            description: '含税总金额不能为空',
+            regExp:/^(([1-9][0-9]*)|(([0]\.\d{1,2}|[1-9][0-9]*\.\d{1,2})))$/,
+            regExpMsg:'请填写正确含税总金额' ,
+        },
+        // 自定义，表达式
+        'dtStart': {
+            required: true,
+            description: '开始时间不能为空',
+            expression: function(m){
+                return new Date(m.dtStart) >= new Date(m.dtEnd)
+            },
+            expressionMsg:'开始时间不能大于结束时间'        
+        },
+        // 数据嵌套 情况
+        'itsItemData.refer':{
+            required: false,
+            expression: function(m){
+                return !m.itsItemData.refer&&(m.itsSuppliersV2?!m.itsSuppliersV2.length:!m.itsSuppliersV2)
+            },
+            expressionMsg:'请选择至少一个供应商'
+        },
+    }
+    let result = this.$validate(params,validateConfig);
+    if(!result.status){
+        this.$toast(result.msg)
+        return;
+    }
+    当然，在具体项目中使用时，validateConfig应该抽离成一个单独的js文件
+    
+    elementui的 form表单验证，参考：https://blog.csdn.net/yytoo2/article/details/82626219
+    dataForm:{
+        name:'',
+    	age:'',
+    	human:{
+            hobby:'美女',
+    		sex:'男'
+        }
+    }
+    验证human.hobby
+    rules:{
+        'human.hobby':[
+            { type: "string", required: true, message: '请填写爱好', trigger: 'blur' },
+            ......
+        ],
+        'human.sex':{ type: "string",required: true, message: '请填写性别', trigger: 'blur'},
+    }
+    ```
+
+12. 虚位以待！！！

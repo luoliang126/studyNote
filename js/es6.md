@@ -1012,7 +1012,7 @@
 13. ##### Map类 使用方法
 
     ```js
-    Map结构提供了“值—值”的对应，是一种更完善的Hash结构实现。如果你需要“键值对”的数据结构，Map比Object更合适。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。
+    Map结构提供了“键—值”的对应，是一种更完善的Hash结构实现。如果你需要“键值对”的数据结构，Map比Object更合适。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。
     1、使用
     let map = new Map();
     let obj = {name:1};
@@ -1176,12 +1176,299 @@
     WeakSet后续补充
     ```
 
-17. #####  Proxy代理，参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+15. #####  Proxy代理，参考：https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy
 
     ```js
-    Proxy用于修改某些操作的默认行为，等同与在语言层面做出修改，即对编程语言进行编程。
-    Proxy 可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。Proxy 这个词的原意是代理，用在这里表示由它来“代理”某些操作，可以译为“代理器”。
+    Proxy用于修改某些操作的默认行为，等同于在语言层面做出修改，即对编程语言进行编程。
+    Proxy 可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截。因此提供了一种机制，可以对外界的访问进行过滤和改写。Proxy 这个词的原意是代理，用在这里表示由它来“代理”某些操作，可以译为“代理器”。
     
+    1、基本使用：
+    var proxy = new Proxy(target, handler);
+    // new Proxy()表示生成一个Proxy实例，target参数表示所要拦截的目标对象，handler参数也是一个对象，用来定制拦截行为
+    实例：
+    var target = {
+    	name: 'poetries'
+    };
+    var logHandler = {
+        get: function(target, key) {
+            console.log(`${key} 被读取`);
+            return target[key];
+        },
+        set: function(target, key, value) {
+            console.log(`${key} 被设置为 ${value}`);
+            target[key] = value;
+            return true;
+        }
+    }
+    var targetWithLog = new Proxy(target, logHandler);
+    targetWithLog.name; // 控制台输出：name 被读取
+    targetWithLog.name = 'others'; // 控制台输出：name 被设置为 others
+    console.log(target.name); // 控制台输出: others
+    // 由实例可以看出，一个对象的拦截只有生成new Proxy()对象后，才有拦截效果，其原始对象仍然不变。
+    注意：在设置对象代理的时候，代理器的get,set操作，最后一定要返回一个值，否则在严格模式下会抛错！！！，如果return false会阻塞进程！！！
+    当然在定义一个空对象的时候，依然可以代理，这个根据实际使用情况而定！！！
+    var proxy = new Proxy({}, {
+        get: function(target, property) {
+            return 35;
+        }
+    });
+    
+    2、Proxy所能代理的范围--handler
+    实际上handler本身就是ES6所新设计的一个对象。它的作用就是用来：自定义代理对象的各种可代理操作。它本身一共有13中方法,每种方法都可以代理一种操作
+    // 在读取代理对象的原型时触发该操作，比如在执行 Object.getPrototypeOf(proxy) 时。
+    handler.getPrototypeOf()
+    // 在设置代理对象的原型时触发该操作，比如在执行 Object.setPrototypeOf(proxy, null) 时。
+    handler.setPrototypeOf()
+    // 在判断一个代理对象是否是可扩展时触发该操作，比如在执行 Object.isExtensible(proxy) 时。
+    handler.isExtensible()
+    // 在让一个代理对象不可扩展时触发该操作，比如在执行 Object.preventExtensions(proxy) 时。
+    handler.preventExtensions()
+    // 在获取代理对象某个属性的属性描述时触发该操作，比如在执行 Object.getOwnPropertyDescriptor(proxy, "foo") 时。
+    handler.getOwnPropertyDescriptor()
+    // 在定义代理对象某个属性时的属性描述时触发该操作，比如在执行 Object.defineProperty(proxy, "foo", {}) 时。
+    andler.defineProperty()
+    // 在判断代理对象是否拥有某个属性时触发该操作，比如在执行 "foo" in proxy 时。
+    handler.has()
+    // 在读取代理对象的某个属性时触发该操作，比如在执行 proxy.foo 时。
+    handler.get()
+    // 在给代理对象的某个属性赋值时触发该操作，比如在执行 proxy.foo = 1 时。
+    handler.set()
+    // 在删除代理对象的某个属性时触发该操作，比如在执行 delete proxy.foo 时。
+    handler.deleteProperty()
+    // 在获取代理对象的所有属性键时触发该操作，比如在执行 Object.getOwnPropertyNames(proxy) 时。
+    handler.ownKeys()
+    // 在调用一个目标对象为函数的代理对象时触发该操作，比如在执行 proxy() 时。
+    handler.apply()
+    // 在给一个目标对象为构造函数的代理对象构造实例时触发该操作，比如在执行new proxy() 时。
+    handler.construct()
+    
+    3、Proxy的作用
+    3.1、拦截和监视外部对对象的访问
+    3.2、降低函数或类的复杂度
+    3.3、在复杂操作前对操作进行校验或对所需资源进行管理
+    
+    4、Proxy的应用场景
+    4.1、实现私有变量
+    var target = {
+        name: 'poetries',
+        _age: 22  //　以‘＿’开头的变量一般认为是私有变量
+    }
+    var logHandler = {
+        get: function(target,key){
+            if(key.startsWith('_')){
+                console.log('私有变量age不能被访问')
+                return false
+            }
+            return target[key];
+        },
+        set: function(target, key, value) {
+            if(key.startsWith('_')){
+                console.log('私有变量age不能被修改')
+                return false
+            }
+            target[key] = value;
+    		return true;
+        }
+    } 
+    var targetWithLog = new Proxy(target, logHandler);
+    // 私有变量age不能被访问
+    targetWithLog.name; 
+    // 私有变量age不能被修改
+    targetWithLog.name = 'others';
+    console.log(target._age) // 22
+    
+    4.2、抽离校验模块。
+    一个简单的校验模块
+    let numericDataStore = {  
+        count: 0,
+        amount: 1234,
+        total: 14
+    };
+    let numericDataStoreProxy = new Proxy(numericDataStore, {  
+        set(target, key, value, proxy) {
+            if (typeof value !== 'number') {
+                throw Error("Properties in numericDataStore can only be numbers");
+            }
+            return Reflect.set(target, key, value, proxy);
+        }
+    });
+    numericDataStoreProxy.count = "foo"; // 抛错，因为"foo"不是number
+    numericDataStoreProxy.count = 333; // 赋值成功
+    
+    如果要直接为对象的所有属性开发一个校验器可能很快就会让代码结构变得臃肿，使用Proxy则可以将校验器从核心逻辑分离出来自成一体。
+    function createValidator(target, validator) {  
+        return new Proxy(target, {
+            _validator: validator,
+            set(target, key, value, proxy) {
+                if (target.hasOwnProperty(key)) {
+                    let validator = this._validator[key];
+                    if (!!validator(value)) {
+                        return Reflect.set(target, key, value, proxy);
+                    } else {
+                        throw Error(`Cannot set ${key} to ${value}. Invalid.`);
+                    }
+                } else {
+                    throw Error(`${key} is not a valid property`)
+                }
+            }
+        });
+    }
+    const personValidators = {  
+        name(val) {
+            return typeof val === 'string';
+        },
+        age(val) {
+            return typeof age === 'number' && age > 18;
+        }
+    }
+    class Person {  
+        constructor(name, age) {
+            this.name = name;
+            this.age = age;
+            return createValidator(this, personValidators);
+        }
+    }
+    const bill = new Person('Bill', 25);
+    // 以下操作都会报错
+    bill.name = 0;  
+    bill.age = 'Bill';  
+    bill.age = 15;
+    
+    通过校验器和主逻辑的分离，你可以无限扩展 personValidators 校验器的内容，而不会对相关的类或函数造成直接破坏。更复杂一点，我们还可以使用 Proxy 模拟类型检查，检查函数是否接收了类型和数量都正确的参数
+    let obj = {  
+        pickyMethodOne: function(obj, str, num) { /* ... */ },
+        pickyMethodTwo: function(num, obj) { /*... */ }
+    };
+    const argTypes = {  
+        pickyMethodOne: ["object", "string", "number"],
+        pickyMethodTwo: ["number", "object"]
+    };
+    obj = new Proxy(obj, {  
+        get: function(target, key, proxy) {
+            var value = target[key];
+            return function(...args) {
+                var checkArgs = argChecker(key, args, argTypes[key]);
+                return Reflect.apply(value, target, args);
+            };
+        }
+    });
+    function argChecker(name, args, checkers) {  
+        for (var idx = 0; idx < args.length; idx++) {
+            var arg = args[idx];
+            var type = checkers[idx];
+            if (!arg || typeof arg !== type) {
+                console.warn(`You are incorrectly implementing the signature of ${name}. Check param ${idx + 1}`);
+            }
+        }
+    }
+    obj.pickyMethodOne();
+    obj.pickyMethodTwo("wopdopadoo", {});  
+    obj.pickyMethodOne({}, "a little string", 123);  
+    obj.pickyMethodOne(123, {});
+    
+    4.3、访问日志
+    对于那些调用频繁、运行缓慢或占用执行环境资源较多的属性或接口，开发者会希望记录它们的使用情况或性能表现，这个时候就可以使用 Proxy 充当中间件的角色，轻而易举实现日志功能（实例有问题，有待验证！！！）
+    let api = {  
+        _apiKey: '123abc456def',
+        getUsers: function() { /* ... */ },
+        getUser: function(userId) { /* ... */ },
+        setUser: function(userId, config) { /* ... */ }
+    };
+    function logMethodAsync(timestamp, method) {  
+        setTimeout(function() {
+            console.log(`${timestamp} - Logging ${method} request asynchronously.`);
+        }, 0)
+    }
+    api = new Proxy(api, {  
+        get: function(target, key, proxy) {
+            var value = target[key];
+            return function(...arguments) {
+                logMethodAsync(new Date(), key);
+                return Reflect.apply(value, target, arguments);
+            };
+        }
+    });
+    api.getUsers();
+    
+    4.4、预警和拦截
+    假设你不想让其他开发者删除 noDelete 属性，还想让调用 oldMethod 的开发者了解到这个方法已经被废弃了，或者告诉开发者不要修改 doNotChange 属性，那么就可以使用 Proxy 来实现
+    let dataStore = {  
+        noDelete: 1235,
+        oldMethod: function() {/*...*/ },
+        doNotChange: "tried and true"
+    };
+    const NODELETE = ['noDelete'];  
+    const NOCHANGE = ['doNotChange'];
+    const DEPRECATED = ['oldMethod'];  
+    dataStore = new Proxy(dataStore, {  
+        set(target, key, value, proxy) {
+            if (NOCHANGE.includes(key)) {
+                throw Error(`Error! ${key} is immutable.`);
+            }
+            return Reflect.set(target, key, value, proxy);
+        },
+        deleteProperty(target, key) {
+            if (NODELETE.includes(key)) {
+                throw Error(`Error! ${key} cannot be deleted.`);
+            }
+            return Reflect.deleteProperty(target, key);
+    
+        },
+        get(target, key, proxy) {
+            if (DEPRECATED.includes(key)) {
+                console.warn(`Warning! ${key} is deprecated.`);
+            }
+            var val = target[key];
+    
+            return typeof val === 'function' ?
+                function(...args) {
+                    Reflect.apply(target[key], target, args);
+                } : val;
+        }
+    });
+    dataStore.doNotChange = "foo";  
+    delete dataStore.noDelete;  
+    dataStore.oldMethod();
+    
+    4.5、过滤操作
+    某些操作会非常占用资源，比如传输大文件，这个时候如果文件已经在分块发送了，就不需要在对新的请求作出相应（非绝对），这个时候就可以使用 Proxy 对当请求进行特征检测，并根据特征过滤出哪些是不需要响应的，哪些是需要响应的。下面的代码简单演示了过滤特征的方式，并不是完整代码，相信大家会理解其中的妙处
+    let obj = {  
+        getGiantFile: function(fileId) {/*...*/ }
+    };
+    obj = new Proxy(obj, {  
+        get(target, key, proxy) {
+            return function(...args) {
+                const id = args[0];
+                let isEnroute = checkEnroute(id);
+                let isDownloading = checkStatus(id);      
+                let cached = getCached(id);
+    
+                if (isEnroute || isDownloading) {
+                    return false;
+                }
+                if (cached) {
+                    return cached;
+                }
+                return Reflect.apply(target[key], target, args);
+            }
+        }
+    });
+    
+    4.6、中断代理
+    Proxy支持随时取消对target的代理，这一操作常用于完全封闭对数据或接口的访问。使用了Proxy.revocable方法可以创建、撤销代理的代理对象
+    let sensitiveData = { username: 'devbryce' };
+    const {sensitiveData, revokeAccess} = Proxy.revocable(sensitiveData, handler);
+    function handleSuspectedHack(){  
+        revokeAccess();
+    }
+    console.log(sensitiveData.username);
+    handleSuspectedHack();
+    console.log(sensitiveData.username);
+    
+    5、在上面的实例中，我们常用到Reflect，它是什么呢？ 参考：https://blog.csdn.net/jianghao233/article/details/80175845
+    
+    
+    提示：据说vue3.0版本的数据响应双向绑定就是使用的Proxy方式（有待验证！！！）
     ```
 
 18. 虚位以待！

@@ -28,4 +28,10 @@
    直接使用 app.globalData
    ```
 
-2. 虚位以待！
+2. 微信调用登录接口方法
+
+   ```js
+   第三方调用微信登陆。 参考：https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419316505&token=&lang=zh_CN
+   ```
+
+3. 虚位以待！

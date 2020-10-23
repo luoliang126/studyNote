@@ -124,6 +124,7 @@
    
    使用方法三：symbol可以使用本地包模式，也可以使用线上模式，需要引入一个js文件，就在定义图标那里生成！！！
    在项目的index.html中直接引入该js即可。
+   注意：通过https，http都可同时引入，唯一不同的是，ios系统无法识别http，所以建议都用https。
    ```
 
 3. ##### 滚动条样式
@@ -256,4 +257,30 @@
    
    ```
 
-5. 虚位以待！！！
+5. ##### 横向滚动css实现方法，参考：https://blog.csdn.net/w390058785/article/details/80373154
+
+   ```css
+   父元素
+   .item{
+       overflow-x: auto;
+       white-space:nowrap;
+   }
+   可以配合使用取消横向滚动条，效果更佳
+   ```
+
+6. ##### border-radius
+
+   ```css
+   1、一个值的时候
+   border-radius:10px  // 四周圆角10px
+   
+   2、两个值的时候
+   border-radius:10px 0px; // 分别为左上、右下为10px，右上、左下为0px
+   
+   3、四个值的时候
+   border-radius:10px 10px 0 0 // 分别为左上、右上、右下、左下
+   ```
+
+   
+
+7. 虚位以待！！！

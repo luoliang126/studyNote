@@ -42,15 +42,6 @@
    解决办法： this.$set(userObject,'userInfo',response)
    ```
 
-3. ##### vue-cli3发布一个npm包 参考：https://www.cnblogs.com/jasonwang2y60/p/11382349.html
-
-   ```js
-   1、创建项目
-   vue create myProgramme
-   
-   2、
-   ```
-
 4. ##### vue源码笔记 
 
    ```js
@@ -1536,12 +1527,12 @@ elementUI中表格错位，优化方案
     //详解
     el: 指令所绑定的元素，可以用来直接操作 DOM 。
     binding: 一个对象，包含以下属性：
-    name: 指令名，不包括 v- 前缀。
-    value: 指令的绑定值， 例如： v-my-directive="1 + 1", value 的值是 2。
-    oldValue: 指令绑定的前一个值，仅在 update 和 componentUpdated 钩子中可用。无论值是否改变都可用。
-    expression: 绑定值的字符串形式。 例如 v-my-directive="1 + 1" ， expression 的值是 "1 + 1"。
-    arg: 传给指令的参数。例如 v-my-directive:foo， arg 的值是 "foo"。
-    modifiers: 一个包含修饰符的对象。 例如： v-my-directive.foo.bar, 修饰符对象 modifiers 的值是 { foo: true, bar: true }。
+        name: 指令名，不包括 v- 前缀。
+        value: 指令的绑定值， 例如： v-my-directive="1 + 1", value 的值是 2。
+        oldValue: 指令绑定的前一个值，仅在 update 和 componentUpdated 钩子中可用。无论值是否改变都可用。
+        expression: 绑定值的字符串形式。 例如 v-my-directive="1 + 1" ， expression 的值是 "1 + 1"。
+        arg: 传给指令的参数。例如 v-my-directive:foo， arg 的值是 "foo"。
+        modifiers: 一个包含修饰符的对象。 例如： v-my-directive.foo.bar, 修饰符对象 modifiers 的值是 { foo: true, bar: true }。
     vnode: Vue 编译生成的虚拟节点，查阅 VNode API 了解更多详情。（可以在vnode.context中查看vue的实例对象即this）
     oldVnode: 上一个虚拟节点，仅在 update 和 componentUpdated 钩子中可用。
     
@@ -2081,6 +2072,41 @@ elementUI中表格错位，优化方案
             ......
         });
     }
+                       
+    9、vue-cli3兼容ie问题，参考：https://refined-x.com/2018/12/04/VueCLI3%20%E5%85%BC%E5%AE%B9%E6%80%A7%E9%85%8D%E7%BD%AE/
+    9.1、如果确切知道有兼容性问题的依赖包名，可以配置项目根目录下的vue.config.js（默认不存在），将依赖包名添加到transpileDependencies键中，这会为该依赖同时开启语法语法转换和根据使用情况检测 polyfill。例如：
+    module.exports = {
+    	transpileDependencies: ["vue-plugin-load-script"]       // 需要编译的依赖包名
+    }
+    9.2、如果确切的知道需要转译的语言特性，可以配置根目录下的babel.config.js，为presets的值添加所需要的 polyfill，例如：
+    module.exports = {
+        presets: [
+            ['@vue/app', {
+                polyfills: [
+                    'es6.symbol'
+                ]
+            }]
+        ]
+    }
+    9.3、然而更多的情况是，我们并不确切的知道项目中引发兼容问题的具体原因，这时还可以配置为根据兼容目标导入所有 polyfill，需要设置babel.config.js为：
+    module.exports = {
+        presets: [
+            ['@vue/app', {
+                useBuiltIns: 'entry'
+            }]
+        ]
+    }
+    9.4、同时在入口文件（main.js）第一行添加
+    import '@babel/polyfill'
+        
+    10、vue-cli3 项目运行时，如果app.js超过244kb就会warn警告，limit限制
+    解决办法：
+    在vue.config.js中
+    overlay: {
+        warnings: false,
+    	errors: true
+    }, // 错误、警告在页面弹出
+    将overlay中的warnings暂时修改为false，只为能使用，最根本的解决办法还未找到？？？
     ```
 
 16. 虚位以待！！！

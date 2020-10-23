@@ -120,6 +120,17 @@
    8.3、map文件一般比较大，打包的时候会影响打包速度（建议禁止打包map文件）取消map打包方法：
    productionSourceMap: false,
    
+   9、vue-cli3配置多个运行环境  参考：https://www.cnblogs.com/webtaotao/p/13540956.html
+   9.1、首先在项目目录下创建不同的.env文件(目前我们讨论 开发环境 dev,测试环境test,发布环境 prod) 所以我们创建如下三个文件(.env.prod、.env.test、.env.development)，如果需要其他环境 按照以上描述，继续创建.env.XXX环境名称
+   9.2、配置三个文件（以devement为例）
+   ENV = 'development'
+   port = 9549
+   VUE_APP_API_URL = 'http://61.240.148.87:8309'
+   // 当然，如果还有更多的环境变量，接口地址等，可以继续配置
+   9.3、完成以上所需环境配置之后改写 package.json中的运行命令
+   "dev": "vue-cli-service serve --mode development",
+   "ch": "vue-cli-service serve --mode ch",
+   "build": "vue-cli-service build"
    ```
 
 3. 虚位以待！！！

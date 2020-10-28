@@ -5,7 +5,7 @@
 1. ##### 本地存储
 
    ```js
-   1、cookie（不属于h5，在之前就已经有cookie了）
+   1、cookie（不属于h5，在之前就已经有cookie）
    let userName = 'luoliang';
    document.cookie = "userName" + "=" + userName;
    1.1、cookie取值：

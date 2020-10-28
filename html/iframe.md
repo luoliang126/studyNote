@@ -86,7 +86,7 @@
       let data = {
           name:'luoliang'
       }
-  window.parent.postMessage(data,"*");
+  	window.parent.postMessage(data,"*");
   </script>
   在a.html中
   window.addEventListener('message',function(rs){

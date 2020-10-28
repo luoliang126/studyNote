@@ -1788,7 +1788,7 @@ elementUI中表格错位，优化方案
     indicator.open() // 这样loading效果就会出来了。
     
     方法二：
-    在方法一中，只是简单的创建一个实例DOM，并添加到body中，通过v-show来控制组件显示/隐藏。但像Dialog嵌套等组件，不能控制层级与销毁。
+    在方法一中，只是简单的创建一个实例DOM，并添加到body中，通过v-show来控制组件显示/隐藏。但像Dialog嵌套等组件，不能控制其销毁，解决方案：
     1、定义组件，和平时组件没多大区别，只是在method中需要暴露一个方法，用于接收参数
     <template>
         <div v-show="visible">
@@ -1898,6 +1898,40 @@ elementUI中表格错位，优化方案
             console.log('取消！')
         }
     });
+    
+    方法三：
+    在上面的一种方法中，解决了组件销毁问题，但是一个组件既要支持挂载DOM节点渲染，同时也应该支持JS动态渲染，解决办法：
+    const initMessageBox = function(options) {
+        let instance = new messageBoxConstructor({
+            el: document.createElement('div'),
+            propsData:{ ...options }
+        });
+        return instance;
+    }
+    // 注意：这里是propsData就是组件中的props，合并options参数到实例化的props中。这里还有一个点，如果propsData传递的参数，在实例化组件的props中没有定义的话，是不能挂载的（即便传递了，合并时会过滤掉）！！！
+    const showDialog = function(options) {
+        const {
+            callbackMethod = function(res){}
+        } = options;
+        const instance = initDialog(options);
+    
+        let el = options.mountDom || document.body;
+        el.appendChild(instance.$el);
+        // 监听实例上的按钮(确定、取消等)
+        instance.$on("callbackMethod", function(res) {
+            callbackMethod(res);
+            destroyDialog(instance);
+        })
+    }
+    // 挂载点,如果传入了挂载点（options.mountDOM），就使用该挂载点，否则就是全局document.body。注意这里是appendChild，而不是innerHTML。实例挂载还可以使用：instance.$mount(document.body)方法。
+    const destroyDialog = function(instance) {
+        if(!instance) {
+            return;
+        }
+        instance.$destroy();
+        instance.mountDom.removeChild(instance.$el);
+    }
+    // 销毁组件时，是指定DOM的销毁，如果没有就是document.body
     ```
 
 14. ##### vue中DOM操作

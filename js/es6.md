@@ -951,10 +951,11 @@
     4、混合解构
     ```
 
-12. ##### 可选链操作符
+10. ##### 可选链操作符
 
     ```js
-    ECMAScipt机构还在审核阶段，各浏览器暂时不支持！ https://www.jianshu.com/p/2852b6efed8e
+    ECMAScript机构还在审核阶段，各浏览器暂时不支持！ https://www.jianshu.com/p/2852b6efed8e
+    ES11即ECMAScript2020已经正式通过！！！
     问题描述：有一个对象，多个嵌套属性，但有可能不存在
     let obj = {
         luoliang:{
@@ -1097,7 +1098,7 @@
     ```js
     ES6 提供了新的数据结构 Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。
     const set = new Set([1,2,1,2])
-    console.log(set) // {1,2} 可以看出Se 是可以去除数组中的重复元素
+    console.log(set) // {1,2} 可以看出Set是可以去除数组中的重复元素
     
     Set的属性
     size: 返回集合中所包含的元素的数量

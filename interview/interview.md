@@ -626,11 +626,20 @@
     
     微前端的实现方式？
     1、iframe加载方式
-    使用网页嵌套的方式，体验不是很好！！！
+    主模板页面和每个模块页面隔离，加载iframe后，可以在每个模块内干自己相关的业务逻辑。最关键的传参，可以通过iframe onload后，传递参数，postMessage方式。使用iframe嵌套的方式，能快速的嵌套与隔离引用，但视觉体验效果不是很好！
+    注意点：
+    1、iframe高度问题，通过计算内部高度而定，或者匹配当前窗口的宽高。
+    2、传递参数，需要等到iframe onload之后再进行
+    
     2、web-component
     qiankun框架：https://v1.qiankun.umijs.org/zh/
     vue实现方法：https://juejin.im/post/6844904087616487438
     实现原理：qiankun框架说白了就是通过在主程中添加一个展示子程序的DOM，经过路由判断做转发加载子程序。
+    node环境下安装yarn
+    执行：npm install -g yarn
+    再执行：yarn 会自动安装yarn（node版本最好是最新版本）
+    在github上copy一份qiankun的实例模板
+    安装依赖，安装子项目依赖
     
     ```
 

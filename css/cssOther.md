@@ -254,7 +254,7 @@
 4. ##### box-shadow
 
    ```css
-   
+   详情查看css3中的box-shadow部分
    ```
 
 5. ##### 横向滚动css实现方法，参考：https://blog.csdn.net/w390058785/article/details/80373154

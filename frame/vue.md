@@ -906,10 +906,10 @@
    1、安装：npm install vuex-persistedstate  --save
    2、使用：在new Vuex.Store(......)中添加
    import createPersistedState from "vuex-persistedstate" // 引入vuex持久化
-   	export default new Vuex.Store ({
-   		modules: {
-   			user
-   		},
+   export default new Vuex.Store ({
+   	modules: {
+   		user
+   	},
        plugins: [createPersistedState({  // 配置持久化，以sessionStorage为例，localStorage和cookie同理
            storage:window.sessionStorage
        })],
@@ -2034,7 +2034,7 @@ elementUI中表格错位，优化方案
     vue生命周期钩子函数：
     beforeCreate -> created -> beforeMount -> mounted -> beforeUpdate -> updated -> beforeDestroy -> destroyed
     beforeCreate：组件实例刚被创建，组件中的属性、data等都没有计算。
-    created:组件实例创建完成，属性已经绑定，data等已经赋值，但DOM还未生产，所以$el还不存在
+    created:组件实例创建完成，属性已经绑定，data等已经赋值，但DOM还未正式挂载，所以$el还不存在。
     beforeMount：虚拟DOM已经存在，但是正式DOM还未挂载。
     mounted：正式DOM已经生产，并挂载完成。
     beforeUpdate：组件更新之前

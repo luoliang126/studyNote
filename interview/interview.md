@@ -578,7 +578,7 @@
     
     4、vue中的生命周期中使用全局事件，然后没有做释放处理。$Bus总线方式
     onCreate(){
-        bus.%on('')
+        bus.$on('')
     },
     解决办法：在销毁的时候，取消监听$off
     beforeDestroy() {

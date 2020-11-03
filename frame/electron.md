@@ -14,7 +14,8 @@
    安装electron
    npm install -g electron // 全局安装
    npx electron -v // 查看安装版本号，npx必须要node5.0以上才能使用
-   创建项目
+   
+   原生创建项目
    1、到项目目录下，新建一个index.html，内容为hello world
    2、创建主入口文件main.js
    let electron = require("electron"); //引入electron
@@ -59,7 +60,7 @@
 
    
 
-3. ##### 基本使用
+3. ##### 运行发布
 
    ```js
    1、创建主脚本main.js
@@ -118,4 +119,39 @@
 
    
 
-4. 虚位以待！！！
+4. ##### 基本操作
+
+   ```
+   1、electron中remote模块的使用。
+   remote模块：electron有且只有一个主进程就是new BrowserWindow创建的主进程，在里面我们加载一个渲染进程win.loadFile('index.html')，但是在index.html渲染进程里面我们又想调用主进程或者操作其他渲染进程界面时怎么办？这时就需要remote模块了。
+   1.1、在主进程中，设置nodeIntegration和enableRemoteModule为true,才能使用remote模块。（10.1.2版本之后必须设置）
+   webPreferences: {
+       nodeIntegration: true,
+       enableRemoteModule: true,
+       preload: path.join(__dirname, 'preload.js')
+   }
+   1.2、新开窗口时，获取的是remote下的BrowerWindow!!!
+   const demo1Ele = document.querySelector('#demo1');
+   const { BrowserWindow } = require('electron').remote;
+   window.onload = function(){
+       demo1Ele.onclick = () => {
+           const demo1Window = new BrowserWindow({
+               width: 960,
+               height: 700,
+               webPreferences: {
+                 nodeIntegration: true,
+                 enableRemoteModule: true
+               }
+           })
+           demo1Window.loadFile('demo1.html')
+       }
+   }
+   点击按钮demo1Ele后，就会重新打开一个窗口demo1.html
+   
+   2、桌面应用程序的菜单栏Menu的使用
+   
+   ```
+
+   
+
+5. 虚位以待！！！

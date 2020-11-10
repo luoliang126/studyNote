@@ -935,13 +935,13 @@
    渲染结果：<li>Home</li>
    5、路由的嵌套：参考：http://blog.csdn.net/github_26672553/article/details/54861174
    在当前路由Login下，再定义子路由。（可以再定义children继续嵌套下去）
-   path: '/Login',
+   	path: '/Login',
        name: 'Login',
-           component: Login,
-               children:[
-                   { path: '/Login/Hello', component: Hello},
-                   { path: '/Login/Hello', component: Hello}
-               ]
+   	component: Login,
+   	children:[
+           { path: '/Login/Hello', component: Hello},
+           { path: '/Login/Hello', component: Hello}
+       ]
    6、路由链接的激活状态
    //注意，路由默认的激活class为：router-link-exact-active。此处我们单独再添加一个headItemActive的class。
    linkActiveClass:'headItemActive',

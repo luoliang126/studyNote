@@ -180,19 +180,19 @@
                    let themeTip = '';
                    switch (tenant_code){
                        case 'roche':
-                       themeTip = 'theme-roche'
-                       break;
+                           themeTip = 'theme-roche'
+                           break;
                        case 'lilly':
-                       themeTip = 'theme-lilly'
-                       break;
+                           themeTip = 'theme-lilly'
+                           break;
                        case 'novartis-master':
-                       themeTip = 'theme-novartis'
-                       break;
+                           themeTip = 'theme-novartis'
+                           break;
                        case 'pfizer':
-                       themeTip = 'theme-pfizer'
-                       break;
+                           themeTip = 'theme-pfizer'
+                           break;
                        default:
-                       themeTip = 'theme-default'
+   	                    themeTip = 'theme-default'
                    }
                    return themeTip;
                }

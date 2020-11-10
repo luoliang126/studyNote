@@ -47,7 +47,54 @@
    exit 退出当前cmd操作面板
    ```
    
-4. ##### git基本操作
+4. ##### vs code 快捷键操作
+
+   ```
+   F1或Ctrl+Shift+P（俗称万能键）：打开命令面板
+   Ctrl+G+行数   跳转到指定行数
+   新建文件:   Ctrl+N
+   文件之间切换:   Ctrl+Tab
+   打开一个新的VS Code编辑器: Ctrl+Shift+N
+   关闭当前文件:   Ctrl+W
+   关闭当前的VS Code编辑器:   Ctrl+Shift+W
+   切换左中右3个编辑器窗口的快捷键:   Ctrl+1  Ctrl+2  Ctrl+3
+   代码行向左或向右缩进:   Ctrl+[ 、 Ctrl+]
+   代码格式化:   Shift+Alt+F（在文件--首选--设置中，输入tabsize查询，将缩进字符串修改为2或者4）
+   向上或向下移动一行:   Alt+Up 或 Alt+Down
+   向上或向下复制一行:   Shift+Alt+Up 或 Shift+Alt+Down
+   在当前行下方插入一行:   Ctrl+Enter
+   在当前行上方插入一行:   Ctrl+Shift+Enter
+   移动到行首:   Home
+   移动到行尾:   End
+   移动到文件结尾:   Ctrl+End
+   移动到文件开头:   Ctrl+Home
+   移动到定义处:   F12
+   查看定义处缩略图(只看一眼而不跳转过去):    Alt+F12
+   选择从光标到行尾的内容:   Shift+End
+   选择从光标到行首的内容： Shift+Home
+   删除光标右侧的所有内容(当前行):   Ctrl+Delete
+   扩展/缩小选取范围： Shift+Alt+Right 和 Shift+Alt+Left
+   多行编辑(列编辑):   Alt+Shift+鼠标左键 或 Ctrl+Alt+Down/Up
+   同时选中所有匹配编辑(与当前行或选定内容匹配):   Ctrl+Shift+L
+   下一个匹配的也被选中:   Ctrl+D
+   回退上一个光标操作:   Ctrl+U
+   撤销上一步操作: Ctrl+Z
+   手动保存:   Ctrl+S
+   查找:   Ctrl+F
+   查找替换:   Ctrl+H
+   全屏显示(再次按则恢复):   F11
+   放大或缩小(以编辑器左上角为基准):   Ctrl +/-
+   侧边栏显示或隐藏： Ctrl+B
+   显示资源管理器(光标切到侧边栏中才有效):   Ctrl+Shift+E
+   显示搜索(光标切到侧边栏中才有效):   Ctrl+Shift+F
+   显示(光标切到侧边栏中才有效):   Git Ctrl+Shift+G
+   显示 Debug:    Ctrl+Shift+D
+   显示 Output:    Ctrl+Shift+U
+   ```
+   
+   
+   
+5. ##### git基本操作
 
    ```
    git init 本地初始化（用于最初创建git版本库）
@@ -116,4 +163,4 @@
    1-3、解决冲突后，再执行git add .， git commit等操作，实现代码提交！
    ```
 
-5. 虚位以待
+6. 虚位以待

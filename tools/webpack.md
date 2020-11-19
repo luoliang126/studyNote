@@ -11,7 +11,58 @@
    //安装到你的项目目录（首先通过cmd进入到项目目录，再执行以下操作）
    npm install --save-dev webpack
    
-   创建package.json文件
+   // 创建package.json文件
+   1、运行：npm init -y 快速创建项目，自动生成package.json
+   
+   2、创建项目目录
+   package.json目录:配置文件
+   dist目录：用于存放打包后的项目
+   src目录：存放项目文件
+   	index.html
+   	index.js
+   		console.log('ok')
+   
+   3、安装webpack(如果慢的话，使用cnpm)
+   	npm install webpack -D
+   	npm install webpack-cli -D
+   
+   4、创建一个webpack.config.js，配置webpack打包时的信息。（注意：webpack是基于node构建，所以webpack支持所有的Node API语法）
+   commonJS规范：暴露一个模块的方法和es6注意区别
+   module exports = {
+       mode:'development' // development为开发模式，只打包不压缩，production打包+压缩。
+   }
+   注意：webpack4.x版本，提供了约定文件 打包的入口文件是，src-->index.js，打包的输出文件放在dist目录下的main.js
+   
+   5、在index.html中引入打包好的main.js
+   <script src="../dist/main.js"></script>
+   访问index.html，在控制台输出ok，成功！！！
+   
+   6、我们在index.html中引入的js为打包后的main.js，但是如果我们重新编辑修改代码后，ctrl+s保存，发现并未重新打包，那刷新浏览器内容还是不会变更？怎么解决？
+   使用webpack-dev-server：提供一个webpack的服务，让我们可以通过ip访问这个服务
+   安装：npm install webpack-dev-serve
+   重新配置package.json
+   	“scripts”：{
+           “dev”:"webpack-dev-server --open"  // --open编译好后，自动打开浏览器
+       }
+   	--port 3000 // 默认端口号是：8080，通过port可以自行修改
+   	--host 127.0.0.1 // 通过ip访问
+   	......
+   修改index.html中的main.js。通过webpack-dev-server生成的main.js存放于内存中，可以理解为在根目录下，但是在实际目录中看不到！！！，为什么要存放内存中？因为：只有内存读取/修改更快，且不伤害物理内存（即磁盘）。试想一下，如果我们在开发时，修改一个变量就保存一次，就编译一次，就热更新一次，就重新修改一次磁盘，那过不了多久磁盘估计就报废了！所以存放内存，是最好的办法！
+   <script src="/main.js"></script>
+   这次就可以通过webpack服务访问：localhost:8080
+   编辑内容、保存，就会发现热更新可以使用！！！
+   
+   7、webpack插件
+   html-webpack-plugin：把界面生成到内存中去
+   安装：npm install html-webpack-plugin -D
+   在webpack.config.js中
+   const path = require('path');
+   const HtmlWebPackPlugin = require('html-webpack-plugin')
+   //创建一个插件实例对象
+   const htmlPlugin = new HtmlWebPackPlugin{
+       template:path.join(__dirname,'./src/index.html'), // 源文件，注意这里是根路径 
+       filename:'index.html' // 生成的，在内存中的首页
+   }
    ```
 
 2. ##### 基于vue-cli的webpack

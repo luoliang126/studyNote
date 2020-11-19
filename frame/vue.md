@@ -162,7 +162,7 @@
    批注：这种方法的关键在于this.$route.matched.filter(item => item.name) 直接返回的是一个数组格式，且根据路由嵌套的方式，一次存入数组，方便我们取值绑定。
    ```
 
-6. ##### vue组件
+5. ##### vue组件
 
    ```js
    vue组件扩展（公用方法抽离），混合mixins和继承extends 参考：http://www.jb51.net/article/131008.htm
@@ -760,9 +760,41 @@
    }
    </script>
    注意：如果v-model是动态，随时可能变的情况下，应该用watch监听value的变化，在赋值！！！这样就能同步数据
+   
+   函数式组件，vue没有类似react那样的jsx语法，想用函数式编程就会变得很鸡肋，因为数据不是双向的。
+   什么叫函数式组件？
+   我们可以把函数式组件想像成组件里的一个函数，入参是渲染上下文(render context)，返回值是渲染好的HTML片段。
+   对于函数式组件，可以这样定义：
+       Stateless(无状态)：组件自身是没有状态的
+       Instanceless(无实例)：组件自身没有实例，也就是没有this
+       内部没有任何生命周期处理函数
+       轻量,渲染性能高,适合只依赖于外部数据传递而变化的组件(展示组件，无逻辑和状态修改)
+       只接受props值
+   由于函数式组件拥有的这两个特性，我们就可以把它用作高阶组件(High order components)，所谓高阶，就是可以生成其它组件的组件。
+   新建一个functionComponent.vue
+   export default {
+       name: 'functional-button',
+       functional: true,
+       render(createElement, context) {
+           return createElement('button', 'click me')
+       }
+   }
+   注意：声明的functional:true // 必须！！！
+   当然也可以使用模板template functional  // 与上面方法相同
+   <template functional>
+     <div class="cell">
+       <div v-if="props.value" class="on"></div>
+       <section v-else class="off"></section>
+     </div>
+   </template>
+   <script>
+   export default {
+     props: ['value']
+   }
+   </script>
    ```
 
-7. ##### vuex的使用
+6. ##### vuex的使用
 
    ```js
    为什么要使用vuex？
@@ -916,10 +948,24 @@
    	getters
    })
    3、那么在调用user中的方法，修改值后，就会在sessionStorage中存储一个值，如果刷新的话，会自动去取sessonStorage中对应的值。如果想持久化一个 modules中的模块，请参考文档详细说明
-   4、在一个js文件中，怎样引用store？？？
-   import Index from '@/store/index.js' // 引入store中的index.js
+   
+   在一个独立的js文件中，怎样引用store？怎样获取store中的值？怎样修改store中的值？
+   import Index from '@/store/index.js' // 引入store中的index.js（就是vuex的主文件）
    Index.orderId // 直接使用
+   console.log(Index)中去寻找查询、修改的方法
    记住：引入的index.js一定要是export default new Vuex.Store({。。。。。。}) 挂载全局的那一个！
+   
+   vuex中触发事件修改state值，dispatch和commit的区别
+   dispatch是异步操作
+   存值
+   this.$store.dispatch('listData',value);
+   取值
+   this.$store.getters.listData
+   commit是同步操作
+   存值
+   this.$store.commit('listData',value);
+   取值
+   this.$store.state.listData
    ```
 
 8. ##### vue路由
@@ -2141,6 +2187,53 @@ elementUI中表格错位，优化方案
     	errors: true
     }, // 错误、警告在页面弹出
     将overlay中的warnings暂时修改为false，只为能使用，最根本的解决办法还未找到？？？
+    
+    11、vue中关于设置服务代理方式 参考:https://blog.csdn.net/qq_36407748/article/details/90679991
+    在vue.config.js中
+    module.exports = {
+      devServer: {
+        port: port,
+        open: false,
+        overlay: {
+          warnings: false,
+          errors: true
+        },
+        proxy: {
+          '/apis': {
+            target: process.env.VUE_APP_BUSI_API,
+            secure: false,
+            changeOrigin: true,
+            pathRewrite: {
+              '^/apis': ''
+            }
+          },
+          '/api': {
+            target: process.env.VUE_APP_SSO_HOST,
+            changeOrigin: true,
+            pathRewrite: {
+              '/api': ''
+            }
+          },
+          ......
+        }
+      }
+    }
+    添加.env.development
+    # dev环境，也是本地开发环境的配置
+    ENV = 'development'
+    port = 9549
+    # 本机代理url配置
+    # 统一认证后端服务地址,对应/api/
+    VUE_APP_SSO_HOST = 'http://172.17.6.196:8888'
+    # 统一用户管理后端服务地址,对应/ctfo-cloud-system/
+    VUE_APP_SYS_HOST = 'http://172.17.6.196:8001'
+    # 应急系统后端服务地址,对应/apis/   或者  tocc-emergency-disposal-ch
+    VUE_APP_BUSI_API = 'http://172.17.6.126:31001'
+    # 文件服务后端服务地址,对应/file/
+    VUE_APP_FILE_API = 'http://172.17.6.196:8002'
+    # 数据魔方服务地址,对应/dataApi/
+    VUE_APP_CUBE_API = 'http://172.17.6.192:8589'
+    当然也可以添加.env.production环境，配置内容同development
     ```
 
 16. 虚位以待！！！

@@ -1,4 +1,4 @@
-# http协议笔记
+#  http协议笔记
 
 1. ##### http协议介绍
 
@@ -315,6 +315,106 @@
    if (response) {
        console.log(response);
    }
+   
+   9、基于axios封装http请求，以及管理api接口
+   import iStorage from '../storage/index.js'
+   import axios from 'axios'
+   import qs from 'qs'
+   import { indicator } from 'smart-indicator';
+   class smartHttp {
+       constructor(options) {
+           this.api = axios.create({
+               baseURL: (options && options.baseURL ? options.baseURL : undefined) || iStorage.getUrlGateway()
+           });
+           this.options = options;
+           this.autoExtractResponseError = true
+           if(options.autoExtractResponseError === false)(
+               this.autoExtractResponseError = false
+           )
+           this.alert = options.alert || window.alert;
+           this.isNeedBlock = true;
+           if(typeof(options.isNeedBlock) == 'boolean'){
+               this.isNeedBlock = options.isNeedBlock;
+           }
+           this.block = options.block || indicator.open;
+           this.unblock = options.unblock || indicator.close;
+           this.only401 = true;
+           this.handle401 = options.handle401 || function () {};
+           this.injectRequest();
+           this.injectResponse();
+           // 修改是否需要 抛错时的alert true/false
+           let that = this;
+           this.api.changeAutoExtractResponseError = function(isShow){
+               that.autoExtractResponseError = isShow;
+           }
+       }
+       // 请求拦截，这里根据实际情况做一些操作
+       injectRequest() {
+           this.api.defaults.headers.post['Content-Type'] = 'application/json; charset=utf-8';
+           this.api.interceptors.request.use(null, (error) => {
+               this.alert(error.message);
+               throw error;
+           });
+           this.api.interceptors.request.use((config) => {
+               if(this.isNeedBlock){
+                   this.block();
+               }
+               // get请求添加时间搓
+               if (config.method === 'get') {
+                   config.params = {
+                      ...config.params,
+                      rnd: new Date().getTime(),
+                   }
+               }
+               if (config.data && config.headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+                   config.data = qs.stringify(config.data);
+               }
+               this.appendHeader(config);
+               return config;
+           },(err) => {
+               return Promise.reject(err);
+           });
+       }
+       // 响应拦截，这里根据实际情况做一些操作
+       injectResponse() {
+           let that = this;
+           this.api.interceptors.response.use((response) => {
+               if(this.isNeedBlock){
+                   this.unblock();
+               }
+               let filterResponse = (response && response.data) ? response.data : null;
+               if (!filterResponse) {
+                   return;
+               }
+           }
+   	}
+       // 添加header
+       appendHeader(config) {
+           var token = iStorage.getAccessToken()
+           if (token && token != null) {
+               config.headers["Authorization"] = 'Bearer ' + token;
+           }
+           var Version = iStorage.get("apiVersion");
+           if(Version){
+               config.headers["Version"] = Version;
+           }
+           var tenantInfo = iStorage.get("tenantInfo");
+           if(tenantInfo){
+               config.headers["tenantInfo"] = tenantInfo;
+           }
+           var organization_type = iStorage.get("organization_type");
+           if (organization_type == "Tenant") {
+               config.headers["tenant_code"] = iStorage.get("tenant_code")
+           }
+       }
+   }
+   export default smartHttp;
+   // 使用时
+   import smartHttp from './http.js';
+   this.http = new smartHttp({
+       baseURL:'http://XXXX.COM',
+       alert:Indicator.open
+   })
    ```
 
 9. 虚位以待！

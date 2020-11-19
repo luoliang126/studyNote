@@ -123,7 +123,7 @@
    }
    .body{
        width:100%;
-       height:calc(100%-60px);
+       height:calc(100% - 60px); // 注意间隔
        background-color:blue;
    }
    .footer{

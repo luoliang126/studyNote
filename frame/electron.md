@@ -119,10 +119,9 @@
 
    
 
-4. ##### 基本操作
+4. ##### remote模块
 
-   ```
-   1、electron中remote模块的使用。
+   ```js
    remote模块：electron有且只有一个主进程就是new BrowserWindow创建的主进程，在里面我们加载一个渲染进程win.loadFile('index.html')，但是在index.html渲染进程里面我们又想调用主进程或者操作其他渲染进程界面时怎么办？这时就需要remote模块了。
    1.1、在主进程中，设置nodeIntegration和enableRemoteModule为true,才能使用remote模块。（10.1.2版本之后必须设置）
    webPreferences: {
@@ -147,11 +146,165 @@
        }
    }
    点击按钮demo1Ele后，就会重新打开一个窗口demo1.html
-   
-   2、桌面应用程序的菜单栏Menu的使用
-   
    ```
 
    
 
-5. 虚位以待！！！
+5. ##### Menu模块
+
+   ```js
+   菜单栏Menu的自定义，绑定事件，鼠标右键
+   2.1、主窗口的menu菜单
+   新建一个menu.js
+   const { Menu } = require('electron')
+   let template = [
+       {
+           label:'测试标题1',
+           click:() => {
+               alert(123)
+           },
+           submenu:[
+               {
+                   label:'测试标题1-1'
+               },
+               {
+                   label:'测试标题1-2'
+               },
+           ]
+       },
+       {
+           label:'测试标题2',
+           submenu:[
+               {
+                   label:'测试标题2-1'
+               },
+               {
+                   label:'测试标题2-2'
+               },
+           ]
+       },
+   ]
+   let nav = Menu.buildFromTemplate(template);
+   Menu.setApplicationMenu(nav);
+   在主进程main.js中引入
+   const mainWindow = new BrowserWindow({
+       width: 960,
+       height: 700,
+       webPreferences: {
+           nodeIntegration: true,
+           enableRemoteModule: true,
+           preload: path.join(__dirname, 'preload.js')
+       }
+   })
+   require('./views/demo1/demo1.js'); // 引入定义好的menu菜单栏即可，是在loadFile之前
+   mainWindow.loadFile('index.html')
+   2.2、如果是打开的新窗口怎么定义菜单栏呢？（渲染进程）。在打开新窗口（新的渲染进程的时候，配置一个menu，记住是remote模块的Menu）
+   配置一个渲染进程的demo1MenuConfig.js
+   const { remote } = require('electron')
+   let template = [
+       {
+           label:'测试标题1',
+           click:() => {
+               alert('123')
+           },
+           submenu:[
+               {
+                   label:'测试标题1-1',
+                   accelerator:'ctrl+n', //配置快捷键
+               },
+               {
+                   label:'测试标题1-2',
+                   accelerator:'ctrl+p',
+               },
+           ]
+       },
+       {
+           label:'测试标题2',
+           submenu:[
+               {
+                   label:'测试标题2-1'
+               },
+               {
+                   label:'测试标题2-2'
+               },
+           ]
+       },
+   ]
+   let nav = remote.Menu.buildFromTemplate(template);
+   remote.Menu.setApplicationMenu(nav);
+   在打开demo1.html之前，引入该demo1MenuConfig.js
+   const demo1Ele = document.querySelector('#demo1');
+   const { BrowserWindow } = require('electron').remote;
+   window.onload = function(){
+       demo1Ele.onclick = () => {
+           let demo1Window = new BrowserWindow({
+               width: 500,
+               height: 500,
+               webPreferences: {
+                 nodeIntegration: true,
+                 enableRemoteModule: true
+               }
+           })
+           require('./views/demo1/demo1MenuConfig.js'); // 打开demo1.html之前引入这个Menu配置
+           demo1Window.loadFile('./views/demo1/demo1.html')
+           demo1Window.on('close', ()=> {
+               demo1Window = null;
+           })
+       }
+   }
+   这样打开的demo1.html渲染进程的menu菜单栏就被修改了。
+   注意accelerator快捷键，只有子菜单才有，一级菜单是没有快捷键的，即便配置了也没有！！！
+   如果menu菜单栏被自定义后？怎么打开调试模式？在打开界面之前首先执行下面方法即可！
+   demo1Window.webContents.openDevTools(); 
+   ```
+
+   
+
+6. ##### shell模块
+
+   ```js
+   使用默认应用程序管理文件和 url。
+   1、使用shell打开浏览器,并定位到http://www.baidu.com
+   const { shell } = require("electron");
+   window.onload = function(){
+       let aEle = document.querySelector('#atest');
+       aEle.onclick = function(e){
+           e.preventDefault();
+           let href = this.getAttribute('href') || 'http://www.baidu.com';
+           shell.openExternal(href);
+       }
+   }
+   ```
+
+   
+
+7. ##### 基本操作
+
+   ```js
+   1、鼠标右键配置，在渲染进程中，监听鼠标右键
+   在demo1.js中
+   const { remote } = require("electron");
+   // 自定义一个鼠标右键的菜单栏
+   let rightTemplate = [
+       { label:'复制',accelerator:'ctrl+c' },
+       { label:'粘贴',accelerator:'ctrl+v' },
+   ]
+   let m = remote.Menu.buildFromTemplate(rightTemplate);
+   // 监听鼠标右键
+   window.addEventListener('contextmenu',function(e){
+       e.preventDefault();
+       m.popup({
+           window:remote.getCurrentWindow()
+       })
+   })
+   
+   2、新开一个子视图，类似iframe嵌套的方式BrowserView
+   
+   父子窗口的通信
+   
+   文件操作
+   ```
+
+   
+
+8. 虚位以待！！！

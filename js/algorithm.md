@@ -135,6 +135,28 @@
    console.log(ar); // [6,7]
    由此可见find是找到一个，然后就返回该元素。filter是赛选出所有符合条件的元素，并返回一个新的数组。
    
+   数组的循环中断
+   for(var i=0;i<3;i++){
+       if(i>1){
+           alert('满足条件了')
+           break;
+       }
+       console.log(i); // 只有0,1，alert后面的因为break不再执行，中断循环操作
+   }
+   forEach没有中断一说，但可以使用try...catch抛错实现中断
+   try{
+       const arr = [0,1,2,3,4,5];
+       arr.forEach(item => {
+           if(item>3){
+               throw new Error('满足条件了')
+           }
+           console.log(item); //0,1,2,3 后面没有了，因为抛错了，走catch
+       })
+   }catch(error){
+       console.log(error); // Error:满足条件了
+   }
+   当然其他的遍历也可以使用这种方式
+   
    判断 字符串 是否以 xxx 开头 startsWith()，返回的是boolean
    let a = 'luoliang'
    console.log(a.startsWith('luo'))  // true
@@ -464,7 +486,55 @@
    tan(x)	返回一个角的正切
    ```
 
-6. ##### js实现惯性滚动，下拉回弹效果
+6. ##### 递归
 
-7. 虚位以待！
+   ```js
+   let arr1 = [{
+       codeName:'ceshi123',
+       codeValue:123,
+   },{
+       codeName:'ceshi456',
+       codeValue:456,
+       children:[
+           {
+               codeName:'456-1',
+               codeValue:4561
+           },
+           {
+               codeName:'456-2',
+               codeValue:4562,
+               children:[
+                   {
+                       codeName:'456-2-1',
+                       codeValue:45621
+                   }
+               ]
+           },
+       ]
+   }]
+   let tempFn = function(data){
+       let result = [];
+       if(data.length){
+           data.forEach(jtem => {
+               let tempObj = {
+                   label: jtem.codeName, 
+                   value: jtem.codeValue,
+                   children:null
+               }
+               if(jtem.children && jtem.children.length){
+                   tempObj.children = tempFn(jtem.children)
+               }else{
+                   delete tempObj.children;
+               }
+               result.push(tempObj);
+           })
+       }
+       return result;
+   }
+   let temp = tempFn(arr1);
+   // 递归：适用于多级嵌套数组，如果想批量在每一级添加/修改/删除动作时使用。关键在于条件判断和函数的返回值！
+   ```
 
+7. ##### js实现惯性滚动，下拉回弹效果
+
+8. 虚位以待！！！

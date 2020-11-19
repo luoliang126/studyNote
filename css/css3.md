@@ -387,5 +387,55 @@
 
 12. ##### 盒模型定义
 
-13. 虚位以待！！！
+13. ##### css3的换肤解决方案
+
+    ```css
+    使用基于sass\less的换肤方案，有一个缺陷。就是一个应用只有一个主题色，如果还想多扩展几个主题色的话，就会很麻烦。css3推出一种变量命名，绑定到根节点的方式。
+    css3作用域
+    // 作用域根节点
+    :root{
+        --theme-color:red;
+    }
+    // 作用域id='app'的dom节点下（包含）
+    #app{
+        --theme-color:red;
+    }
+    
+    // 定义一个themeColor.js文件，配置所需的颜色值
+    const themeColorList = {
+        'red':{
+            '--theme-color':'red',  // 同一个主题'red'下就有多个颜色值了them-color1,them-color2......
+            '--theme-color1':'green',
+        },
+        'black':{
+            '--theme-color':'black',
+            '--theme-color1':'green',
+        }
+        ......
+    }
+    export default themeColorList;
+    
+    // 在入口文件中操作根节点，写入theme-color
+    const currentTheme = window.document.documentElement.getAttribute('data-theme'); // 获取当前的主题色
+    const temp = themeColorList[currentTheme]; // 从themeColor中匹配出当前主题色对应的颜色列表
+    for(var theme in temp){
+        // 写入到根节点,当然也可以使用到具体的dom节点下，因为css3具有作用域，凡是不在该作用域下的，都无法使用！！！
+        document.documentElement.style.setProperty(theme,temp[theme]);
+    }
+    // 在具体界面使用时
+    .userName{
+        color:var(--theme-color);
+    }
+    // js使用方法：
+    var styles = getComputedStyle(document.documentElement);
+    var value = styles.getPropertyValue("--theme-color");
+    console.log(value);
+    
+    对比sass\less方法和css3方法：
+    其实一般应用主题色只有一个，无疑sass\less是最好的解决办法。但实际UI设计开发的时候，往往会存在多个颜色，所以扩展上讲css3可能更适合！再者使用sass\less方法，无法在js中获取主题色。我们只能通过预先设置好选择器，再使用js动态添加该选择器的方法，达到动态颜色变更。
+    ```
+
+    
+
+14. 虚位以待！！！
 

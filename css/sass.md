@@ -228,9 +228,17 @@
    方法四：css3的更换皮肤方案
    参考css3部分！
    
+   方法五：通过插件webpack-theme-color-replacer插件方式更换皮肤（参考ant-design-pro项目）
+   
    对比两种方法：
    第一种更全局更优雅，但扩充颜色主题较麻烦。
    第二种简单，但如果一个大项目较多时，使用的全局theme.scss定义的class也会较多，不适合大型项目
+   第三种适用于少量界面，微小型项目。
+   第四种，其原理是将皮肤色绑定到根节点dom上，这样css通过var方法获取，js通过
+   var styles = getComputedStyle(document.documentElement);
+   var value = styles.getPropertyValue("--theme-color");
+   console.log(value);
+   获取，使用方便简单，但会在根节点渲染时将主题色添加上。
    总结：没有最好的解决办法，只有根据当前项目最适合的解决办法。
    ```
 

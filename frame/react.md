@@ -133,6 +133,7 @@
 5. ##### react创建组件，以及组件传参
 
    ```jsx
+   react创建组件的方法
    方法一：
    创建一个Test组件
    function Test(props){
@@ -149,7 +150,7 @@
          <header className="App-header">
            { a.map(item => <div key={ item.id }><span>{ item.name }</span></div>) }
          </header>
-         <Test list={a}></Test>
+         <Test list={a}></Test> // 可以使用多个属性，传递多个参数
        </div>
      );
    }
@@ -157,50 +158,11 @@
    1、组件名称，首字母必须大写！！！
    2、父组件通过属性传递给子组件，子组件通过props参数接收。但参数为只读模式,意思是子组件无法修改父组件传递过来的值！
    function Test(props){
-     const list = props.list;
+     let list = props.list;
      list = [] // 抛错，因为list = props.list是通过父组件传递过来的，子组件无法修改！
-     return <div>{ list.map(item => <h1 key={ item.id }>{ item.name }</h1>) }</div>
    }
    
-   方法二：
-   方法一用于单个或者少量参数传递还行，大量数据使用就不太方便了，该方法提供一个对象传递。
-   function Test(props){
-     console.log(props);
-     return <div>123</div>
-   }
-   function App() {
-     const a = { name:'罗亮',age:31,id:1 }
-     const b = { hobby:'football' }
-     let c = Object.assign(a,b);
-     return (
-       <div className="App">
-         <Test {...c}></Test>
-       </div>
-     );
-   }
-   
-   方法三：组件抽离成一个单独的jsx文件
-   创建一个组件Test.jsx
-   import React from 'react';
-   function Test(props){
-       console.log(props);
-       return <div>这是一个单独的组件</div>
-   }
-   export default Test;
-   在父组件中引入Test.jsx组件
-   import Test from './Test.jsx';
-   function App() {
-     const a = { name:'罗亮',age:31,id:1 }
-     const b = { hobby:'football' }
-     let c = Object.assign(a,b);
-     return (
-       <div className="App">
-         <Test {...c}></Test>
-       </div>
-     );
-   }
-   
-   方法四：使用class创建
+   方法二：使用class创建
    创建一个Test.jsx组件
    import React from 'react';
    class Test extends React.Component{    
@@ -252,8 +214,114 @@
    1、使用constructor函数时，必须使用super()函数，才能使用this。
    2、申明在state中的数据，都是可以读写的。
    
-   子-父组件传参
+   react组件间传递参数
+   父-子组件传参。
+   1、使用属性传递参数（适用于组件嵌套层级少的情况，多层嵌套也可以一层一层传递参数，但是相对来说麻烦，不利于管理）
+   在父组件中
+   <Test data1={data1} data1={data2}></Test> //单个属性传递
+   <Test {...c}></Test> // 合并为一个对象传递
+   在子组件中
+   componentDidMount(){
+       console.log(this.props) // 接收props参数
+   }
    
+   2、使用context对象方式（适用于嵌套层级比较多时）
+   nav1--》nav2--》nav3 嵌套关系
+   context方式可以理解为：上下文的关系，在父组件nav1中定一个该组件的上下文context，那么在子组件nav2，nav3都可以拿到这个context，再暴露一个修改context的方法，即可达到双向通信。
+   在nav1.js中
+   import PropTypes from 'prop-types';
+   class Nav1 extends Component {
+   	constructor(){
+           this.state = {
+               color:'red'
+           }
+       }
+       // 父组件声明自己所有的context
+       static childContextTypes = {
+           color:PropTypes.string,
+           callback:PropTypes.func
+       }
+   	// 父组件提供一个函数，来返回相应的context对象
+   	getChildContext = () => {
+       	return {
+               color:this.state.color,
+               callback:this.callback
+           }
+       },
+   	// 父组件提供一个回调函数，来修改context
+   	callback = (color) => {
+           this.setState({
+               color:color
+           })
+       }
+   }
+   在nav2.js或者nav3.js以及所有嵌套的子组件中
+   import PropTypes from 'prop-types';
+   // 子组件声明自己需要使用的context
+   static childContextTypes = {
+       color:PropTypes.string,
+       callback:PropTypes.func
+   }
+   changeColor = () => {
+       // 调用context中的callback方法，来修改父组件的color值
+       this.context.callback('blue');
+   }
+   render(){
+       console.log(this.context.color); // 获取context
+       return(
+           <div onClick={ this.changeColor }>修改父组件的color</div>
+       )
+   }
+   注意：在传递的时候，构造函数中的constructor(props){ super(props) }加上props，避免拿不到context问题！！！
+   
+   3、自定义事件传参（该方法适用于，非嵌套组件/兄弟组件间的传递参数）
+   首先安装一个events包：npm install events --save
+   新建一个eventBus.js
+   import { EventEmitter } from 'events';
+   const eventBus = new EventEmitter();
+   export default eventBus;
+   在组件中使用。
+   在需要监听的界面
+   import eventBus from '../utils/eventBus.js';
+   componentDidMount(){
+       // 监听
+       this.eventEmitter = eventBus.addListener('callMe',(msg) => {
+           console.log(msg);
+       })
+   }
+   componentWillUnmount(){
+       // 移除监听，否则会重复触发
+       eventBus.removeListener(this.eventEmitter,(msg) => {
+           console.log(msg); // 注意移除事件，一定要加一个回调方法，哪怕是空函数也行，否则会抛错！！！
+       })
+   }
+   在触发界面
+   import eventBus from '../utils/eventBus.js';
+   fun = () => {
+       eventBus.emit('callMe',"HELLOW");
+   }
+   render(){
+       return(
+           <div onClick={ this.fun }>触发事件</div>
+       )
+   }
+   总结：自定义事件方式，跟vue的eventBus类似，当然也可以不用events包，自己实现一个events类。
+   
+   4、redux方式
+   
+   子-父组件传参
+   1、通过props，只不过父组件传递的是一个回调function
+   在父组件中
+   callback = (val) => {  // 注意这里推荐使用箭头函数，因为this指向问题，否则就需要重新bind一下this。
+       console.log(val);
+   }
+   <Test callback={callback}></Test>
+   在子组件中
+   this.props.callback() // 调用回调方法
+   
+   2、事件eventBus方式。
+   
+   3、redux方式
    ```
 
 6. ##### react中的样式

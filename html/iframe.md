@@ -1,6 +1,6 @@
 # iframe笔记
 
-- ##### iframe加载网页，但iframe的高度不能确定，所以iframe要自适应内容的高度。
+- ##### iframe加载网页，iframe自适应内容的高度。
 
   原生js方法:通过contentWindow来获取子页面的元素，也有用contentDocument获取的，但是contentWindow 兼容各个浏览器，可取得子窗口的 window 对象。
 
@@ -19,7 +19,7 @@
   注意：以上的iframe当中的链接必须是同源，即不能够跨域，否则无法访问。
   ```
 
-- ##### iframe跨域加载的页面，在父页面是无法修改子页面的内容。而非要修改的话，父子必须同源。
+- ##### iframe跨域加载的页面，父页面通过name属性修改子页面的内容
 
   ###### 参考地址：http://blog.csdn.net/fdipzone/article/details/17619673
   
@@ -54,9 +54,10 @@
 
 - ##### 通过iframe + window.postMessage实现跨域通信传递参数
 
-  ###### 参考链接：地址一：https://blog.csdn.net/szu_aker/article/details/52314817 地址二：https://blog.csdn.net/aurum_hj/article/details/78304787
-
-  ```js
+  ```
+参考链接：地址一：https://blog.csdn.net/szu_aker/article/details/52314817 
+  地址二：https://blog.csdn.net/aurum_hj/article/details/78304787
+  
   1、主页面发送数据，子页面接收。
   在a.html文件中
   <iframe id="proxy" src="http://www.baidu.com/test/b.html" onload = "postMsg()"></iframe>
@@ -92,11 +93,14 @@
   window.addEventListener('message',function(rs){
       console.log(rs.data);
   })
+  这里可以使用window.onmessage = function(e){ console.log(e) }代替addEventListener方式（因为它会多次触发！！！）
   
-  注意：iframe嵌套必须在b.html加载完成后，才能执行。即onload之后执行postMessage方法。
-  	 iframe的传参方式请查看smart-iframe-dialog方法封装组件
+  注意：1、iframe嵌套必须在b.html加载完成后，才能执行。即onload之后执行postMessage方法。
+  	 2、iframe的传参方式请查看smart-iframe-dialog方法封装组件
+  	3、在创建iframe的时候，如果iframe初始url为空，挂载到dom上后，再添加url，此时通过postMessage传值会触发两次。原因就在于iframe创建挂载时就会触发一次，当url修改时又会触发一次，总共两次。解决办法：先创建iframe并添加固定url，再append到DOM树上。
+      4、addEventListener和onmessage方式都可以实现监听，但很明显onmessage性能更优！！！
   ```
-
   
-
-
+  
+  
+- 虚位以待！！！

@@ -343,7 +343,7 @@
 
 13. ##### 太极阴阳
 
-    ```css
+    ```
     .yin-yang {
         width: 96px;
         height: 48px;
@@ -378,3 +378,53 @@
         height: 12px;
     }
     ```
+    
+    
+    
+14. ##### 四角边框，参考：https://blog.csdn.net/XreqcxoKiss/article/details/105236123
+
+    ```
+    原理：linear-gradient() 函数用于创建一个线性渐变的 “图像”。为了创建一个线性渐变，你需要设置一个起始点和一个方向（指定为一个角度）的渐变效果。你还要定义终止色。终止色就是你想让Gecko去平滑的过渡，并且你必须指定至少两种，当然也会可以指定更多的颜色去创建更复杂的渐变效果。
+    
+    <div class="div1"></div>
+    <div class="div2"></div>
+    .div1{
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(to left, #f00, #f00) left top no-repeat,
+        linear-gradient(to bottom, #f00, #f00) left top no-repeat,
+        linear-gradient(to left, #f00, #f00) right top no-repeat,
+        linear-gradient(to bottom, #f00, #f00) right top no-repeat,
+        linear-gradient(to left, #f00, #f00) left bottom no-repeat,
+        linear-gradient(to bottom, #f00, #f00) left bottom no-repeat,
+        linear-gradient(to left, #f00, #f00) right bottom no-repeat,
+        linear-gradient(to left, #f00, #f00) right bottom no-repeat;
+        background-size: 1px 20px, 20px 1px, 1px 20px, 20px 1px;
+    }
+    .div2{
+        border: 1px red solid;
+        position: absolute;
+        top: 20px;
+        left: 150px;
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(to left, #f00, #f00) left top no-repeat,
+        linear-gradient(to bottom, #f00, #f00) left top no-repeat,
+        linear-gradient(to left, #f00, #f00) right top no-repeat,
+        linear-gradient(to bottom, #f00, #f00) right top no-repeat,
+        linear-gradient(to left, #f00, #f00) left bottom no-repeat,
+        linear-gradient(to bottom, #f00, #f00) left bottom no-repeat,
+        linear-gradient(to left, #f00, #f00) right bottom no-repeat,
+        linear-gradient(to left, #f00, #f00) right bottom no-repeat;
+        background-size: 2px 20px, 20px 2px, 2px 20px, 20px 2px;
+      }
+    ```
+
+    
+
+15. 虚位以待！！！
+
+    

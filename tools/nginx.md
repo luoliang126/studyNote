@@ -14,7 +14,7 @@
    
    2、找到nginx.exe运行（当然也可以使用命令行）
    
-   3、命令行操作（到nginx根目录下）
+   3、命令行操作，到nginx根目录下（切记cmd要以管理员身份进入）
    配置nginx启动项：找到conf目录下的nginx.conf，配置方式查看百度文档。
    start nginx 或 nginx.exe - 启动命令
    nginx -s reload - 重启

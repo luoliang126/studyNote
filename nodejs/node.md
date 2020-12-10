@@ -24,6 +24,8 @@
    	npm pack
    view	显示模块的详细信息
    	npm view express
+   show 显示包的信息
+   	npm show package
    publish	把在一个package.json文件中定义的模块发布到注册表，当前与package.json在同一文件夹下的包发布。(在发布包到npm官网上时，常用)
    	npm publish
    unpublish	取消发布您已发布到注册表的一个模块（在某些情况下，还需使用 --force 选项）
@@ -38,18 +40,44 @@
    	npm adduser
    login	等同于adduser
    	npm login
-   logout	将用户信息从当前的开发环境中清除
+   logout	将用户信息从当前的开发环境中清除 
    	npm logout
    init	初始化Node包的信息，会创建package.json文件
+   	npm init
+   conifg  查看npm的配置信息
+   	npm config get registry // 获取npm拉取包的地址
+       npm config set registry http://xxxxx // 设置npm的registry地址
+   --force 强制安装（npm在安装包时，会在npm安装目录创建一个类似node_modules的镜像，如果安装的包以前安装过，那么就直接用本地镜像，而不是远端，使用force表示强行从远端获取，并更新本地镜像！）
+   	npm install package --force
    
    2、nrm的使用，管理npm的不同版本
    ```
    
 2. ##### node版本管理nvm，参考：https://blog.csdn.net/baidu_30907803/article/details/80734275
 
-3. ##### npm发包（基于vue-cli3），参考：https://www.cnblogs.com/jasonwang2y60/p/11382349.html
+   ```js
+   描述：每个项目都有固定的node版本，或者推荐>多少版本才能运行，假如有两个项目存在冲突，怎么办？使用nvm管理不同node版本
+   
+   1、下载安装nvm
+   	nvm version  // 查看版本号，以及是否安装成功！
+   
+   2、进入终端操作
+       安装指定node版本
+       nvm install 6.0.0
+   	nvm install 6.0.0 32 // windows32位node版本
+   
+   3、切换node版本
+   nvm list // 查看当前安装的所有node版本
+   nvm user 6.0.0 // 使用6.0.0版本
+   node -v // 查看当前node版本
+   ```
+
+   
+
+3. ##### npm发包
 
    ```js
+   基于vue-cli3发布vue组件方法，参考：https://www.cnblogs.com/jasonwang2y60/p/11382349.html
    1、创建项目
    vue create programme
    
@@ -143,7 +171,7 @@
    lib : 输出目录，默认 dist 。这里我们改成 lib
    [entry] : 最后一个参数为入口文件，默认为 src/App.vue 。这里我们指定编译 packages/ 组件库目录。
    例如：
-   "lib": "vue-cli-service build --target lib --name smart-alipay --dest dist src/main.js",
+   "lib": "vue-cli-service build --target lib --name smart-alipay --dest lib src/main.js",
    
    9、修改package.js中的入口文件，以及包的信息
    "name": "vue-svgicon-coms",
@@ -153,13 +181,117 @@
    "main": "lib/vue-svgicon-coms.umd.min.js", // 入口文件
    "keyword": "vue svg icon",
    "license": "MIT",
-   "private": false
+   "private": false,  // 注意如果private为true说明为私有包，不允许发布
    
    10、执行编译
    npm run lib
    
    11、发布（当然前提是必须有一个npm账号）
    npm publish
+   
+   问题描述：上面是基于vue-cli的npm包发布，他会将项目中的依赖一起打包到npm包里。但有时候我们只发布一些插件，例如js文件，无关vue组件，所以就没必要将vue等的依赖一起打包，这样会增加包的大小。
+   参考：https://blog.csdn.net/weixin_44198965/article/details/104209771
+   	https://blog.csdn.net/xyphf/article/details/84846009
+   新建一个项目smart-plugins
+   初始化 npm init
+   此时会生成一个package.json
+   {
+     "name": "smart-plugins",
+     "version": "1.0.0",
+     "description": "公司一些公用的包",
+     "main": "src/index.js",
+     "scripts": {
+       "test": "echo \"Error: no test specified\" && exit 1"
+     },
+     "author": "luoliang",
+     "license": "ISC"
+   }
+   新建src资源文件目录
+   	新建index.js入口文件，引入需要暴露的js插件
+   	import { Iframe,receiveMessage,sendMessageToParent } from './Iframe.js';
+       export {
+           Iframe,
+           receiveMessage,
+           sendMessageToParent
+       }
+   执行npm publish（注意：这里少了一个webpack打包的过程，可以在这里引入webpack或者grut等打包），否则发布出去的包可以用，但全部都是源码，没有编译，没有压缩！！！
    ```
 
-4. 虚位以待！！！
+4. ##### npm私有仓库搭建
+
+   ```
+   问题描述：内网开发。在一些公司内部，由于各种原因，会用到npm官网上发布的第三方包，但是开发时又不希望开发人员随意使用外界的包，必须通过管理人员通过后才可引入。但前端开发的包依赖管理node_modules又是必须的，所有搭建一个内网或者叫局域网的私有仓库就很有必要了。内网的npm仓库拉取速度更快。
+   
+   使用verdaccio插件
+   安装(必须全局)
+   	npm install --global verdaccio
+   	
+   运行，即启动一个npm仓库服务（可以查看到仓库的物理地址）
+   	verdaccio
+   	
+   查找到config.yaml配置文件（大部分不用修改）
+   	#只添加一句
+   	listen:0.0.0.0:4873  // 监听端口，这是重点，如果不添加这个，其他局域网无法通过ip访问本机的npm私有仓库
+   	
+   本地的私有仓库启动好后，那么安装npm包的地址，就应该指向该私有仓库地址
+   npm config set registry http://localhost:4873
+   
+   注册私有仓库用户
+   npm adduser -registry http://localhost:4873
+   ......然后输入用户名密码邮箱等操作
+   
+   完成后，查看当前用户
+   npm who am i
+   
+   当然发布自己开发的私有包，也是npm publish，发布完成后，安装npm install 包名
+   yarn命令直接操作，不需要做其他配置！！！
+   ```
+
+   
+
+5. ##### yarn操作
+
+   ```
+   安装yarn（全局）
+   npm install -g yarn
+   
+   查看版本
+   yarn --version
+   
+   初始化项目（同npm）
+   yarn init
+   
+   yarn的配置项
+   yarn config list // 显示所有配置项
+   yarn config get key //获取具体key配置项
+   delete key // 删除某个key配置项
+   set	key value // 设置某个key配置项为value
+   
+   添加包
+   yarn add package // 安装一个package包，并添加到package.json和yarn.lock文件中
+   yarn add package@version // 安装指定版本
+   yarn add package@tag // 安装某个包下的tag
+   
+   yarn安装某个依赖包
+   yarn install // 安装package.json中的所有包，并将包及所有依赖保存进yarn.lock
+   yarn install --force // 强制重新下载所有包
+   yarn install --production // 值安装dependencies里的包
+   yarn install --no-lockfile // 不读取或者生产yarn.lock
+   
+   yarn发布包
+   yarn publish
+   
+   yarn更新包
+   yarn upgrade package
+   
+   显示一个包的信息
+   yarn info package
+   
+   yarn移除包
+   yarn remove package // 移除一个package包，并更新package.json和yarn.lock
+   
+   ```
+
+   
+
+6. 虚位以待！！！

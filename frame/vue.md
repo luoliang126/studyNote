@@ -290,11 +290,12 @@
        // 只要在index.js中规定了install方法，就可以像一些公共的插件一样在main.js中使用Vue.use()
        install:function(Vue){
            Vue.component('allComponent',outComponent)
+           ...... // 可以注册多个
        }
    };
    export default allComponent;
    4、挂载全局 到main.js中
-   import allComponent from './components/outComponent/index.js' //默认会去找index.js
+   import allComponent from './components/outComponent/index.js'
    Vue.use(allComponent);
    5、这样在组件中就可以直接使用 <all-component></all-component>，而不需要import和注册了
    
@@ -527,7 +528,7 @@
    两种方式的区别是query传参的参数会带在url后边展示在地址栏，params传参的参数不会展示到地址栏。
    需要注意的是接收参数的时候是route而不是router。两种方式一一对应，名字不能混用。
    
-   5、$attrs和$listener方式（vue2.4版本以后）。
+   5、$attrs和$listener方式（vue2.4版本以后支持）。
    描述：A-->B-->C组件传参（$attrs）
    组件A：
    <template>
@@ -603,7 +604,7 @@
        }
    }
    </script>
-   说明：这种方式可以理解为漏勺的原理，A组件传递了inputTex和content两个参数，但B组件只用了inputTex参数，剩下的参数（content）直接给B组件中引用的C组件，当然C组件需要props去接收。注意点：A传递的inputTex和content，如果B组件用props全部接收了，则组件C一个值都拿不到（一个都没有漏下去），同理如果B组件一个都没取，则全部漏给了组件C。这种方式实际应用时根据需要所定。
+   说明：这种方式可以理解为漏勺的原理，A组件传递了inputTex和content两个参数，但B组件只用了inputTex参数，剩下的参数（content）直接给C组件，当然C组件需要props去接收。注意点：A传递的inputTex和content，如果B组件用props全部接收了，则组件C一个值都拿不到（一个都没有漏下去），同理如果B组件一个都没取，则全部漏给了组件C。这种方式实际应用时根据需要所定。
                 
    组件C-->B-->A 事件触发($listener)
    组件A：同时监听了event-first和event-second两个事件
@@ -968,7 +969,7 @@
    this.$store.state.listData
    ```
 
-8. ##### vue路由
+7. ##### vue路由
 
    ```js
    关于路由
@@ -1139,9 +1140,11 @@
    this.$route.query.pk_refinfo  // 接收
    通过拼接路由地址+参数方式：http://localhost/isAttendMeeting?id=123,然后在路由isAttendMeeting界面，使用this.$route.query.id来获取拼接的参数。
    两种方式的区别是query传参的参数会带在url后边展示在地址栏，params传参的参数不会展示到地址栏。需要注意的是接收参数的时候是route而不是router。两种方式一一对应，名字不能混用。
+   
    11、关于用户权限，加载不同路由组件，addRouter方法。（查看smartx-webconsole-supplier站点）
    问题描述：一个应用有A,B两种权限操作，A和B不能访问对方的路由页面。在定义路由时可以做到，但如果在浏览器中手动输入路由地址依然可以访问？
-   解决办法：使用vue-router中的addRouter()动态添加路由方法。参考：https://www.jb51.net/article/139303.htm
+   解决办法：使用vue-router中的addRouter()动态添加路由方法。
+   方法一：参考 https://www.jb51.net/article/139303.htm
    第一步：定义路由，跟平时一样，不过基础路由很少，只有登陆注册报错等几个简单的路由。（因为登陆成功后，会根据一个返回值来判断动态添加的路由）
    import Vue from 'vue'
    import Router from 'vue-router'
@@ -1252,6 +1255,67 @@
    this.$router.addRoutes(routerList['V16']); 此时的路由就变成了V16对应的路由。
    注意：1、该方法要在路由跳转前就使用。
    	2、在切换账号权限的时候，需要路由重定向，清除不同账号权限对应的cookie，storage等
+   
+   方法二：方法一使用的是前端配置好所有权限匹配的路由地址数组，然后根据登录的账号权限获取对应的路由地址，这种方法实现了效果，但终究没达到数据库配置化。
+   原理：把当前所需要的路由地址（包括嵌套），配置到数据库中，注意这里的路由地址是一个字符串，所有前端拿到这个数据后，需要递归遍历该路由数组，获取到对应的component最后再走addRoutes，从而实现动态路由配置。
+   步骤一：假设我们已经登录成功，并有对应的账号权限，这时候去取路由地址，返回的应该类似这样的树状结构
+   routerList = [
+       {
+           path:'/',
+           name:'首页',
+           componentPath:'/index', //注意这里的地址，应该对应的是项目中实际的component地址，而不能随便定义，否则去import该组件就会抛错
+           children:[
+               {
+                   path:'nav1',
+                   name:'nav1',
+                   componentPath:'/index/nav1',
+                   children:[
+                       {
+                           path:'/nav1/nav1-1',
+                           name:'nav1-1',
+                           componentPath:'/index/nav1-1',
+                           children:.... // 当然这里可以继续嵌套，遍历时使用递归方法
+                       }
+                   ]
+               }，
+               {
+               	path:'nav2',
+                   name:'nav2',
+                   componentPath:'/index/nav2',
+               }
+           ]
+       }
+   ]
+   步骤二：拿到路由地址后，就是根据路由字符串componentPath，去取具体的路由component（必须使用递归，因为不知道嵌套多少层）
+   const getRouterComponent = (list) => {
+       if(list && list.length){
+           list.forEach(item => {
+               item.component = loadComponent(item.componentPath);
+               if(item.children && item.children.length){
+                   getRouterComponent(item,children);
+               }
+           })
+       }
+   }
+   const loadComponent = (path) => {
+       // 注意：这里动态import的component，应该映射的是根路径下的文件，这跟配置数据库路由地址有很大关系。
+       return () => import(`@/pages${path}.vue`);
+   }
+   getRouterComponent(routerList);
+   步骤三：在添加路由component成功后，执行addRoutes方法，将账号对应的路由地址push的路由结构中
+   const routes = [
+       {
+           path:'/login',
+           name:'登录',
+           component:() => import('@/pages/login.vue')
+       }
+   ]
+   let router = new VueRouter({
+       mode:'history',
+       routes:routes
+   })
+   router.addRoutes(routerList);
+   对比方法一和方法二：如果没有数据库配置，使用方法一，如果想走数据库配置，使用方法二。最后都是执行addRoutes
        
    12、路由地址错误或者丢失：当用户输入地址栏的路由，在我们路由配置中找不到时，那么直接强行跳转到我们指定的路由地址
    routes: [{
@@ -2236,5 +2300,38 @@ elementUI中表格错位，优化方案
     当然也可以添加.env.production环境，配置内容同development
     ```
 
-16. 虚位以待！！！
+16. ##### vue3.0
+
+    ```js
+    vue3.0完美兼容2.0版本，所以可以放心大胆的升级！！！
+    将vue-cli升级到最新版本，npm update -g @vue/cli,如果不成功就卸载后再重新安装。目前版本4.5.9
+    vue create vue3
+    提示选择：vue3版本
+    项目安装好后，与2.0版本一样。
+    
+    新增功能
+    1、支持jsx语法
+    安装jsx插件
+    npm install @vue/babel-plugin-jsx -D
+    配置.babel.config.js
+    "plugins":["@vue/babel-plugin-jsx"]
+    运行项目就可以使用jsx语法了
+    创建一个HelloWorld.js/HelloWorld.jsx .js或者.jsx后缀名都可以
+    const HelloWorld = {
+        render(){
+            return <div>vue3.0</div>
+        }
+    }
+    export default HelloWorld; // 这就创建好了一个HelloWorld组件
+    当然，使用时跟vue组件一样
+    import HelloWorld from './HelloWorld.js';
+    components:{
+        HelloWorld
+    }
+    <Hello-world></Hello-world>
+    ```
+
+    
+
+17. 虚位以待！！！
 

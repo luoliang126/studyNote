@@ -4,7 +4,7 @@
 
    ```js
    webpack是一款模块加载器兼打包工具，它能把各种资源，例如JS（含JSX）、coffee、样式（含less/sass）、图片、html等都作为模块来使用和处理
-   为什么使用webpack？现今的很多网页其实可以看做是功能丰富的应用，它们拥有着复杂的JavaScript代码和一大堆依赖包。为了简化开发的复杂度，引入了模块化的开发，例如requireJS（但只能加载js文件）
+   为什么使用webpack？现今的很多网页其实可以看做是功能丰富的应用，它们拥有着复杂的JavaScript代码和一大堆依赖包。为了简化开发的复杂度，引入了模块化的开发，例如requireJS
    安装webpack：
    //全局安装
    npm install -g webpack

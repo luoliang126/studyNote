@@ -235,10 +235,12 @@
    console.log(luoliang.constructor); // Person
    2、instanceof:判断某个对象是否属于另外一个对象，或被另外一个对象所创建。要求其左边的是一个对象，右边是对象类的名字或构造函数
    console.log(luoliang instanceof Person); // true
+   const arr = [];
+   console.log(arr instanceof Array) //true其他为false，可用于区别object和array
    3、typeof：返回结果是一个基本数据类型。如："number"，"string"，"boolean"，"object"，"function"，"undefined"
    typeof Person // 返回function，因为它是一个构造函数
    typeof luoliang // 返回object
-   typeof 1、typeof NaN // 返回 number
+   typeof 1 和 typeof NaN // 返回 number
    typeof 'test' // 返回 string
    typeof true   // 返回 boolean
    typeof Null、typeof undefined  // 返回 undefined
@@ -460,7 +462,7 @@
    ```js
    parseInt(5/2)  //丢弃小数部分,保留整数部分
    Math.ceil(5/2)  //向上取整,有小数就整数部分加1
-   Math.round(5/2)  //四舍五入
+   Math.round(5/2)  //四舍五入取整
    Math.floor(5/2)  //向下取整
    Math.round(Math.random()*9+1); //1-10之间的随机数
    Math.round(Math.random()*12+2); //2-14之间的随机数
@@ -533,6 +535,30 @@
    }
    let temp = tempFn(arr1);
    // 递归：适用于多级嵌套数组，如果想批量在每一级添加/修改/删除动作时使用。关键在于条件判断和函数的返回值！
+   
+   // 为每一级添加一个id，定义的递归函数传递一个当前index
+   let tempFn = function(data,index){
+       let result = [];
+       if(data.length){
+           data.forEach(jtem => {
+               let tempObj = {
+                   label: jtem.codeName, 
+                   value: jtem.codeValue,
+                   index:index,
+                   children:null
+               }
+               if(jtem.children && jtem.children.length){
+                   tempObj.children = tempFn(jtem.children,index+1)
+               }else{
+                   delete tempObj.children;
+               }
+               result.push(tempObj);
+           })
+       }
+       return result;
+   }
+   let temp = tempFn(arr1,0);
+   
    ```
 
 7. ##### js实现惯性滚动，下拉回弹效果

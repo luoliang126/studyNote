@@ -307,4 +307,23 @@
 
    
 
-8. 虚位以待！！！
+8. ##### electron与vue的混合开发
+
+   ```
+   第一种，通过地址栏url加载vue应用。
+   打包一个electron的空壳，然后首次加载的时候
+   mainWindow.loadURL('http://xxxx.com') // 你的vue项目地址
+   这种方式类似于iframe嵌套加载的方式。
+   
+   第二种，使用electron-vue
+   踩坑记录：
+   1、配置vue.config.js
+   	publicPath:'./'
+   2、路由，一定要使用hash模式（即vue路由的默认模式），千万不要使用history模式!!!。
+   3、cookie存储，什么js-cookie、tiny-cookie都没法使用，（如果非要使用缓存的话，使用local或者session）
+   4、使用electron-packager打包项目。npm install electron-packager
+   ```
+
+   
+
+9. 虚位以待！！！

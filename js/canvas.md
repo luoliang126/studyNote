@@ -11,12 +11,12 @@
 2. ##### canvas用法
 
    ```js
-   // 创建canvas画布
-   <canvas id="myCanvas" width="200" height="100"></canvas>
+   // 创建canvas画布，通过属性width、height设置宽高，不建议使用css样式。比如：我们设置了#myCanvas{width:400px;height:400px;},那么我们定义的属性width、height就会被拉升，从而影响视图效果
+   <canvas id="myCanvas" width="200" height="200"></canvas>
    // 拿到canvas画布
    var c=document.getElementById("myCanvas");
    // 创建context对象：getContext("2d") 对象是内建的 HTML5 对象，拥有多种绘制路径、矩形、圆形、字符以及添加图像的方法。
-   var ctx=c.getContext("2d");
+   var ctx=c.getContext("2d"); // 2d视图，如果想创建3d的话，使用的是webgl 
    // 作画
    ctx.fillStyle="#FF0000";
    ctx.fillRect(0,0,150,75);
@@ -87,12 +87,24 @@
    
    3、closePath()创建从当前点回到起始点的路径。
    
-   4、moveTo()把路径移动到画布中的指定点，不创建线条。
+   4、moveTo(x,y)把路径移动到画布中的指定点，不创建线条。
+   x:X坐标
+   y:Y坐标
    
-   5、lineTo()添加一个新点，然后在画布中创建从该点到最后指定点的线条。
+   5、lineTo(x,y)添加一个新点，然后在画布中创建从该点到最后指定点的线条。
+   x:X坐标
+   y:Y坐标
    
-   6、arc()创建弧/曲线（用于创建圆形或部分圆）
-      
+   6、arc(x,y,r,sAngle,eAngle,couterclockwise)创建弧/曲线（用于创建圆形或部分圆）
+   x:X坐标，y:Y坐标 （注意是圆心坐标）
+   r:半径 (需要作画圆弧的半径)
+   sAngle,eAangle:起始角度(是以弧度计算！！！)
+   couterclockwise:可选参数，默认为false（顺时针），true(逆时针)
+   弧度计算公式：
+   0----π/2(90度)----π(180度)----3π/2(270度)----2π(360度即0度)
+   度与弧度的转换公式：
+   度 = 弧度 x 180°/π ===》 弧度 = 度 x π/180度
+   
    7、arcTo()创建两切线之间的弧/曲线。
    
    8、rotate()旋转当前绘图。
@@ -108,6 +120,8 @@
    13、strokeText()	在画布上绘制文本（无填充）。
        
    14、drawImage()	向画布上绘制图像、画布或视频。
+   
+   15、stroke() 之前的各种操作可以理解为描线（只是一个轮廓，并没有实际作画），执行stroke方法，才是真正在canvas上画。
    ```
 
 3. 虚位以待

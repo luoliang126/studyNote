@@ -214,7 +214,21 @@
            receiveMessage,
            sendMessageToParent
        }
-   执行npm publish（注意：这里少了一个webpack打包的过程，可以在这里引入webpack或者grut等打包），否则发布出去的包可以用，但全部都是源码，没有编译，没有压缩！！！
+   执行npm publish（注意：这里少了一个webpack打包的过程，可以在这里引入webpack或者grut等打包），发布出去的包可以用，但全部都是源码，没有编译，没有压缩。这里已webpack为例，解决打包压缩问题。
+   安装webpack和webpack-cli
+   npm install webpack webpack-cli
+   配置package.json，添加打包压缩命令
+   "scripts":{
+       ......
+       "build":"webpack"
+   }
+   这里默认webpack的打包，以及打包的输出文件（当然可以配置webpack，详情查看smart-core-util插件发布）。
+   执行npm run build后会生成一个dist目录，以及一个main.js文件，此时我们需要修改包的入口为该main.js
+   {
+       ......
+       "main":"dist/main.js"
+   }
+   再执行npm publish发布该包，此时的包就已经是打包压缩过后的了。
    ```
 
 4. ##### npm私有仓库搭建
@@ -230,8 +244,8 @@
    	verdaccio
    	
    查找到config.yaml配置文件（大部分不用修改）
-   	#只添加一句
-   	listen:0.0.0.0:4873  // 监听端口，这是重点，如果不添加这个，其他局域网无法通过ip访问本机的npm私有仓库
+   	#只添加一句，监听端口，使其他局域网用户可以通过ip访问本机的npm私有仓库，注意关闭防火墙！！！
+   	listen:0.0.0.0:4873
    	
    本地的私有仓库启动好后，那么安装npm包的地址，就应该指向该私有仓库地址
    npm config set registry http://localhost:4873
@@ -282,7 +296,10 @@
    yarn publish
    
    yarn更新包
-   yarn upgrade package
+   yarn upgrade package // 包更新了，但是package.json中包的版本标识未更新！
+   //将package包更新到1.0.0版本，并将package.json一起更新。在使用时最好先查看一下最新版本号yarn info package
+   yarn upgrade  package@1.0.0
+   yarn add package // 重新安装package，也会更新package.json
    
    显示一个包的信息
    yarn info package

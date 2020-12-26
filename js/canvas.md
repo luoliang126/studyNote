@@ -105,9 +105,20 @@
    度与弧度的转换公式：
    度 = 弧度 x 180°/π ===》 弧度 = 度 x π/180度
    
-   7、arcTo()创建两切线之间的弧/曲线。
+   7、arcTo(x1,y1,x2,y2,r)创建两切线之间的弧/曲线(用于创建圆角，类似borderRadius)
+   x1、y1:圆弧起点坐标（是原本直角的顶点坐标）
+   x2、y2:圆弧结束坐标
+   r:圆弧半径
+   ctx.moveTo(20,20);
+   ctx.lineTo(100,20);
+   ctx.arcTo(120,20,120,40,20);
+   ctx.lineTo(120,100);
+   ctx.stroke();
+   画出来是一个半圆弧，但倒角为半圆圆弧(类似borderRadius效果),注意这里的x1,y1是原本直角的顶角坐标（因为是圆弧，所以该坐标没被画出来），x2,y2是圆弧结束的坐标，r是圆弧半径。
    
-   8、rotate()旋转当前绘图。
+   8、rotate(angle)旋转当前绘图。
+   angle:旋转角度(注意是弧度,详情查看度与弧度的转换公式)
+   ctx.rotate(20*Math.PI/180)
       
    9、translate()	重新映射画布上的 (0,0) 位置。
       
@@ -115,11 +126,24 @@
        
    11、setTransform()	将当前转换重置为单位矩阵。然后运行 transform()。
        
-   12、fillText()	在画布上绘制"被填充的"文本。
+   12、fillText(text,x,y,maxWidth)	在画布上绘制"被填充的"文本。
+   text:文本内容
+   x,y:开始绘制文本的坐标（相对于画布，默认为起始点）
+   maxWidth:允许的最大文本宽度(如果文本宽度超过了maxWidth,那么文本将会被压缩)
+   ctx.font = '30px Georgia';
+   ctx.fillText('我是罗亮',100,100,50);
+   ctx.stroke();
+   
+   13、strokeText(text,x,y,maxWidth)在画布上绘制文本（无填充）。
+   参数与fillText一致，只是一个是填充，一个是描边，画出来效果不同而已
        
-   13、strokeText()	在画布上绘制文本（无填充）。
-       
-   14、drawImage()	向画布上绘制图像、画布或视频。
+   14、drawImage(img,sx,sy,swidth,sheight,x,y,width,height)	向画布上绘制图像、画布或视频。（可用于图片上传时候的裁剪工作）
+   img:规定要使用的图像、画布或者视频(注意是DOM元素element)
+   sx、sy:剪切img元素开始的坐标（起始左上角坐标）
+   swidth、sheight:被剪切图片的宽高
+   x、y:在canvas画布上放置已经剪切好图像的坐标（起始坐标）
+   width、height:放在画布上的图像的宽高(超出会压缩)
+   其中img、x、y是毕传，其余参数可选。
    
    15、stroke() 之前的各种操作可以理解为描线（只是一个轮廓，并没有实际作画），执行stroke方法，才是真正在canvas上画。
    ```

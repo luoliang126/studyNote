@@ -204,7 +204,13 @@
    
    4、迭代器模式
    
-   5、代理模式
+   5、代理模式：为其他对象提供一种代理以控制对这个对象的访问。在某些情况下，一个对象不适合或者不能直接引用另一个对象，而代理对象可以在客户端和目标对象之间起到中介的作用。
+   vuex中的getters，就是一个代理模式
+   我们访问vuex中的name值，直接使用this.$store.state.name即可，但这样不太好，为什么？因为该值可能不存在或者为空。那么我们通过this.$store.state.name拿到后，就会处理一下
+   if(!this.$store.state.name){.....}
+   假如我们有多次多个地方需要用到这个name值，那我们是不是要在每个地方加上这句if判断？所以统一一个getters方式，就变得尤为重要，getters其实就是一个代理模式，让我们通过getters去获取这个name值，而不是直接去获取这个name值。
+   es6中的Proxy构造函数就是为此而生
+   var proxy = new Proxy(target, handler) // target表示所要代理的对象，参数handler也是一个对象用来设置对所代理的对象的行为。
    
    6、命令模式
    

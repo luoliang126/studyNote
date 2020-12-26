@@ -218,7 +218,7 @@
    }
    
    方法三：
-   使用TPM获取皮肤颜色值（十六进制值），通过style绑定。
+   获取皮肤颜色值（十六进制值），通过style绑定。
    实现方式：
    1. iaccount在初始化时通过/api/tpm/cfg/getsettings拿到当前租户的颜色值，存入cookie；
    2. 使用时通过style绑定computed.background-color;
@@ -228,9 +228,94 @@
    方法四：css3的更换皮肤方案
    参考css3部分！
    
-   方法五：通过插件webpack-theme-color-replacer插件方式更换皮肤（参考ant-design-pro项目）
+   方法五：通过插件webpack-theme-color-replacer插件方式更换皮肤
+   基于element-ui的方法：参考：https://www.jianshu.com/p/10a9fe676145?from=singlemessage
+   1、安装插件：webpack-theme-color-replacer、node-sass、sass-loader、babel-plugin-component、element-theme-chalk这几个插件是我基于vue-cli3搭建项目时，所用到的。
+   2、在根目录下创建一个config目录---> app-config.js
+   module.exports = {
+       LOGIN_PATH: './',
+       title: 'vue + webpack4 + element-ui脚手架项目',
+       description: 'vue + webpack4 + element-ui脚手架项目',
+       themeColor: '#409EFF' // 这个色号必须和主题色是一个颜色才行，要不然出来的css模板文件是空的
+   }
+   3、在src目录下，创建plugins目录---> themeColorClient.js（这个是修改主题色的插件，当然可以根据自己项目结构随意调整位置，注意引用路径即可！！！）
+   import client from 'webpack-theme-color-replacer/client'
+   import forElementUI from 'webpack-theme-color-replacer/forElementUI'
+   // 注意自己项目里的引入路径
+   import appConfig from '../../config/app-config'
+   export let curColor = appConfig.themeColor
+   // 动态切换主题色
+   export function changeThemeColor(newColor) {
+       var options = {
+           newColors: [...forElementUI.getElementUISeries(newColor)]
+       }
+       return client.changer.changeColor(options, Promise)
+       .then(() => {
+           curColor = newColor
+           localStorage.setItem('theme_color', curColor) // 把修改的主题色保存到localStorage，方便下次使用，当然也可以走接口保存！
+       })
+   }
+   // 初始化主题色（就是上面保存时候的值）
+   export function initThemeColor() {
+       const savedColor = localStorage.getItem('theme_color')
+       if (savedColor) {
+           curColor = savedColor
+           changeThemeColor(savedColor)
+       }
+   }
+   4、配置babel.config.js  这个babel-plugin-component插件很重要，必须装否则无效，同时依赖的.scss，所以node-sass和sass-loader必须！
+   module.exports = {
+       presets: ["@vue/cli-plugin-babel/preset"],
+       plugins: [
+           [
+               'babel-plugin-component',
+               {
+                   libraryName: 'element-ui',
+                   styleLibraryName: '~node_modules/element-theme-chalk/src',
+                   ext: '.scss'
+               }
+           ]
+       ],
+   };
+   5、注意main.js
+   ......
+   import ElementUI from 'element-ui'; 
+   // 注意，这里就不用引入element-ui的主题样式了，因为是我们后面生成的，可以查看一下DOM结构，生成的css样式会动态的append到body后面，我们下次动态修改主题色的时候就是修改的这个css。
+   // import 'element-ui/lib/theme-chalk/index.css';
+   Vue.use(ElementUI)
+   // 初始化主题色
+   import { initThemeColor } from './utils/themeColorClient'
+   initThemeColor();
+   ......
+   6、界面上使用时
+   <template>
+       <div class="home">
+   	    <el-button type="primary">主要按钮</el-button>
+   	    <el-color-picker size="medium" @change="changeColor"></el-color-picker>
+       	<div>
+               <span class="font-test">
+               	看我到底变不变色
+               </span>
+               <span class="font-test1">
+   	            看我到底变不变色
+               </span>
+           </div>
+       </div>
+   </template>
+   <script>
+   import { changeThemeColor } from '@/utils/themeColorClient'
+   export default {
+       methods: {
+           changeColor(newColor) {
+               changeThemeColor(newColor).then(() => {......})
+           }
+       }
+   }
+   </script>
+   注意：class="font-test"这个font-test选择器，估计是作者添加的，凡是用了这个class的标签，颜色会自动取主题色！！！
+   基于ant-design的换肤方案，参考ant-design-vue-pro的那套！
    
-   对比两种方法：
+   对比几种方法：
    第一种更全局更优雅，但扩充颜色主题较麻烦。
    第二种简单，但如果一个大项目较多时，使用的全局theme.scss定义的class也会较多，不适合大型项目
    第三种适用于少量界面，微小型项目。
@@ -239,7 +324,9 @@
    var value = styles.getPropertyValue("--theme-color");
    console.log(value);
    获取，使用方便简单，但会在根节点渲染时将主题色添加上。
+   第五种，通过插件的方式，将UI组件的所有定义的主题色全部修改，再append到body上，每次切换主题色的时候，都是动态生成的主题样式表css文件，理论上这种方式是最可取的。目前还未遇到任何问题！
    总结：没有最好的解决办法，只有根据当前项目最适合的解决办法。
    ```
 
 4. 虚位以待！
+

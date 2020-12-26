@@ -439,7 +439,7 @@
    若 a 等于 b，则返回 0。
    若 a 大于 b，则返回一个大于 0 的值
    
-   2、冒泡排序
+   2、冒泡排序：相邻两个元素相对比，按照大小排序。循环次数为数组长度的n次方。
    let arr = [23,1,56,2,7,8,9,1,5]
    for (var i = 0; i < arr.length; i++) {
        for (var j = 0; j < arr.length - 1 - i; j++) {
@@ -452,7 +452,18 @@
    }
    console.log(arr);
    
-   3、选择排序，顾明思议就是 每次挑选出最大/最小值，然后放入一个存放数组中，（并将它从原数组中删除，这样可以减少循环时间）
+   3、选择排序，顾明思议就是选择当前元素与之前的数组相比较，知道大于前面数组中的那个数，就push。
+   let arr = [23,1,56,2,7,8,9,1,5]
+   let preIndex, current;
+   for (let i = 1; i < arr.length; i++) {
+       preIndex = i - 1;
+       current = arr[i];
+       while (preIndex >= 0 && current < arr[preIndex]) {
+           arr[preIndex + 1] = arr[preIndex];
+           preIndex--;
+       }
+       arr[preIndex + 1] = current;
+   }
    
    4、二分查找法(在数据量较少时，不推荐使用效率不高，大量数据推荐使用！)
    ```
@@ -567,4 +578,4 @@
 
 7. ##### js实现惯性滚动，下拉回弹效果
 
-8. 虚位以待！！！
+8. 更多算法题目练习，参考：https://leetcode-cn.com/ 。虚位以待！！！

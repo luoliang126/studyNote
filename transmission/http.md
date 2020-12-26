@@ -170,6 +170,7 @@
    .catch(function (error) {
        console.log(error);
    });
+   
    axios.post('/user', {
        firstName: 'Fred',
        lastName: 'Flintstone'

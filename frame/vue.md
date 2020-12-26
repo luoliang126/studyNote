@@ -933,6 +933,53 @@
    this.username //直接使用取值
    this.setUser({name:'luoliang',age:28}) // 直接使用修改user的值
    // 如果我们从接口获取到的数据需要存入store的话，那么建议将接口写在vuex的actions中。
+       
+   再次优化getters的使用
+   在上面中是全局只有一个getters用来暴露state中的值
+   export default new Vuex.Store ({
+       modules: {
+           permission,
+           venue,
+           user,
+           supplier
+       },
+       getters,
+   })
+   如果我们在每个modules中暴露getters呢？
+   permission.js模块中
+   const permission = {
+       state: {
+           token: null,
+           userId: null,
+           grant: null,
+       },
+       mutations: {
+           setGrantResult(state, value) {
+               localStorage.setItem("smartx_token", JSON.stringify(value));
+               this.token = value.access_token;
+               this.userId = value.userId;
+               this.grant = value;
+               localStorage.setItem("token", this.token);
+           }
+       },
+       gettters:{
+           // getters中的值，是一个返回函数，在这里可以一些其他操作！
+           token:state => {
+               if(!state.token){
+                   try{
+                       const token = window.localStorage.getItem('token');
+                       state.token = JSON.parse(token);
+                   }catch(err){
+                       console.log(err);
+                   }
+               }
+               return state.token;
+           },
+           ......
+       }
+   }
+   export default permission;
+   那么在vuex主index.js中就不需要再次暴露getters，而只是引入每个modules即可！！！
    
    vuex状态持久化
    vuex虽然可以实现状态管理，但它毕竟是以定义一个全局变量实现，在app端还好，但在web端用户按F5或者刷新页面后，vuex中的数据会全部清空为初始值。解决办法：使用vuex-persistedstate 参考：https://www.cnblogs.com/lemoncool/p/9645587.html
@@ -1448,7 +1495,7 @@
    注意：
    1、include是包含，exclude是除去......之外的（特别注意：如果不需要任何缓存时，includes的值是' ',中间有一个空格，而不是简单的空字符串！！！）
    2、记住加name属性，不是router中的name属性，而是在test1组件当中的name值。
-   3、切记只是不会执行created和mounted里面的内容。
+   3、切记只是不会执行created和mounted生命周期里面的内容。
    4、如果需要缓存多个界面include="test1,test2,test3......"。
    5、如果存在多个路由嵌套时，最好在每个<router-view>外层都加上<keep-alive :include="你需要缓存的界面，多个以逗号隔开">
    问题二：

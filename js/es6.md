@@ -496,11 +496,12 @@
    总结：没有最好的办法，只有根据当前需求最合理的解决办法。
    ```
 
-6. ##### Promise的用法。参考: https://blog.csdn.net/shan1991fei/article/details/78966297
+4. ##### Promise的用法。参考: https://blog.csdn.net/shan1991fei/article/details/78966297
 
    ```js
    1、什么是promise？
    简单来讲，就是能把原来的回调写法分离出来，在异步操作执行完后，用链式调用的方式执行回调函数，它是一种异步方法。
+   基本使用：Promise是一个构造函数，允许一个回调方法，并接受两个参数resolve、reject，这两个参数都是function。这两个参数都可以修改promise的状态，resolve是成功状态，reject是失败状态，我们可以通过这两个方法将结果返回出去，在通过then方法接收。then方法也有两个回调function，第一个就是resove的成功回调，第二个就是reject的失败回调。除了这resolve和reject外，还有一个throw也可以修改promise的状态，但它只能走错误的回调
    function runAsync(){
        var p = new Promise(function(resolve, reject){
            //做一些异步操作(这里用setTimeout模拟ajax)
@@ -513,6 +514,9 @@
    }
    runAsync().then(function(data){
        //data就是resolve中传递过来的参数
+       console.log(data);
+   },function(err){
+       //error就是reject中传递过来的参数
        console.log(data);
    });
    //上面的方法，用callback回调的办法依然可以解决异步执行方法，但promise的强大之处在于可以链式调用。
@@ -1020,7 +1024,6 @@
     map.set(true,'111');
     map.set(obj,'111');
     map.set(1,1);
-    map.set(1,1);
     map.set(undefined,undefined);
     map.set(null,null);
     map.set(NaN,NaN);
@@ -1092,7 +1095,7 @@
     
     WeakMap后续补充
     ```
-
+    
 14. ##### Set 类的使用。参考：https://www.cnblogs.com/wjcoding/p/11690886.html
 
     ```js

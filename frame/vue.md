@@ -165,9 +165,9 @@
 5. ##### vue组件
 
    ```js
-   vue组件扩展（公用方法抽离），混合mixins和继承extends 参考：http://www.jb51.net/article/131008.htm
+   1、vue组件扩展（公用方法抽离），混合mixins和继承extends 参考：http://www.jb51.net/article/131008.htm
    在一个单独的js文件
-   1、在extends.js中
+   在extends.js中
    let apiUrs = {
        query: '/api/tenants/roche/Disclaimer/GetMyLastUnread',
        read: '/api/tenants/roche/Disclaimer/Read'
@@ -216,7 +216,7 @@
            },
        }
    }
-   2、在test.vue组件中
+   在test.vue组件中
    import extends from "../controllers/extends.js"; //这里为了演示，实际中最好不用关键字
    export default {
        extends: extends, // mixins:[extends，......]多个
@@ -231,12 +231,12 @@
        ......
    };
    批注：
-   1、这里以extends为例，mixins类似。
-   2、当然也可以extends一个单独的.vue文件，里面的内容和js一样（这也是写服务组件的方式）。
-   3、使用了mixins和extends继承之后，同一生命周期函数，会优先调用mixins和extends里面的生命周期钩子函数，组件本身的钩子函数也会对应调用。mixins和extends相比，extends触发的优先级更高（最优先执行）。
-   4、同一data里面的值，mixins和extentd也会优先解析赋值，所以最后取值的时候，一般都是组件本身的data值（因为本身最后执行，把data里面原有的值覆盖了）
+   这里以extends为例，mixins类似。
+   当然也可以extends一个单独的.vue文件，里面的内容和js一样（这也是写服务组件的方式）。
+   使用了mixins和extends继承之后，同一生命周期函数，会优先调用mixins和extends里面的生命周期钩子函数，组件本身的钩子函数也会对应调用。mixins和extends相比，extends触发的优先级更高（最优先执行）。
+   同一data里面的值，mixins和extentd也会优先解析赋值，所以最后取值的时候，一般都是组件本身的data值（因为本身最后执行，把data里面原有的值覆盖了）
    
-   vue中动态切换组件的方法
+   2、vue中动态切换组件的方法
    <template>
        <div>
    	    <button @click="changeComponent">切换组件</button>
@@ -265,7 +265,7 @@
    </scirpt>
    一般，我们通过v-if,v-show等可以控制组件的隐藏和显示，就可以达到渲染的效果，但这样无疑会增加代码量，而这样操作可以提高代码效率，传递参数也可以通用一个componentParams，以及回调事件componentCallback，再分发事件。
    
-   全局组件 创建和使用方法。
+   3、全局组件 创建和使用方法。
    <a href="https://www.cnblogs.com/670074760-zsx/p/7049806.html" target="_blank">参考文档1</a>
    <a href="https://blog.csdn.net/runonway/article/details/78998631" target="_blank">参考文档2</a>
    问题描述：我们创建好了组件indicator.vue,然后在需要引用的地方
@@ -276,14 +276,14 @@
    <Indicator></Indicator>   // 使用组件。
    假如有10处的话，我们就需要import 10次，但如果我们像element组件一样，在全局main.js中引入一次。
    方法一：
-   1、在components目录下，定义单独的组件文件夹 outComponent，并创建组件outComponent.vue 和index.js
-   2、outComponent.vue 定义的组件（和平时定义组件一样）
+   在components目录下，定义单独的组件文件夹 outComponent，并创建组件outComponent.vue 和index.js
+   在outComponent.vue中 定义的组件（和平时定义组件一样）
    <template>
        <div>
            这是挂载的全局组件
    	</div>
    </template>
-   3、index.js 中通过 install方法，将outComponent组件暴露出去
+   在index.js 中通过 install方法，将outComponent组件暴露出去
    import outComponent from './outComponent.vue'
    const allComponent = {
        // allComponent这就是后面可以使用的组件的名字，install是默认的一个方法
@@ -294,13 +294,13 @@
        }
    };
    export default allComponent;
-   4、挂载全局 到main.js中
+   挂载全局 到main.js中
    import allComponent from './components/outComponent/index.js'
    Vue.use(allComponent);
-   5、这样在组件中就可以直接使用 <all-component></all-component>，而不需要import和注册了
+   这样在组件中就可以直接使用 <all-component></all-component>，而不需要import和注册了
    
    方法二：
-   1、在components下创建一个allComponent.js文件
+   在components下创建一个allComponent.js文件
    import eg from '../components/eg.vue';  //引入需要注册的全局组件，并暴露出去
    ......
    export default (Vue)=>{
@@ -317,11 +317,11 @@
        }
    };
    export default allComponent
-   2、在main.js中
+   在main.js中
    import components from './components/allComponent.js';
    Vue.use(components);
    
-   组件提供给使用者自定义的方法（slot插槽方式）。 参考：https://blog.csdn.net/kingov/article/details/78293384
+   4、组件提供给使用者自定义的方法（slot插槽方式）。 参考：https://blog.csdn.net/kingov/article/details/78293384
    问题描述：
    我们写了一个head.vue的组件，样式已经固定了，但是用户在使用的时候，又想自己修改怎么办？
    解决办法：使用slot和name属性搭配可以做到，slot分发插槽，可以让组件的可扩展性更强。
@@ -440,7 +440,120 @@
        </div>
    </swiper>
    
-   组件间的数据传递
+   5、自定义组件实现一个双向绑定v-model，双向绑定还可以使用sync修饰符，详细内容查看sync部分
+   问题描述：假如我们在书写一个组件的时候，只想得到里面的值。如<persona-component v-model="value"></persona-component>由于父--子组件props传参是单向的，即父组件修改值，子组件能拿到最新修改后的值。但是子组件将props传过来的值修改了，父组件却无法修改（双向绑定）。使用事件传递可以，但毕竟要$emit一次，并要监听。
+   解决办法一：
+   父组件：
+   <template>
+       <div>
+       	<aa v-model="test"></aa>  // 组件中使用v-model
+   	</div>
+   </template>
+   <script>
+   import aa from './aa.vue'
+   export default {
+   	data () {
+   		return {
+   			test: ''
+   		}
+   	},
+   	components:{
+   		aa
+   	}
+   }
+   </script>
+   子组件：
+   <template>
+   	<div>
+   		<ul>
+   			<li>{{'里面的值：'+ msg}}</li>
+               <button @click="fn2">里面改变外面</button>
+   		</ul>
+   	</div>
+   </template>
+   <script>
+   export default {
+   //使用model，这儿2个属性，prop属性说，我要将msg作为该组件被使用时（此处为aa组件被父组件调用）v-model能取到的值，
+   //event说，我this.$emit('cc',修改的值)的时候，参数的值就是父组件v-model收到的值。
+   	model: {
+   		prop: 'msg',
+   		event: 'cc'
+   	},
+       props: {
+           msg: ''
+       },
+   	methods: {
+           fn2 () {
+               this.$emit('cc', this.msg+2)  // this.msg+2就是修改后的值
+           }
+       }
+   }
+   </script>
+   方法二(推荐使用)：
+   父组件与方法一的父组件一样
+   子组件
+   <template>
+       <div>
+       	<ul>
+       	// 组件使用时有v-model属性，value初始传的‘what’ 不会被渲染，而是v-model绑定的test值被渲染，这儿value会被重新赋值为v-model绑定的test的值。
+   			<li>{{'里面的值：'+ value}}</li>
+   			<button @click="fn2">里面改变外面</button>
+   		</ul>
+   	</div>
+   </template>
+   <script>
+   export default {
+   	props: {
+           value: {   // 必须要使用value，才能拿到数据
+               default: '',
+           },
+       },
+   	methods: {
+           fn2 () {
+               // 这儿必须用input发送数据，发送的数据会被父级v-model=“test”接受到，再被value=test传回来。
+               this.$emit('input', this.value+2)
+           }
+       }
+   }
+   </script>
+   注意：如果v-model是动态，随时可能变的情况下，应该用watch监听value的变化，在赋值！！！这样就能同步数据
+   
+   6、函数式组件，vue没有类似react那样的jsx语法，想用函数式编程就会变得很鸡肋，因为数据不是双向的。
+   什么叫函数式组件？
+   我们可以把函数式组件想像成组件里的一个函数，入参是渲染上下文(render context)，返回值是渲染好的HTML片段。
+   对于函数式组件，可以这样定义：
+       Stateless(无状态)：组件自身是没有状态的
+       Instanceless(无实例)：组件自身没有实例，也就是没有this
+       内部没有任何生命周期处理函数
+       轻量,渲染性能高,适合只依赖于外部数据传递而变化的组件(展示组件，无逻辑和状态修改)
+       只接受props值
+   由于函数式组件拥有的这两个特性，我们就可以把它用作高阶组件(High order components)，所谓高阶，就是可以生成其它组件的组件。
+   新建一个functionComponent.vue
+   export default {
+       name: 'functional-button',
+       functional: true,
+       render(createElement, context) {
+           return createElement('button', 'click me')
+       }
+   }
+   注意：声明的functional:true // 必须！！！
+   当然也可以使用模板template functional  // 与上面方法相同
+   <template functional>
+     <div class="cell">
+       <div v-if="props.value" class="on"></div>
+       <section v-else class="off"></section>
+     </div>
+   </template>
+   <script>
+   export default {
+     props: ['value']
+   }
+   </script>
+   ```
+   
+6. ##### 组件间传递参数
+
+   ```js
    1、父-子传递参数 props
    在father.vue中导入子组件child.vue后
    <child :data="data"></child>  // 可以绑定多个参数
@@ -501,32 +614,13 @@
    this.Bus.$emit("doSearch", params); //触发事件
    this.Bus.$on("doSearch",function(params){......}) //监听事件，params为传递的参数
    注意：
-   1、在组件中使用$on时，首先创建时会执行一次。如果在当前组件不销毁时，那么下次进入时就会执行2次，依次类推，不停的进入该组件、退出，就会不停的监听$on，解决办法是，在该组件销毁时取消监听组件销毁生命周期函数中取消监听，下次再进入时再创建监听。
+   在组件中使用$on时，首先创建时会执行一次。如果在当前组件不销毁时，那么下次进入时就会执行2次，依次类推，不停的进入该组件、退出，就会不停的监听$on，解决办法是，在该组件销毁时取消监听组件销毁生命周期函数中取消监听，下次再进入时再创建监听。
    destroyed() {
    	this.$root.$bus.$off("reloadDetail")
    },
-   2、以上两种方法都一样，只是书写方法不一致而已。适用于触发一次，从新渲请求接口等操作。Bus总线事件触发方法，建议少用，尤其是有大量数据需要传递时，建议使用vuex。（整个界面都是触发--监听很难维护,尤其是数据无法得到保证和确定）
+   以上两种方法都一样，只是书写方法不一致而已。适用于触发一次，从新渲请求接口等操作。Bus总线事件触发方法，建议少用，尤其是有大量数据需要传递时，建议使用vuex。（整个界面都是触发--监听很难维护,尤其是数据无法得到保证和确定）
                                  
-   4、路由传参
-   方法一：定义路由跳转传参
-   <router-link :to="{ name:'game1', params: {num: 123} }">   
-   //其中name:'game1',这个name属性就是定义路由中的name
-   <router-link :to="{ path:'/hotel',params:{id:item.id} }">
-   方法二：函数传参
-   router.push({ name: 'user', params: { userId: 123 }})  
-   // 记住此处只能用定义在路由index.js文件中，name属性对应的值。
-   界面上通过this.$route就可以获取到这个params了
-   方法三：
-   this.$router.push({name:'parasetEdit',params:{pk_refinfo:'test',value:'test1'}}); // 传递
-   this.$route.params.pk_refinfo // 接收
-   方法四：
-   this.$router.push({path:'/uapbd/paraset/edit',query:{pk_refinfo:'test',value:'test1'}}); // 传递
-   this.$route.query.pk_refinfo  // 接收
-   方法五：
-   通过拼接路由地址+参数方式：http://localhost/isAttendMeeting?id=123
-   然后在路由isAttendMeeting界面，使用this.$route.query.id来获取拼接的参数。
-   两种方式的区别是query传参的参数会带在url后边展示在地址栏，params传参的参数不会展示到地址栏。
-   需要注意的是接收参数的时候是route而不是router。两种方式一一对应，名字不能混用。
+   4、路由传参（详情查看vue路由部分）。
    
    5、$attrs和$listener方式（vue2.4版本以后支持）。
    描述：A-->B-->C组件传参（$attrs）
@@ -684,118 +778,89 @@
    </script>
    说明：这里的关键在于组件B，通过v-on="$listeners"把B组件所有的事件都传给了C组件，C组件就可以直接触发！！！
    
-   6、自定义组件实现一个双向绑定v-model，双向绑定还可以使用sync修饰符，详细内容查看sync部分
-   问题描述：假如我们在书写一个组件的时候，只想得到里面的值。如<persona-component v-model="value"></persona-component>由于父--子组件props传参是单向的，即父组件修改值，子组件能拿到最新修改后的值。但是子组件将props传过来的值修改了，父组件却无法修改（双向绑定）。使用事件传递可以，但毕竟要$emit一次，并要监听。
-   解决办法一：
-   父组件：
-   <template>
-       <div>
-       	<aa v-model="test"></aa>  // 组件中使用v-model
-   	</div>
-   </template>
-   <script>
-   import aa from './aa.vue'
-   export default {
-   	data () {
-   		return {
-   			test: ''
-   		}
-   	},
-   	components:{
-   		aa
-   	}
-   }
-   </script>
-   子组件：
+   6、provide/inject方式，这是父组件对子、孙、以及所有后代传递的方式，但不建议在项目中使用（因为怕你使用不好，会骂作者）
+   在componentA中
    <template>
    	<div>
-   		<ul>
-   			<li>{{'里面的值：'+ msg}}</li>
-               <button @click="fn2">里面改变外面</button>
-   		</ul>
-   	</div>
+       	<component-B></component-B>
+       </div>    
    </template>
-   <script>
    export default {
-   //使用model，这儿2个属性，prop属性说，我要将msg作为该组件被使用时（此处为aa组件被父组件调用）v-model能取到的值，
-   //event说，我this.$emit('cc',修改的值)的时候，参数的值就是父组件v-model收到的值。
-   	model: {
-   		prop: 'msg',
-   		event: 'cc'
-   	},
-       props: {
-           msg: ''
-       },
-   	methods: {
-           fn2 () {
-               this.$emit('cc', this.msg+2)  // this.msg+2就是修改后的值
+       data(){......},
+   	provide(){
+           return {
+               name:'luoliang'
            }
-       }
+       },
+   	methods:{......}
    }
-   </script>
-   方法二(推荐使用)：
-   父组件与方法一的父组件一样
-   子组件
+   在componentB中
    <template>
-       <div>
-       	<ul>
-       	// 组件使用时有v-model属性，value初始传的‘what’ 不会被渲染，而是v-model绑定的test值被渲染，这儿value会被重新赋值为v-model绑定的test的值。
-   			<li>{{'里面的值：'+ value}}</li>
-   			<button @click="fn2">里面改变外面</button>
-   		</ul>
-   	</div>
+   	<div>
+   		......
+       </div>    
    </template>
-   <script>
    export default {
-   	props: {
-           value: {   // 必须要使用value，才能拿到数据
-               default: '',
-           },
-       },
-   	methods: {
-           fn2 () {
-               // 这儿必须用input发送数据，发送的数据会被父级v-model=“test”接受到，再被value=test传回来。
-               this.$emit('input', this.value+2)
+       data(){......},
+   	inject:['name'],
+   	mounted:function(){
+           console.log(this.name) //luoliang
+       }
+   }
+   上面方法即便嵌套多层都可以使用inject获取到name值，这是固定传值的方式。但数据却不是响应式的！！！官方说明这是有意为之，卧槽你妈！！！
+   单向数据流解决办法：
+   修改name值使用this._provided.name = 'daiqian';
+   双向响应式解决办法：
+   嵌套一层对象，使之指向同一引用地址即可
+   在componentA中
+   <template>
+   	<div>
+       	<component-B></component-B>
+       	{{ test.name }}
+       </div>    
+   </template>
+   export default {
+       data(){
+           test:{
+               name:'luoliang'
            }
+       },
+   	provide(){
+           return {
+               test:this.test
+           }
+       },
+   	mounted:function(){
+           this.test.name = 'daiqian'
        }
    }
-   </script>
-   注意：如果v-model是动态，随时可能变的情况下，应该用watch监听value的变化，在赋值！！！这样就能同步数据
-   
-   函数式组件，vue没有类似react那样的jsx语法，想用函数式编程就会变得很鸡肋，因为数据不是双向的。
-   什么叫函数式组件？
-   我们可以把函数式组件想像成组件里的一个函数，入参是渲染上下文(render context)，返回值是渲染好的HTML片段。
-   对于函数式组件，可以这样定义：
-       Stateless(无状态)：组件自身是没有状态的
-       Instanceless(无实例)：组件自身没有实例，也就是没有this
-       内部没有任何生命周期处理函数
-       轻量,渲染性能高,适合只依赖于外部数据传递而变化的组件(展示组件，无逻辑和状态修改)
-       只接受props值
-   由于函数式组件拥有的这两个特性，我们就可以把它用作高阶组件(High order components)，所谓高阶，就是可以生成其它组件的组件。
-   新建一个functionComponent.vue
-   export default {
-       name: 'functional-button',
-       functional: true,
-       render(createElement, context) {
-           return createElement('button', 'click me')
-       }
-   }
-   注意：声明的functional:true // 必须！！！
-   当然也可以使用模板template functional  // 与上面方法相同
-   <template functional>
-     <div class="cell">
-       <div v-if="props.value" class="on"></div>
-       <section v-else class="off"></section>
-     </div>
+   在componentB中
+   <template>
+   	<div>
+   		<input type="text" v-model="test.name"/>
+       </div>    
    </template>
-   <script>
    export default {
-     props: ['value']
+       data(){......},
+   	inject:{
+           test:{
+               default:() => {}
+           }
+       },
+   	mounted:function(){
+           console.log(this.test.name) //daiqian
+       }
    }
-   </script>
+   
+   7、通过组件实例$parent/$children方式，访问实例对象，从而获取值和方法。
+   注意：$children是当前组件嵌套的所有子组件，是一个数组，但他们之间没有先后顺序，所以无法知道this.$children[0]是具体哪一个？
+   
+   8、使用vuex、h5缓存等，实现数据共享。
    ```
 
-6. ##### vuex的使用
+   
+
+7. ##### vuex的使用
 
    ```js
    为什么要使用vuex？
@@ -1016,17 +1081,21 @@
    this.$store.state.listData
    ```
 
-7. ##### vue路由
+8. ##### vue路由
 
    ```js
    关于路由
    路由跳转的常见方式：
    1、常见用 <router-link to="/form">Form</router-link> 绑定跳转 "/form" 是定义路由时的path。等同于指令中的 <a v-link="{ path: '/home'}">Home</a>
+   
    2、还有一种为函数式跳转 this.$router.push("/form") 来修改 url，完成跳转。
+   
    3、replace属性：页面切换时不会留下历史纪录 <router-link :to="/home" replace></router-link>
+   
    4、tag属性：有tag属性的router-link会被渲染成相应的标签
    <router-link :to="/home" tag="li">Home</router-link>
    渲染结果：<li>Home</li>
+   
    5、路由的嵌套：参考：http://blog.csdn.net/github_26672553/article/details/54861174
    在当前路由Login下，再定义子路由。（可以再定义children继续嵌套下去）
    	path: '/Login',
@@ -1036,6 +1105,7 @@
            { path: '/Login/Hello', component: Hello},
            { path: '/Login/Hello', component: Hello}
        ]
+   
    6、路由链接的激活状态
    //注意，路由默认的激活class为：router-link-exact-active。此处我们单独再添加一个headItemActive的class。
    linkActiveClass:'headItemActive',
@@ -1073,6 +1143,7 @@
    但是一级路由状态，依然只有class="headItemActive"。所以我们需要重新定义一个激活状态的active。更多层的嵌套待续......
    说明：如果是使用this.$router.push()方法进入的路由跳转，那么可以通过设置 activeIndex，即点击哪一个来区别，首次加载可以匹配路由地址，
    包含某个字符，从而实现activeIndex对应的值，然后再让标题栏成选中状态。
+   
    7、路由的拆分（大型项目时，根据需要使用）
    //在router下的index.js中，引入配置路由list
    import routerConfig from './routerConfig'
@@ -1102,6 +1173,7 @@
        }
    ]
    export default routerConfig;
+   
    8、路由守卫
    方法一：全局监听
    监听路由切换beforeEach切换前执行，afterEach切换成功后执行（此方法可以监听路由跳转时的函数，例如loadingBar加载条等）
@@ -1166,30 +1238,33 @@
        // 可以访问组件实例 `this`
    }
    注意：使用beforeRouteEnter时，如果加上async 函数，还可以实现阻塞，我们可以在这里操作 首页最先加载的内容，后面的内容会在此等待这个操作结束
+   
    9、修改vue-router地址栏中的 “#”
    在vue-router中，地址栏一般是这样的：http://localhost:8080/#/Home/HomePage
    在创建路由时添加 mode:"history"，属性就可以取消“#”
+   
    10、路由传递参数 ：
    参考文档：
    https://segmentfault.com/q/1010000009749320/a-1020000009749399
    https://blog.csdn.net/wojiaomaxiaoqi/article/details/80688911
-   <router-link :to="{ name:'game1', params: {num: 123} }">   //其中name:'game1',这个name属性就是定义路由中的name
-   <router-link :to="{ path:'/hotel',params:{id:item.id} }">
-   函数传参：
-   this.$router.push({ name: 'user', params: { userId: 123 }}) 
-   界面上通过this.$route就可以获取到这个params了
    方法一：
+   <router-link :to="{ name:'game1', params: {num: 123} }">   //其中name:'game1',这个name属性是定义路由中的name
+   <router-link :to="{ path:'/hotel',params:{id:item.id} }">
+   方法二：
    // 记住，此处的name是，定义在路由index.js文件中，某个具体路由的name值，而不是路由组件中的name值
    this.$router.push({name:'parasetEdit',params:{ pk_refinfo:'test',value:'test1' }}); // 传递
    this.$route.params.pk_refinfo // 接收
-   方法二：
+   方法三：
    this.$router.push({path:'/uapbd/paraset/edit',query:{pk_refinfo:'test',value:'test1'}}); // 传递
    this.$route.query.pk_refinfo  // 接收
+   方法四：
    通过拼接路由地址+参数方式：http://localhost/isAttendMeeting?id=123,然后在路由isAttendMeeting界面，使用this.$route.query.id来获取拼接的参数。
-   两种方式的区别是query传参的参数会带在url后边展示在地址栏，params传参的参数不会展示到地址栏。需要注意的是接收参数的时候是route而不是router。两种方式一一对应，名字不能混用。
+   方法二和方法三，两种方式的区别是
+   query传参的参数会带在url后边展示在地址栏，params传参的参数不会展示到地址栏。
+   需要注意的是接收参数的时候是route而不是router。两种方式一一对应，名字不能混用。
    
    11、关于用户权限，加载不同路由组件，addRouter方法。（查看smartx-webconsole-supplier站点）
-   问题描述：一个应用有A,B两种权限操作，A和B不能访问对方的路由页面。在定义路由时可以做到，但如果在浏览器中手动输入路由地址依然可以访问？
+   问题描述：一个应用有A,B两种权限操作，A和B不能访问对方的路由页面。在A权限下手动输入B权限下的路由地址，来到error路由界面，并提示该用户没有操作权限？
    解决办法：使用vue-router中的addRouter()动态添加路由方法。
    方法一：参考 https://www.jb51.net/article/139303.htm
    第一步：定义路由，跟平时一样，不过基础路由很少，只有登陆注册报错等几个简单的路由。（因为登陆成功后，会根据一个返回值来判断动态添加的路由）
@@ -1304,7 +1379,7 @@
    	2、在切换账号权限的时候，需要路由重定向，清除不同账号权限对应的cookie，storage等
    
    方法二：方法一使用的是前端配置好所有权限匹配的路由地址数组，然后根据登录的账号权限获取对应的路由地址，这种方法实现了效果，但终究没达到数据库配置化。
-   原理：把当前所需要的路由地址（包括嵌套），配置到数据库中，注意这里的路由地址是一个字符串，所有前端拿到这个数据后，需要递归遍历该路由数组，获取到对应的component最后再走addRoutes，从而实现动态路由配置。
+   原理：把当前所需要的权限路由地址（除了基础的几个login，error等公用路由外），配置到数据库中，注意这里的路由地址是一个字符串，所有前端拿到这个数据后，需要递归遍历该路由数组，获取到对应的component最后再走addRoutes，从而实现动态路由配置。
    步骤一：假设我们已经登录成功，并有对应的账号权限，这时候去取路由地址，返回的应该类似这样的树状结构
    routerList = [
        {
@@ -1362,7 +1437,33 @@
        routes:routes
    })
    router.addRoutes(routerList);
-   对比方法一和方法二：如果没有数据库配置，使用方法一，如果想走数据库配置，使用方法二。最后都是执行addRoutes
+   对比方法一和方法二：如果没有数据库配置，使用方法一，如果想走数据库配置，使用方法二。最后都是执行addRoutes。
+   
+   方法三：优化退出登录，初始化路由
+   问题描述：方法一和方法二都是不错的动态配置路由方法，但有个问题？当前登录A权限，addRoutes的也是A权限路由，退出登录时怎样清除通过addRoutes添加的权限？然后再登录B权限，再重新addRoutes B权限的路由？
+   最简单粗暴的方法，当然是退出登录时，刷新一下界面，在main.js中重新执行初始化路由操作。但很明显这样的效果体验不好。然而vue-router并没有提供删除路由的api方法，所以我们这样操作：
+   //初始化路由
+   const initRouter = () => {
+       let tempRouter = new VueRouter({
+           mode:'history',
+           routes:routerList // 这个routerList是初始路由，跟权限没关系的路由，比如登录、error抛错界面等
+       })
+   }
+   const router = initRouter();
+   //清除路由--其实就是初始化router的matcher而已
+   const clearRouter = () => {
+       // 重新初始化一个路由，注意一个vue项目有且只能有一个路由树，这里初始化一个新的路由，只是想取它的matcher而已！！！
+       let tempRouter = initRouter(); 
+       router.matcher = tempRouter.matcher; // router还是原来的那个router，只是将router的matcher置为一个新的路由matcher。！！！
+   }
+   export { 
+   	router,
+       clearRouter
+   }
+   使用时，先执行clearRouter初始化router的matcher，再动态添加路由！
+   
+   addRoutes的注意点：
+   1、执行addRoutes后，会往路由配置中添加路由，但是这个添加的路由并不会在router的options里面，所以我们通过this.$router.options.routes拿到的路由，还是最开始的路由，而并不是动态添加完的总路由！！！但如果又需要获取总路由的话，使用vuex或者h5缓存！！！
        
    12、路由地址错误或者丢失：当用户输入地址栏的路由，在我们路由配置中找不到时，那么直接强行跳转到我们指定的路由地址
    routes: [{
@@ -1869,7 +1970,7 @@ elementUI中表格错位，优化方案
     5、v-model中不能使用filter，即input，textarea中实现双向绑定的地方不能使用filter，因为filter只是展示数据的过滤，不是编辑数据的功能。
     ```
 
-13. ##### vue 服务类组件，动态创建组件，添加到对应DOM（又名函数式编程）
+13. ##### vue 服务类组件，动态创建组件，通过js添加到对应DOM节点。
 
     ```js
     动态创建组件，并通过js方法渲染到界面上。参考:https://www.cnblogs.com/stoneniqiu/p/6877460.html
@@ -1879,7 +1980,7 @@ elementUI中表格错位，优化方案
         Indicator
     }
     <Indicator></Indicator>   // 使用组件。
-    但是，我们在js文件中怎样调用该组件，例如：http请求拦截和响应拦截时怎样调用？动态创建插入组件就很有必要了，即服务类组件，虽然vue并不提倡。
+    但是，我们在js文件中怎样调用该组件，例如：http请求拦截和响应拦截时怎样调用？动态创建插入组件就很有必要了，即服务类组件，虽然vue提倡模板template挂载方式，但特殊地方特殊处理。
     
     方法一：
     1、首先定一个组件indicator.vue 和平时的组件没多大区别
@@ -1945,7 +2046,7 @@ elementUI中表格错位，优化方案
     indicator.open() // 这样loading效果就会出来了。
     
     方法二：
-    在方法一中，只是简单的创建一个实例DOM，并添加到body中，通过v-show来控制组件显示/隐藏。但像Dialog嵌套等组件，不能控制其销毁，解决方案：
+    在方法一中，只是简单的创建一个实例DOM，并添加到body中，通过v-show来控制组件显示/隐藏。但像Dialog嵌套等组件，并不能控制其销毁？解决方案：
     1、定义组件，和平时组件没多大区别，只是在method中需要暴露一个方法，用于接收参数
     <template>
         <div v-show="visible">
@@ -2091,7 +2192,166 @@ elementUI中表格错位，优化方案
     // 销毁组件时，是指定DOM的销毁，如果没有就是document.body
     ```
 
-14. ##### vue中DOM操作
+    
+
+14. ##### vue函数式编程，h函数的使用
+
+    ```js
+    描述：vue提倡使用template模板方式创建dom，但有时候我们不得不用函数方式创建dom，比如动态菜单栏、根据路由树生成。
+    const menu = [
+        {
+            name:'首页',
+            path:'/',
+            component:homePage,
+            children:[
+                {
+                    name:'页面1',
+                    path:'/page1',
+                    component:page1,
+                    children:[
+                        {
+                            name:'页面1-1',
+                            path:'/page1/page1-1',
+                            component:page1-1,
+                            children:[
+                                {
+                                    ......
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    name:'页面2',
+                    path:'/page2',
+                    component:page2,
+                }
+            ]
+        },
+    ]
+    这个时候我们如果要使用template模板方式将这个菜单栏渲染出来的话，将会是一件很痛苦的事，因为你不知道菜单栏到底嵌套了多少层？react的jsx语法，可以很轻松实现这个菜单栏渲染，因为它通过js的递归遍历即可，vue也有一套创建createElement的方法，即h函数。
+            
+    制作一个导航组件 navHeader.js
+    export default{
+        data(){
+            return{
+                menuList:[
+                    {
+                        name:'首页',
+                        path:'/',
+                        children:[
+                            {
+                                name:'页面1',
+                                path:'/page1',
+                                children:[
+                                    {
+                                        name:'页面1-1',
+                                        path:'/page1/page1-1',
+                                        children:[]
+                                    },
+                                    {
+                                        name:'页面1-2',
+                                        path:'/page1/page1-2'
+                                    }
+                                ]
+                            },
+                            {
+                                name:'页面2',
+                                path:'/page2',
+                            }
+                        ]
+                    },
+                ]
+            }
+        },
+        methods:{
+            //处理dom树
+            renderMenu(h,menu){
+                let arr = [];
+                menu.forEach(item => {
+                    let res;
+                    if(!item.children || !item.children.length){
+                        res = this.renderItem(h,item);
+                    }else{
+                        res = this.renderSubItem(h,item,item.children);
+                    }
+                    arr.push(res);
+                })
+                return arr;
+            },
+            // 返回menu
+            renderItem(h,item){
+                return h(
+                    'el-menu-item',
+                    {
+                        props:{
+                            index:item.path
+                        }
+                    },
+                    item.name
+                )
+            },
+            // 返回subMenu
+            renderSubItem(h,item,list){
+                return h(
+                    'el-submenu',
+                    {
+                        props:{
+                            index:item.path,
+                            item:item
+                        }
+                    },
+                    [
+                        
+                        h(
+                            'template',
+                            {
+                                slot:'title'
+                            },
+                            item.name,
+                        ),
+                        this.renderMenu(h,list)
+                    ]
+                )
+            }
+        },
+        //  h 最终创建的是一个元素
+        // 第一个参数div  是表示创建一个div区域的元素（必须）
+        // 第二个参数class表示的是这个div上有一个属性（选填）
+        // 第三个参数 （选填）
+            // 数组：表示div元素下的子元素（这个也必须使用h函数创建的dom）
+            // 字符串：表示text文本节点，最后一级。
+        render(h){
+            return h(
+                // 第一个参数
+                'el-menu',
+                //第二个参数
+                {
+                    class:{
+                        'el-menu-demo':true,
+                    },
+                    props:{ //向该标签传递参数
+                        name:'luoliang',
+                        menu:this.menuList,
+                    },
+                    on:{ // 监听事件
+    					// menu组件的选择事件(参考elementui)
+                        select:(key,keyPath) => {
+                            console.log(key,keyPath);
+                        }
+                    }
+                },
+                //第三个参数  
+                this.renderMenu(h,this.menuList)
+            );
+        }
+    }
+    render函数即为暴露该组件template的方法，注意使用h函数生成的dom树，嵌套也必须使用h函数，否则无法识别！！！
+    h函数的使用，不仅仅局限于此，它甚至可以像jsx语法那样通过js方法创建dom树。但是，使用js方法创建dom树就会遇到另外一个问题，那就是组件状态管理，静态与动态的区别，vue通过template模板创建dom树的初衷本就是为了降低入门门槛，而且大部分情况下，使用template比js方法创建dom树更简单直接。所以h函数不是必须时还是尽量少使用！！！
+    然而，当vue3.0到来后，支持jsx语法，这个h函数就由必选变为可选了！
+    ```
+
+15. ##### vue中DOM操作
 
     ```js
     1、vue中点击获取当前对象，操作DOM。
@@ -2124,7 +2384,7 @@ elementUI中表格错位，优化方案
     那么在父组件中想调用子组件的childMethod方法，就可以使用this.$refs.child.childMethod(); //alert(123)
     ```
 
-15. ##### vue面试常见问题？
+16. ##### vue面试常见问题？
 
     ```js
     1、vue在组件中的data为什么推荐使用函数return的方式（直接对象data也可以）
@@ -2190,10 +2450,10 @@ elementUI中表格错位，优化方案
     3、vue的生命周期函数每个阶段干了什么事？以及父子组件生命周期加载的顺序？
     vue生命周期钩子函数：
     beforeCreate -> created -> beforeMount -> mounted -> beforeUpdate -> updated -> beforeDestroy -> destroyed
-    beforeCreate：组件实例刚被创建，组件中的属性、data等都没有计算。
-    created:组件实例创建完成，属性已经绑定，data等已经赋值，但DOM还未正式挂载，所以$el还不存在。
-    beforeMount：虚拟DOM已经存在，但是正式DOM还未挂载。
-    mounted：正式DOM已经生产，并挂载完成。
+    beforeCreate：组件实例刚被创建，组件中的方法、属性都没法使用。
+    created:组件实例创建完成，属性已经绑定，data等已经赋值，但在这里更改数据是不会触发updated函数，所以这里适合做数据初始化。此时DOM还未正式挂载，所以$el还不存在，类似document.getElementById(...)是获取不到DOM树的，如果非要在这里获取的话，加上vm.$nextTick回调函数。
+    beforeMount：虚拟DOM已经存在，切记是虚拟DOM，意思是template模板已经被编译成渲染函数render，但真实DOM还未挂载，所以修改的数据，依然不会触发updated函数。
+    mounted：正式DOM已经生产，并挂载完成，可以访问dom树以及$refs对真实dom的操作。
     beforeUpdate：组件更新之前
     updated：组件更新之后
     beforeDestroy：组件销毁之前
@@ -2347,17 +2607,16 @@ elementUI中表格错位，优化方案
     当然也可以添加.env.production环境，配置内容同development
     ```
 
-16. ##### vue3.0
+17. ##### vue3.0
 
     ```js
-    vue3.0完美兼容2.0版本，所以可以放心大胆的升级！！！
+    vue3.0部分兼容2.0版本，所以升级时需要注意一下！！！
     将vue-cli升级到最新版本，npm update -g @vue/cli,如果不成功就卸载后再重新安装。目前版本4.5.9
     vue create vue3
     提示选择：vue3版本
     项目安装好后，与2.0版本一样。
     
-    新增功能
-    1、支持jsx语法
+    1、支持jsx语法，当然原来的模板语法继续支持。
     安装jsx插件
     npm install @vue/babel-plugin-jsx -D
     配置.babel.config.js
@@ -2376,9 +2635,16 @@ elementUI中表格错位，优化方案
         HelloWorld
     }
     <Hello-world></Hello-world>
+    
+    2、生命周期函数
+    取消beforeCreate、created
+    修改beforeDestroy、destroyed 为 onBeforeUnmount、onUnmounted
+    新增钩子函数onRenderTracked、onRenderTriggered
+    其余声明周期函数前都添加on，并采用小驼峰命名方式
+    
     ```
 
     
 
-17. 虚位以待！！！
+18. 虚位以待！！！
 

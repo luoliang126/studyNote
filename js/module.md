@@ -12,16 +12,17 @@
    试想一下，如果在客户端这样使用：
    var math = require('math');
    math.add(2, 3);
-   很明显math.add(...)这个方法的执行，必须要等var math = require('math')执行完，才能调用add方法，但是在客户端即便http再快，也无法满足。所以CommonJs规范不适合客户端，客户端应该使用异步的AMD（Asynchronous Module Definition）。
+   在客户端，很明显math.add(...)这个方法会先执行，但我们需要的却是var math = require('math')执行完后才调用add方法。因为在客户端即便http再快，也无法满足。所以CommonJs规范不适合客户端，客户端应该使用异步的AMD（Asynchronous Module Definition）。
    AMD是RequireJS在推广过程中对模块定义的规范化产出，它是一个概念。是一个依赖前置、异步定义的AMD框架（在参数里面引入js文件），在定义的同时如果需要用到别的模块，在最前面定义好即在参数数组里面进行引入，在回调里面加载。require([module], callback);
-   RequireJS：是一个AMD框架，可以异步加载JS文件，按照模块加载方法，通过define()函数定义，第一个参数是一个数组，里面定义一些需要依赖的包，第二个参数是一个回调函数，通过变量来引用模块里面的方法，最后通过return来输出。
+   RequireJS：是一个AMD框架，可以异步加载JS文件，按照模块加载方法，通过数组定义所需要的加载内容，第一个参数是一个数组，里面定义一些需要依赖的包，第二个参数是一个回调函数，通过变量来引用模块里面的方法，最后通过return来输出。
    eg：
    require(['math'], function (math) {
         math.add(2, 3);
    });
+   define(['./a','./b'],)
    
-   2、CMD:是SeaJS在推广过程中对模块定义的规范化产出，是一个同步模块定义，是SeaJS的一个标准，SeaJS是CMD概念的一个实现。
-   通过define()定义，没有依赖前置，通过require加载jQuery插件，CMD是依赖就近，在什么地方使用到插件就在什么地方require该插件，即用即返，这是一个同步的概念。define(function(require,exports,module){...});
+   2、CMD:是SeaJS在推广过程中对模块定义的规范化产出，是一个异步加载模块（与AMD类似，却又有不同），是SeaJS的一个标准，SeaJS是CMD概念的一个实现。
+   通过define()定义，没有依赖前置，采用就近原则加载（CMD是依赖就近），在什么地方使用到插件就在什么地方require该插件，即用即返，这是一个同步的概念。define(function(require,exports,module){...});
    CMD(Common Module Definition)，通用模块定义，它解决的问题和AMD规范是一样的，只不过在模块定义方式和模块加载时机上不同，CMD也需要额外的引入第三方的库文件，SeaJS
    eg：
    需要引入sea.js

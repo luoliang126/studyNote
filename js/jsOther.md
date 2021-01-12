@@ -676,4 +676,54 @@
     }
     ```
 
-12. 虚位以待！！！
+12. ##### js中call、apply、bind的使用
+
+    ```js
+    call()、apply()、bind() 都是用来重定义 this 这个对象的！
+    
+    看一个例子：
+    var name = 'luoliang';
+    var age=18;
+    var obj = {
+        name:'张三',
+        objAge:16,
+        myFun:function(){
+            console.log(this.name + '年龄' + this.age);
+        }
+    }
+    var db = {
+        name:'德玛',
+        age:99
+    }
+    obj.myFun.call(db);　　　　// 德玛年龄99
+    obj.myFun.apply(db);　　　 // 德玛年龄99
+    obj.myFun.bind(db)();　　　// 德玛年龄99
+    
+    将上面一个例子修改以下：
+    var name = 'luoliang';
+    var age=18;
+    var obj = {
+        name:'张三',
+        objAge:16,
+        myFun:function(from,to){
+            console.log(this.name + '年龄' + this.age,'从'+ from + '来，到' + to + '去');
+        }
+    }
+    var db = {
+        name:'德玛',
+        age:99
+    }
+    obj.myFun.call(db,'成都','上海');　　　　 // 德玛年龄99 从成都来，到上海去
+    obj.myFun.apply(db,['成都','上海']);      // 德玛年龄99 从成都来，到上海去
+    obj.myFun.bind(db,'成都','上海')();       // 德玛年龄99 从成都来，到上海去
+    obj.myFun.bind(db,['成都','上海'])();　　 // 德玛年龄99 从成都,上海来，到undefined去
+    
+    总结：call 、bind 、 apply 这三个函数的第一个参数都是this的指向对象，第二个参数差别就来了：
+    call:需要传递的参数，从第二个开始，依次展开......
+    apply:所有参数都必须放在一个数组里面传进去。
+    bind:它的参数和call一样，从第二个开始，依次传递进去......，但是它返回的是函数，所以需要立即执行一次bind()。
+    ```
+
+    
+
+13. 虚位以待！！！

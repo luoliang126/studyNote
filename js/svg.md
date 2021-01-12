@@ -66,7 +66,7 @@
    H： horizontal lineto 水平直线到
    V： vertical lineto 垂直直线到
    C： curveto 曲线
-   S： smooth curveto 平滑曲线
+   S： smooth curveto 平滑曲线 
    Q： quadratic Belzier curve 二次贝兹曲线
    T： smooth quadratic Belzier curveto 光滑二次贝兹曲线
    A： elliptical Arc 椭圆弧

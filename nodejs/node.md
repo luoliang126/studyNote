@@ -233,7 +233,7 @@
 
 4. ##### npm私有仓库搭建
 
-   ```
+   ```js
    问题描述：内网开发。在一些公司内部，由于各种原因，会用到npm官网上发布的第三方包，但是开发时又不希望开发人员随意使用外界的包，必须通过管理人员通过后才可引入。但前端开发的包依赖管理node_modules又是必须的，所有搭建一个内网或者叫局域网的私有仓库就很有必要了。内网的npm仓库拉取速度更快。
    
    方法一：适用于私有仓库可以连接外网，每次需要引用外网包的时候打开，然后生成一个本地镜像，断开网络，下次再有拉取的时候，就可以直接取本地镜像文件。当然也可以将已有的镜像文件上传到私有仓库（可以使用拷贝的方式，当然也可以使用脚本的方式上传）
@@ -250,6 +250,7 @@
    	
    本地的私有仓库启动好后，那么安装npm包的地址，就应该指向该私有仓库地址
    npm config set registry http://localhost:4873
+   npm config get registry // 查看npm的镜像源
    
    注册私有仓库用户
    npm adduser -registry http://localhost:4873
@@ -262,8 +263,20 @@
    yarn命令直接操作，不需要做其他配置！！！
    
    方法二：适用于私有仓库本身就无法连接外网。那么就必须将已有的npm包，通过拷贝或者脚本上传的方式存储于私有仓库内。
-   下载npm包工具
-   上传npm包工具
+   step1：
+   将项目需要的npm包全部在package.json中标注
+   step2：
+   安装node-tgz-downloader:(最好全局)
+   npm install node-tgz-downloader -g
+   step3：
+   执行npm install 并生成package-lock.json (用于锁定依赖包的版本)
+   注意：如果没有生成package-lock.json，可以刷新一下目录。如果还是不行，查看一下 npm config get package-lock，以及设置 npm config set package-lock true。假如还是不行，删除node_modules再重新npm install一次
+   step4：
+   执行download-tgz package-lock package-lock.json 会将所有package-lock.json中标注的依赖包（以及对应的版本号）拉取到本地，并在package-lock.json所在目录生成一个tarballs目录，里面就是我们项目所需要的所有安装包（注意：是没有解压的.tgz压缩文件）
+   step5:
+   上传tarballs目录中的所有.tgz文件到，私有仓库或本地服务
+   单独上传：可以直接使用 npm publish xxx.tgz
+   批量上传：执行脚本，一般后端人员提供！
    ```
 
    

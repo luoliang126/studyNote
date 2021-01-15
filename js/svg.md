@@ -12,13 +12,13 @@
 
 2. ##### svg的形状绘图
 
-   ```
+   ```js
    svg基础
    定义外层svg标签 <svg width="500" height="500" viewBox="50 50 50 50"></svg>
    width、height:分别代表svg在当前dom中，所占的宽、高
    viewBox(x,y,w,h):视图窗口的位置、大小。可选，左上角的x,y坐标，视图的宽、高
    
-   svg的样式属性
+   svg的样式属性style
    fill：填充色
    stroke：描边色
    stroke-width：边框宽度
@@ -136,7 +136,6 @@
    	width="100"
    	height="100"
    ></image>
-   xlink:href 图片的路径
    
    动画效果<animate>
    
@@ -145,6 +144,8 @@
    自定义形状,内部代码不会显示出来<defs>
    
    自定义形状，该形状可以用来平铺一个区域<pattern>
+       
+   两点连线（二阶贝塞尔曲线）
    
    通过以上，发现要绘制复杂的图形也不是不可以，但如果靠代码去写的话会浪费时间，这里推荐一款在线编辑器
    链接：https://c.runoob.com/

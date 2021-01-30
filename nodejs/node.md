@@ -74,9 +74,61 @@
 
    
 
-3. ##### npm发包
+3. ##### npm发布
 
    ```js
+   一些简单的插件、类class文件的发布
+   参考：https://blog.csdn.net/weixin_44198965/article/details/104209771
+   	https://blog.csdn.net/xyphf/article/details/84846009
+   问题描述：有时候我们需要发布一些插件，例如js文件，无关vue组件，所以就没必要将vue等的依赖一起打包，这样会增加包的大小。
+   1、新建一个项目smart-plugins
+   初始化 npm init
+   此时会生成一个package.json
+   {
+     "name": "smart-plugins",
+     "version": "1.0.0",
+     "description": "公司一些公用的包",
+     "main": "src/index.js",
+     "scripts": {
+       "test": "echo \"Error: no test specified\" && exit 1"
+     },
+     "author": "luoliang",
+     "license": "ISC"
+   }
+   2、新建src资源文件目录
+   	新建index.js入口文件，引入需要暴露的js插件
+   	import { Iframe,receiveMessage,sendMessageToParent } from './Iframe.js';
+       export {
+           Iframe,
+           receiveMessage,
+           sendMessageToParent
+       }
+   3、执行npm publish（注意：到这里其实就已经可以使用了。但少了一个webpack打包的过程，可以在这里引入webpack或者grut等打包），发布出去的包可以用，但全部都是源码，没有编译，没有压缩。这里已webpack为例，解决打包压缩问题。
+   4、安装webpack和webpack-cli
+   npm install webpack webpack-cli
+   5、配置package.json，添加打包压缩命令
+   "scripts":{
+       ......
+       "build":"webpack"
+   }
+   这里默认webpack的打包，以及打包的输出文件（当然可以配置webpack，详情查看smart-core-util插件发布）。
+   6、执行npm run build后会生成一个dist目录，以及一个main.js文件，此时我们需要修改包的入口为该main.js
+   {
+       ......
+       "main":"dist/main.js"
+   }
+   7、npm发布--不需要的文件，例如node_modules等
+   发布只需要的文件（白名单），在package.json中
+   {
+       ......,
+       "files":[
+           "dist",
+           "index.js"
+       ]
+   }
+   配置只发布dist目录，以及index.js文件
+   8、再执行npm publish发布该包，此时的包就已经是打包压缩过后的了。
+   
    基于vue-cli3发布vue组件方法，参考：https://www.cnblogs.com/jasonwang2y60/p/11382349.html
    1、创建项目
    vue create programme
@@ -96,14 +148,23 @@
        }
    }
    
-   4、编写组件 ，和平时写组件一样
+   4、编写组件 ，和平时写组件一样,不同处在于(每个组件都有一个index.js，用于服务类注册组件)
+   在svg-icon目录下新建一个index.js
+   import SvgIcon from './svgIcon'
+   // 为组件提供 install 安装方法，供按需引入
+   SvgIcon.install = function (Vue) {
+     Vue.component(SvgIcon.name, SvgIcon)
+   }
+   // 默认导出组件
+   export default SvgIcon
    
    5、在packages/index,js 整合所有的组件，对外导出，即一个完整的组件库
    // 导入颜色选择器组件
    import SvgIcon from './svg-icon'
    // 存储组件列表
    const components = [
-     SvgIcon
+       SvgIcon
+       ......
    ]
    // 定义 install 方法，接收 Vue 作为参数。如果使用 use 注册插件，则所有的组件都将被注册
    const install = function (Vue) {
@@ -116,11 +177,12 @@
    if (typeof window !== 'undefined' && window.Vue) {
      install(window.Vue)
    }
-   export default {
-     // 导出的对象必须具有 install，才能被 Vue.use() 方法安装
-     install,
-     // 以下是具体的组件列表
-     SvgIcon
+   //全局导出模式
+   export default install;
+   //单个组件引入模式
+   export {
+       SvgIcon,
+       ......
    }
    
    6、本地开发，预览
@@ -188,47 +250,9 @@
    
    11、发布（当然前提是必须有一个npm账号）
    npm publish
-   
-   问题描述：上面是基于vue-cli的npm包发布，他会将项目中的依赖一起打包到npm包里。但有时候我们只发布一些插件，例如js文件，无关vue组件，所以就没必要将vue等的依赖一起打包，这样会增加包的大小。
-   参考：https://blog.csdn.net/weixin_44198965/article/details/104209771
-   	https://blog.csdn.net/xyphf/article/details/84846009
-   新建一个项目smart-plugins
-   初始化 npm init
-   此时会生成一个package.json
-   {
-     "name": "smart-plugins",
-     "version": "1.0.0",
-     "description": "公司一些公用的包",
-     "main": "src/index.js",
-     "scripts": {
-       "test": "echo \"Error: no test specified\" && exit 1"
-     },
-     "author": "luoliang",
-     "license": "ISC"
-   }
-   新建src资源文件目录
-   	新建index.js入口文件，引入需要暴露的js插件
-   	import { Iframe,receiveMessage,sendMessageToParent } from './Iframe.js';
-       export {
-           Iframe,
-           receiveMessage,
-           sendMessageToParent
-       }
-   执行npm publish（注意：这里少了一个webpack打包的过程，可以在这里引入webpack或者grut等打包），发布出去的包可以用，但全部都是源码，没有编译，没有压缩。这里已webpack为例，解决打包压缩问题。
-   安装webpack和webpack-cli
-   npm install webpack webpack-cli
-   配置package.json，添加打包压缩命令
-   "scripts":{
-       ......
-       "build":"webpack"
-   }
-   这里默认webpack的打包，以及打包的输出文件（当然可以配置webpack，详情查看smart-core-util插件发布）。
-   执行npm run build后会生成一个dist目录，以及一个main.js文件，此时我们需要修改包的入口为该main.js
-   {
-       ......
-       "main":"dist/main.js"
-   }
-   再执行npm publish发布该包，此时的包就已经是打包压缩过后的了。
+   注意：以上发布的组件有一个缺点，包相对比较大？因为webpack打包的时候，把这个组件所依赖的包、插件等，全部一起打包了，所以最后生成的xxx.min.js会很大。解决和优化办法：
+   1、本来就需要这么大。因为我们不知道谁会用到该组件，那么将该组件对应的依赖都打包，这是为了保证该组件能正常使用的基本。
+   2、该组件引用的一些组件，在使用者的时候，就会引入，这时候就没必要将依赖都一起打包（或者有些需要一起打包，有些则不需要），使用cdn方式，将vue、vue-router等依赖通过cdn引入，而不是通过项目
    ```
 
 4. ##### npm私有仓库搭建
@@ -265,7 +289,7 @@
    方法二：适用于私有仓库本身就无法连接外网。那么就必须将已有的npm包，通过拷贝或者脚本上传的方式存储于私有仓库内。
    step1：
    将项目需要的npm包全部在package.json中标注
-   step2：
+   step2：(如果之前全局安装了node-tgz-downloader的话，这里就不用再装了，直接执行下载命令即可)
    安装node-tgz-downloader:(最好全局)
    npm install node-tgz-downloader -g
    step3：
@@ -274,6 +298,8 @@
    step4：
    执行download-tgz package-lock package-lock.json 会将所有package-lock.json中标注的依赖包（以及对应的版本号）拉取到本地，并在package-lock.json所在目录生成一个tarballs目录，里面就是我们项目所需要的所有安装包（注意：是没有解压的.tgz压缩文件）
    step5:
+   修改本地npm镜像源：npm config set registry http://xx.xx.xxx
+   step6:
    上传tarballs目录中的所有.tgz文件到，私有仓库或本地服务
    单独上传：可以直接使用 npm publish xxx.tgz
    批量上传：执行脚本，一般后端人员提供！
@@ -329,4 +355,32 @@
 
    
 
-6. 虚位以待！！！
+6. ##### 搭建cli脚手架
+
+   ```js
+   cli脚手架本质就是一个基于nodejs的项目！
+   
+   搭建一个简单的cli脚手架
+   参考文档：https://juejin.cn/post/6844903802001162248
+   项目地址：https://github.com/LNoe-lzy/my-cli
+   1、初始化项目
+   npm init
+   2、修改启动项（入口）
+   在根目录下新建bin/mycli.js
+   #!/usr/bin/env node   // 指定nodejs运行该js文件
+   console.log('hello world');
+   并在package.json中添加启动项目
+   "bin": {
+       "mycli": "bin/mycli"
+   },
+   3、将该cli添加到全局npm，方便本地调试
+   npm link
+   这时候，就可以执行mycli命令了，并输出hello world
+   更多内容参考项目：。。。。。。
+   		
+   完整的cli项目
+   ```
+
+   
+
+7. 虚位以待！！！

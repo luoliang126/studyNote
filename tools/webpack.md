@@ -184,4 +184,103 @@
    "build": "vue-cli-service build"
    ```
 
-3. 虚位以待！！！
+3. ##### webpack打包、压缩工具类插件，并发布到npm
+
+   ```js
+   描述：有时候我们需要一些公用的插件，样式，方法等，因为在不同项目都需要。那么抽离发布npm包管理就是一种很好的解决办法（总比粘贴复制强）
+   参考文档：
+   https://blog.csdn.net/weixin_36185028/article/details/81117730
+   https://www.cnblogs.com/hezihao/p/7930155.html
+   https://blog.csdn.net/u012443286/article/details/79577545
+   https://segmentfault.com/q/1010000012933464
+   实现步骤：
+   1、创建项目
+   npm init 初始化项目，生成package.json
+   2、新建目录，即我们需要暴露的js文件（当然公用css文件也行），比如根目录下的js下的validator.js。
+   const fun1 = () => {
+       ......
+   }
+   const obj = {
+       name:'luoliang',
+       age:18
+   }
+   export {
+   	fun1,
+       obj
+   }
+   3、安装webpack(用于打包，压缩文件)，直接发布原js文件其实也可以了，但是如果js过大的话，还是使用webpack打包压缩一下更好！
+       npm install webpack webpack-cli uglifyjs-webpack-plugin
+   4、配置webpack打包项
+   根目录下新建一个webpack.config.js
+   const path = require("path");
+   const uglify = require('uglifyjs-webpack-plugin');
+   module.exports = {
+       mode:'development',
+       // 入口配置的对象中，属性为输出的js文件名，属性值为入口文件
+       entry: {
+           plugins:".src/index.js"
+       },
+       //输出路径和文件名，使用path模块resolve方法将输出路径解析为绝对路径
+       output: {
+           libraryTarget: 'umd', // 这个很重要！！！定义模块的运行方式(解决了无法export和import的问题)
+           path: path.resolve(__dirname, "./dist/js"), //将js文件打包到dist/js的目录
+           filename: "[name].js" //使用[name]打包出来的js文件会分别按照入口文件配置的属性来命名
+       },
+       // 压缩
+       plugins:[
+           new uglify()
+       ],
+       module:{
+   		rules:[
+   			{
+   				test: /\.js$/,  // 处理js文件
+                   exclude: node_modules/, 
+                   loader: "babel-loader"
+   			}
+   		]
+   	}
+   };
+   5、安装babel,在打包的时候，将es6+转换成es5语法.
+   npm install @babel/core @babel/preset-env babel-loader  // babel-core babel-preset-env前面两个不行的话，再装这两个
+   配置babel，在根目录下，新建一个.babelrc文件
+   {
+       "presets": ["@babel/preset-env"]
+   }
+   6、配置package.json
+   {
+     "name": "gtwx_plugins",
+     "version": "1.0.6",
+     "description": "公用插件、样式",
+     "main": "dist/js/plugins.js",  // 发布npm包时，指定入口
+     "scripts": {
+       "test": "echo \"Error: no test specified\" && exit 1",
+       "build": "npx webpack --mode development" // 新建打包命令
+     },
+     "author": "luoliang",
+     "license": "ISC",
+     "dependencies": {
+       "@babel/core": "^7.12.10",
+       "@babel/preset-env": "^7.12.11",
+       "babel-core": "^6.26.3",
+       "babel-loader": "^8.2.2",
+       "babel-preset-env": "^1.7.0",
+       "webpack": "^5.16.0"
+     },
+     "devDependencies": {
+       "webpack-cli": "^4.4.0"
+     },
+     "files": [  //发布npm包时，指定文件，白名单
+       "dist",
+       "css",
+       "js"
+     ]
+   }
+   7、执行步骤
+   npm run build //生成dist/js/plugins.js文件
+   npm publish // 发布
+   
+   ```
+
+   
+
+4. 虚位以待！！！

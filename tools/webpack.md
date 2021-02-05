@@ -148,6 +148,26 @@
    import，use等，就可以删除了(如果不删除的话，依然会打包，这样项目文件还是那么大)
    注意：如果vue-router通过了cdn引入，那么在new Router(......)的时候，就应该使用webpack.base.conf.js中映射的VueRouter
    new VueRoute(......)
+       
+   vue-cli4的配置
+   module.exports = {
+       ......
+       configureWebpack:{  // 不需要打包的文件
+           externals:{
+               vue:'Vue'.
+               'vue-router':'VueRouter',
+               axios:'axios'
+           },
+           css:[],
+           js:[   // js扩展插件的引入方式
+               '//cdn.xxx.xxx/vue.min.js',
+               '//cdn.xxx.xxx/vue-router.min.js'
+               '//cdn.xxx.xxx/axios.min.js'
+           ]
+       }
+   }
+   当然，还可以直接在index.html中直接引入cdn地址
+       
    8.2、路由懒加载
    import Home from './views/Home.vue'
    const routes = [

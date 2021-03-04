@@ -27,7 +27,7 @@
        <div class="middle2">中</div>
        <div class="right2">右</div>
    </div>
-   
+   .all{position:relative;}
    .left2{width:200px;height:100%;background:red;float: left;}
    .middle2{height: 100%;background:blue;position: absolute;left:210px;right: 210px;}
    .right2{width:200px;height: 100%;background: green;float:right;}

@@ -249,7 +249,7 @@
    盒模box-shadow
    box-shadow规定了边框的阴影部分
    语法：
-   box-shadow: inset X-offset Y-offset blur spread color;
+   box-shadow: inset X-offset Y-offset radius spread color;
    
    inset：可选。如不设值，默认投影方式是外阴影，如取其唯一值“inset”，其投影为内阴影。
    X-offset:必须。阴影水平偏移量，其值可以是正负值。如果值为正值，则阴影在对象的右边，其值为负值时，阴影在对象的左边；
@@ -294,6 +294,22 @@
        background-color:red;
        box-shadow:0px 10px 10px -5px #000,10px 0px 10px -5px blue,-10px 0 10px -5px purple,0 -10px 10px -5px yellow;
    }
+   
+   5、关于外阴影/内阴影 偏移量问题？
+   // 外阴影
+   box-shadow: 0px -10px 0px 0px #ff0000,   /*上边阴影  红色*/
+               10px 0px 0px 0px #2279ee,    /*右边阴影  蓝色*/
+               0px 10px 0px 0px #eede15,    /*下边阴影  黄色*/
+               -10px 0px 0px 0px #3bee17;   /*左边阴影  绿色*/
+   // 内阴影
+   box-shadow: inset 0px 10px 0px 0px #eede15;    /*上边内阴影  黄色*/
+   			inset -10px 0px 0px 0px #3bee17,   /*右边内阴影  绿色*/
+   			inset 0px -10px 0px 0px #ff0000,   /*下边内阴影  红色*/
+               inset 10px 0px 0px 0px #2279ee,    /*左边内阴影  蓝色*/
+   细心点就会发现，内/外阴影其实是不一样的，那怎样记住呢？
+   最直观的就是建立一个坐标系：
+   以内阴影为基准：在当前边往上为正，往右为正，往下为负，往左为负
+   那么外阴影则刚好相反：在当前边往上为负，往右为负，往下为正，往左为正
    ```
 
    
@@ -305,6 +321,47 @@
 8. ##### 颜色rgba（rgb为颜色值，a为透明度） 
 
 9. ##### 渐变
+
+   ```css
+   线性渐变（上下、左右、角度方向）
+   background: linear-gradient(direction, color-stop1, color-stop2, ...); // 颜色越多渐变越多
+   1、从上到下（默认情况下）
+   h2{
+       background: -webkit-linear-gradient(red, blue); /* Safari 5.1 - 6.0 */ 
+       background: -o-linear-gradient(red, blue); /* Opera 11.1 - 12.0 */ 
+       background: -moz-linear-gradient(red, blue); /* Firefox 3.6 - 15 */
+       background: linear-gradient(red, blue); /* 标准的语法 */
+   }
+   2、从左到右
+   h2{
+       background: -webkit-linear-gradient(left, red , blue); /* Safari 5.1 - 6.0 */ 
+       background: -o-linear-gradient(right, red, blue); /* Opera 11.1 - 12.0 */ 
+       background: -moz-linear-gradient(right, red, blue); /* Firefox 3.6 - 15 */ 
+       background: linear-gradient(to right, red , blue); /* 标准的语法 */
+   }
+   3、线性渐变：对角 //从左上角到右下角
+   h2{
+       background: -webkit-linear-gradient(left top, red , blue); /* Safari 5.1 - 6.0 */ 
+       background: -o-linear-gradient(bottom right, red, blue); /* Opera 11.1 - 12.0 */ 
+       background: -moz-linear-gradient(bottom right, red, blue); /* Firefox 3.6 - 15 */ 
+       background: linear-gradient(to bottom right, red , blue); /* 标准的语法 */
+   }
+   4、任意角度渐变（注意0deg是从y轴正向开始，顺时针旋转！！！）
+   background: linear-gradient(-45deg, red, yellow);
+   5、透明度写法
+   background: linear-gradient(to bottom right, rgba(255,0,0,0), rgba(255,0,0,1));
+   
+   径向渐变（由内到外渐变）
+   background: radial-gradient(shape size at position, start-color, ..., last-color);
+   1、颜色节点均匀分布的径向渐变（三个各占33.3333%）
+   background: radial-gradient(red, yellow, green);
+   2、颜色节点按比例分布的径向渐变（三个按指定比例占比）
+   background: radial-gradient(red 10%, yellow 10%, green 80%);
+   3、设置形状（圆形circle宽高应保持一直，椭圆形ellipse宽高不一致），当然这需要配合容器的宽高来使用！！！
+   background: radial-gradient(circle, red, yellow, green);
+   ```
+
+   
 
 10. ##### 弹性布局flex，参考：http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html
 
